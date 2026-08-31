@@ -52,7 +52,7 @@
     font-family:'Rajdhani',sans-serif; border: 1px solid #333; color: #999; cursor: pointer;
     text-transform: uppercase; transition: all 0.2s; position: relative; overflow: hidden;
     background-image: linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.92) 100%), var(--tab-cover, none);
-    background-size: cover; background-position: center 15%;
+    background-size: cover; background-position: center top;
     height: 5.4rem; display: flex; flex-direction: column; justify-content: flex-end;
     padding: 0.5rem 0.7rem; text-align: left;
   }
@@ -75,6 +75,25 @@
   .track-row .t-num { font-size: 0.58rem; color: var(--accent-deep); min-width: 1.6rem; transition: color 0.5s ease; }
   .track-row .t-title { font-family:'Rajdhani',sans-serif; font-weight:600; letter-spacing:0.06em; font-size: 0.82rem; text-transform: uppercase; color: #99a; flex:1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .track-row.active .t-title { color: var(--accent-pale); }
+
+  .cover-row {
+    display: flex; align-items: center; gap: 0.6rem;
+    padding: 0.65rem 0.6rem; margin: 0.4rem 0.4rem 0.5rem; cursor: pointer; user-select: none;
+    border: 1px solid var(--border); border-left: 2px solid var(--border-dim);
+    transition: all 0.15s;
+  }
+  .cover-row:hover { background: var(--bg-raise); border-color: var(--accent-deep); }
+  .cover-row.active { background: var(--bg-raise); border-left-color: var(--accent); border-color: var(--accent-deep); }
+  .cover-row .c-icon { font-size: 0.85rem; color: var(--accent); transition: color 0.5s ease; }
+  .cover-row .c-label { font-family:'Rajdhani',sans-serif; font-weight:700; letter-spacing:0.15em; font-size: 0.78rem; text-transform: uppercase; color: #ccd; }
+  .cover-row.active .c-label { color: var(--accent-pale); }
+  .track-nav-divider { height: 1px; background: var(--border); opacity: 0.6; margin: 0 0.6rem 0.5rem; transition: background 0.5s ease; }
+
+  .album-overview { padding: 0.4rem 0 1rem; }
+  .ao-tagline { font-size: 0.95rem; font-style: italic; color: #ddd; line-height: 1.7; margin-bottom: 1.4rem; }
+  .ao-meta { display: flex; flex-wrap: wrap; gap: 1.2rem 1.8rem; padding-bottom: 1.2rem; }
+  .ao-meta div { font-size: 0.62rem; letter-spacing: 0.12em; color: var(--text-dim); text-transform: uppercase; transition: color 0.5s ease; }
+  .ao-meta span { color: var(--accent); display: block; margin-top: 0.2rem; font-size: 0.75rem; transition: color 0.5s ease; }
 
   .sidebar-foot { padding: 0.6rem 1rem; font-size: 0.52rem; letter-spacing: 0.15em; color: #333; border-top: 1px solid var(--border); text-transform: uppercase; transition: border-color 0.5s ease; }
   @media (max-width: 980px) { .sidebar-foot { display: none; } }
@@ -694,7 +713,7 @@ const ALBUMS = {
 // state = what's being VIEWED in the sidebar/cover/lyrics panes.
 // playingAlbum/playingIdx = what's actually PLAYING — deliberately decoupled,
 // so browsing around doesn't interrupt playback.
-const state = { album: 1, track: 0 };
+const state = { album: 1, track: -1 };
 let playingAlbum = null;
 let playingIdx = null;
 const audioPlayer = document.getElementById('audioPlayer');
@@ -739,6 +758,17 @@ function renderTrackNav() {
   const wrap = document.getElementById('trackNav');
   wrap.innerHTML = '';
   const album = ALBUMS[state.album];
+
+  const coverRow = document.createElement('div');
+  coverRow.className = 'cover-row' + (state.track === -1 ? ' active' : '');
+  coverRow.innerHTML = `<span class="c-icon">⬢</span><span class="c-label">Album Cover</span>`;
+  coverRow.addEventListener('click', () => selectTrack(-1));
+  wrap.appendChild(coverRow);
+
+  const divider = document.createElement('div');
+  divider.className = 'track-nav-divider';
+  wrap.appendChild(divider);
+
   album.tracks.forEach((t, i) => {
     const row = document.createElement('div');
     row.className = 'track-row' + (i === state.track ? ' active' : '');
@@ -758,9 +788,10 @@ function renderTrackNav() {
 
 function renderCover() {
   const album = ALBUMS[state.album];
-  document.getElementById('coverImg').src = album.cover;
+  const track = state.track >= 0 ? album.tracks[state.track] : null;
+  document.getElementById('coverImg').src = (track && track.image) ? track.image : album.cover;
   document.getElementById('coverEyebrow').textContent = album.label;
-  document.getElementById('coverTitle').textContent = album.title;
+  document.getElementById('coverTitle').textContent = track ? track.title : album.title;
   document.getElementById('coverTagline').textContent = album.tagline;
   const metaWrap = document.getElementById('coverMeta');
   metaWrap.innerHTML = '';
@@ -773,14 +804,36 @@ function renderCover() {
 
 function renderText() {
   const album = ALBUMS[state.album];
-  const track = album.tracks[state.track];
-  document.getElementById('thNum').textContent = `// TRACK_${String(state.track+1).padStart(2,'0')}`;
-  document.getElementById('thTitle').textContent = track.title;
-  document.getElementById('prevBtn').disabled = state.track === 0 && state.album === MIN_ALBUM;
-  document.getElementById('nextBtn').disabled = state.track === album.tracks.length - 1 && state.album === MAX_ALBUM;
+  document.getElementById('prevBtn').disabled = (state.album === MIN_ALBUM && state.track === -1);
+  document.getElementById('nextBtn').disabled = (state.album === MAX_ALBUM && state.track === album.tracks.length - 1);
 
   const body = document.getElementById('textBody');
   body.innerHTML = '';
+
+  // ── ALBUM COVER VIEW ──
+  if (state.track === -1) {
+    document.getElementById('thNum').textContent = album.label.replace(/\/\//g, '').trim();
+    document.getElementById('thTitle').textContent = album.title;
+    document.getElementById('thPlayBtn').disabled = true;
+
+    const div = document.createElement('div');
+    div.className = 'album-overview';
+    div.innerHTML = `
+      <div class="ao-tagline">${album.tagline}</div>
+      <div class="ao-meta">${album.meta.map(([k,v]) => `<div>${k}<span>${v}</span></div>`).join('')}</div>
+    `;
+    body.appendChild(div);
+    body.scrollTop = 0;
+    refreshPlayingIndicators();
+    return;
+  }
+
+  // ── TRACK VIEW ──
+  const track = album.tracks[state.track];
+  document.getElementById('thNum').textContent = `// TRACK_${String(state.track+1).padStart(2,'0')}`;
+  document.getElementById('thTitle').textContent = track.title;
+  document.getElementById('thPlayBtn').disabled = false;
+
   track.sections.forEach(([label, text]) => {
     const sec = document.createElement('div');
     sec.className = 'lyric-section ' + sectionClass(label);
@@ -794,7 +847,7 @@ function renderText() {
 /* ============ VIEW NAVIGATION (browsing — independent of playback) ============ */
 function selectAlbum(num) {
   state.album = num;
-  state.track = 0;
+  state.track = -1; // land on the album cover first, matching original behavior
   document.body.setAttribute('data-album', num);
   renderAlbumTabs();
   renderTrackNav();
@@ -803,8 +856,11 @@ function selectAlbum(num) {
 }
 
 function selectTrack(i) {
+  const album = ALBUMS[state.album];
+  if (i < -1 || i >= album.tracks.length) return;
   state.track = i;
   renderTrackNav();
+  renderCover();
   renderText();
   setMobileView('lyrics');
 }
@@ -812,8 +868,14 @@ function selectTrack(i) {
 function stepTrack(delta) {
   const album = ALBUMS[state.album];
   let next = state.track + delta;
-  if (next < 0) {
-    if (state.album > MIN_ALBUM) { selectAlbum(state.album - 1); selectTrack(ALBUMS[state.album].tracks.length - 1); }
+  if (next < -1) {
+    if (state.album > MIN_ALBUM) {
+      const prevAlbum = state.album - 1;
+      state.album = prevAlbum;
+      state.track = ALBUMS[prevAlbum].tracks.length - 1;
+      document.body.setAttribute('data-album', String(prevAlbum));
+      renderAlbumTabs(); renderTrackNav(); renderCover(); renderText();
+    }
     return;
   }
   if (next >= album.tracks.length) {
