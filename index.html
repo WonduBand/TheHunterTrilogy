@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>WONDU — Lyrics &amp; Artwork Archive</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --accent: #6b8f3f; --accent-deep: #4a6b2a; --accent-pale: #a8cf7f;
+    --bg: #0a0d09; --bg-panel: #12160e; --bg-raise: #191f13;
+    --border: #2a3820; --border-dim: #1c2615;
+    --text-dim: #7c9166;
+  }
+
+  html, body { height: 100%; background: var(--bg); font-family: 'Share Tech Mono', monospace; color: #ccc; }
+  body { transition: background 0.5s ease; overflow: hidden; }
+
+  body[data-album="1"] { --accent:#6b8f3f; --accent-deep:#4a6b2a; --accent-pale:#a8cf7f; --bg:#0a0d09; --bg-panel:#12160e; --bg-raise:#191f13; --border:#2a3820; --border-dim:#1c2615; --text-dim:#7c9166; }
+  body[data-album="2"] { --accent:#c62a2a; --accent-deep:#8a1c1c; --accent-pale:#e88080; --bg:#0c0a0a; --bg-panel:#171213; --bg-raise:#1f1719; --border:#3a2224; --border-dim:#2c1618; --text-dim:#a17878; }
+  body[data-album="3"] { --accent:#d97e2a; --accent-deep:#a3591a; --accent-pale:#f0b878; --bg:#0a0806; --bg-panel:#181310; --bg-raise:#201a15; --border:#3a2c1e; --border-dim:#2a1f14; --text-dim:#b09680; }
+
+  .app { height: 100%; display: grid; grid-template-rows: auto 1fr auto auto; }
+
+  /* ── TOPBAR ── */
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.7rem 1.4rem; border-bottom: 1px solid var(--border);
+    background: var(--bg-panel); transition: border-color 0.5s ease, background 0.5s ease;
+  }
+  .topbar-brand { display: flex; align-items: baseline; gap: 0.8rem; }
+  .topbar-title { font-family:'Rajdhani',sans-serif; font-weight:700; letter-spacing:0.3em; font-size:1rem; text-transform:uppercase; color:#eee; }
+  .topbar-sub { font-size:0.58rem; letter-spacing:0.2em; color: var(--text-dim); text-transform:uppercase; transition: color 0.5s ease; }
+  .topbar-stamp { font-size:0.55rem; letter-spacing:0.2em; color: var(--accent); text-transform:uppercase; transition: color 0.5s ease; }
+  @media (min-width: 981px) { .topbar-stamp { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); } }
+  .topbar { position: relative; }
+
+  /* ── MAIN GRID ── */
+  .app-main {
+    display: grid;
+    grid-template-columns: 260px minmax(0,1fr) minmax(0,1fr);
+    min-height: 0;
+  }
+
+  /* ── SIDEBAR ── */
+  .sidebar { background: var(--bg-panel); border-right: 1px solid var(--border); display: flex; flex-direction: column; min-height: 0; transition: border-color 0.5s ease, background 0.5s ease; }
+
+  .album-tabs { display: flex; flex-direction: column; gap: 0.55rem; padding: 0.8rem; border-bottom: 1px solid var(--border); transition: border-color 0.5s ease; }
+  .album-tab {
+    font-family:'Rajdhani',sans-serif; border: 1px solid #333; color: #999; cursor: pointer;
+    text-transform: uppercase; transition: all 0.2s; position: relative; overflow: hidden;
+    background-image: linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.92) 100%), var(--tab-cover, none);
+    background-size: cover; background-position: center 15%;
+    height: 5.4rem; display: flex; flex-direction: column; justify-content: flex-end;
+    padding: 0.5rem 0.7rem; text-align: left;
+  }
+  .album-tab .num { font-size: 0.55rem; font-weight: bold; letter-spacing: 0.2em; position: relative; z-index: 1; color: rgba(255,255,255,0.6); text-shadow: 0 1px 4px rgba(0,0,0,0.9); margin-bottom: 0.15rem; }
+  .album-tab .title-text { font-size: 0.92rem; font-weight: 700; letter-spacing: 0.03em; position: relative; z-index: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #eee; text-shadow: 0 1px 6px rgba(0,0,0,0.9); }
+  .album-tab:hover { border-color: #888; }
+  .album-tab:hover .title-text { color: #fff; }
+  .album-tab.active { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent), 0 0 14px var(--accent-glow, rgba(0,0,0,0)); }
+  .album-tab.active .num { color: var(--accent-pale); }
+  .album-tab.active .title-text { color: #fff; }
+  .album-tab.active::after { content: ''; position: absolute; inset: 0; pointer-events: none; box-shadow: inset 0 -2.2rem 1.6rem -1rem var(--accent); opacity: 0.35; }
+
+  .track-nav { flex: 1; overflow-y: auto; padding: 0.4rem; }
+  .track-row {
+    display: flex; align-items: center; gap: 0.6rem; padding: 0.55rem 0.6rem; cursor: pointer;
+    user-select: none; border-left: 2px solid transparent; transition: all 0.15s; border-radius: 2px;
+  }
+  .track-row:hover { background: var(--bg-raise); }
+  .track-row.active { background: var(--bg-raise); border-left-color: var(--accent); }
+  .track-row .t-num { font-size: 0.58rem; color: var(--accent-deep); min-width: 1.6rem; transition: color 0.5s ease; }
+  .track-row .t-title { font-family:'Rajdhani',sans-serif; font-weight:600; letter-spacing:0.06em; font-size: 0.82rem; text-transform: uppercase; color: #99a; flex:1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .track-row.active .t-title { color: var(--accent-pale); }
+
+  .sidebar-foot { padding: 0.6rem 1rem; font-size: 0.52rem; letter-spacing: 0.15em; color: #333; border-top: 1px solid var(--border); text-transform: uppercase; transition: border-color 0.5s ease; }
+  @media (max-width: 980px) { .sidebar-foot { display: none; } }
+
+  /* ── COVER PANE (fixed artwork) ── */
+  .cover-pane { position: relative; overflow: hidden; border-right: 1px solid var(--border); transition: border-color 0.5s ease; }
+  .cover-img-wrap { position: absolute; inset: 0; }
+  .cover-img { width: 100%; height: 100%; object-fit: cover; opacity: 0.92; }
+  .cover-scrim { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.45) 32%, rgba(0,0,0,0.05) 55%, rgba(0,0,0,0.25) 100%); }
+  .cover-content { position: relative; z-index: 2; display: flex; flex-direction: column; justify-content: flex-end; height: 100%; padding: 1.6rem 2rem; }
+  .cover-eyebrow { font-size: 0.62rem; letter-spacing: 0.35em; color: var(--accent); text-transform: uppercase; margin-bottom:0.5rem; transition: color 0.5s ease; }
+  .cover-title { font-family:'Rajdhani',sans-serif; font-size: clamp(1.8rem, 3.6vw, 3rem); font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #fff; line-height: 1.05; text-shadow: 0 0 40px rgba(0,0,0,0.8); }
+  .cover-tagline { font-size: 0.8rem; font-style: italic; color: #ddd; margin-top: 0.6rem; max-width: 480px; }
+  .cover-meta { display:flex; flex-wrap: wrap; gap: 1.4rem; margin-top: 1.1rem; font-size: 0.58rem; letter-spacing: 0.1em; color: rgba(255,255,255,0.5); text-transform: uppercase; }
+  .cover-meta span { color: var(--accent); transition: color 0.5s ease; }
+
+  /* ── TEXT PANE (fixed lyrics) ── */
+  .text-pane { display: flex; flex-direction: column; min-height: 0; }
+  .text-head { padding: 1rem 1.6rem 0.8rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 0.8rem; transition: border-color 0.5s ease; }
+  .text-head .th-num { font-size: 0.62rem; color: var(--accent-deep); letter-spacing: 0.1em; transition: color 0.5s ease; }
+  .text-head .th-title { font-family:'Rajdhani',sans-serif; font-size: 1.3rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #fff; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .text-nav-btn { background: transparent; border: 1px solid var(--border); color: var(--text-dim); width: 1.8rem; height: 1.8rem; cursor: pointer; font-size: 0.75rem; flex-shrink:0; transition: all 0.2s; }
+  .text-nav-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+  .text-nav-btn:disabled { opacity: 0.25; cursor: default; }
+  .icon-tri-right { display:inline-block; width: 0; height: 0; border-top: 5px solid transparent; border-bottom: 5px solid transparent; border-left: 8px solid currentColor; }
+  .icon-tri-left { display:inline-block; width: 0; height: 0; border-top: 5px solid transparent; border-bottom: 5px solid transparent; border-right: 8px solid currentColor; }
+
+  .text-body { flex: 1; overflow-y: auto; padding: 1.2rem 1.6rem 2.2rem; }
+  @keyframes fadeInLeft { from { opacity: 0; transform: translateX(-16px); } to { opacity: 1; transform: translateX(0); } }
+  .text-body > * { animation: fadeInLeft 0.35s ease both; }
+
+  .lyric-section { margin-bottom: 1.2rem; }
+  .sec-label { font-size: 0.6rem; letter-spacing: 0.2em; margin-bottom: 0.45rem; display: flex; align-items: center; gap: 0.5rem; color: var(--accent); text-transform: uppercase; transition: color 0.5s ease; }
+  .sec-label::after { content: ''; flex: 1; height: 1px; background: var(--border); opacity: 0.5; max-width: 80px; }
+  .sec-lines { font-size: 0.85rem; line-height: 1.85; white-space: pre-line; color: #f0f0e8; padding-left: 0.5rem; }
+  .lyric-section.final-chorus .sec-label { color: var(--accent-pale); }
+  .lyric-section.final-chorus .sec-lines { color: #fff; text-shadow: 0 0 14px rgba(255,255,255,0.12); }
+  .lyric-section.bridge .sec-lines { color: var(--accent-pale); font-style: italic; opacity: 0.9; }
+  .sec-lines strong { color: var(--accent); text-shadow: 0 0 12px var(--accent); font-weight: 700; }
+
+  /* ── ROW PLAY BUTTONS ── */
+  .row-play-btn {
+    flex-shrink: 0; width: 1.4rem; height: 1.4rem; border-radius: 50%;
+    border: 1px solid var(--border-dim); background: transparent; color: var(--text-dim);
+    font-size: 0.5rem; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+  }
+  .row-play-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .track-row.playing { background: var(--bg-raise); }
+  .track-row.playing .row-play-btn { border-color: var(--accent); color: var(--accent); background: var(--bg); }
+  .track-row.playing .t-title { color: var(--accent-pale); }
+  .th-play-btn { color: var(--accent); }
+
+  /* ── MINI PLAYER ── */
+  .mini-player {
+    display: none; align-items: center; gap: 1rem; padding: 0.55rem 1.4rem;
+    background: var(--bg-panel); border-top: 1px solid var(--border);
+    transition: border-color 0.5s ease, background 0.5s ease;
+  }
+  .mini-player.active { display: flex; animation: miniPlayerIn 0.4s cubic-bezier(.4,0,.2,1); }
+  @keyframes miniPlayerIn { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  .mp-btn {
+    background: transparent; border: 1px solid var(--border); color: var(--text-dim);
+    width: 2rem; height: 2rem; border-radius: 50%; flex-shrink: 0; cursor: pointer;
+    font-size: 0.7rem; display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+  }
+  .mp-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .mp-play { width: 2.3rem; height: 2.3rem; font-size: 0.8rem; }
+  .mp-info { min-width: 0; flex: 0 0 auto; width: 200px; overflow: hidden; }
+  .mp-title { font-family:'Rajdhani',sans-serif; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .mp-album { font-size: 0.55rem; color: var(--text-dim); letter-spacing: 0.12em; text-transform: uppercase; margin-top: 0.15rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: color 0.5s ease; }
+  .mp-progress {
+    flex: 1; min-width: 0; height: 3px; -webkit-appearance: none; appearance: none;
+    background: var(--border); border-radius: 2px; cursor: pointer; outline: none; transition: background 0.5s ease;
+  }
+  .mp-progress::-webkit-slider-thumb { -webkit-appearance: none; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); cursor: pointer; }
+  .mp-progress::-moz-range-thumb { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); border: none; cursor: pointer; }
+  .mp-time { font-size: 0.55rem; color: var(--text-dim); letter-spacing: 0.05em; white-space: nowrap; flex-shrink: 0; transition: color 0.5s ease; }
+  .mp-volume { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; }
+  .mp-vol-slider {
+    width: 70px; height: 3px; -webkit-appearance: none; appearance: none;
+    background: var(--border); border-radius: 2px; cursor: pointer; outline: none; transition: background 0.5s ease;
+  }
+  .mp-vol-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); cursor: pointer; }
+  .mp-vol-slider::-moz-range-thumb { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); border: none; cursor: pointer; }
+  @media (max-width: 700px) {
+    .mp-info { width: 110px; }
+    .mp-time { display: none; }
+    .mp-vol-slider { width: 46px; }
+  }
+  .icon-pause { display:inline-block; width: 8px; height: 10px; position: relative; }
+  .icon-pause::before, .icon-pause::after { content: ''; position: absolute; top: 0; width: 3px; height: 10px; background: currentColor; }
+  .icon-pause::before { left: 0; }
+  .icon-pause::after { left: 5px; }
+
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); }
+  ::-webkit-scrollbar-thumb:hover { background: var(--accent-deep); }
+
+  /* ── MOBILE TAB BAR ── */
+  .mobile-tabbar { display: none; }
+  @media (max-width: 980px) {
+    .app { grid-template-rows: auto 1fr auto auto; }
+
+    .app-main { grid-template-columns: 1fr; position: relative; overflow: hidden; }
+
+    /* All three panes stay mounted and slide horizontally; only one is in view at a time */
+    .sidebar, .cover-pane, .text-pane {
+      display: flex; position: absolute; inset: 0;
+      height: 100%; max-height: none; border: none;
+      transition: transform 0.38s cubic-bezier(.4,0,.2,1);
+      will-change: transform;
+    }
+    .cover-pane {
+      flex-direction: column;
+      overflow-y: auto;
+      align-items: stretch;
+    }
+    .cover-img-wrap {
+      position: relative; inset: auto;
+      width: 100%; flex-shrink: 0;
+    }
+    .cover-img { height: auto; object-fit: contain; display: block; }
+    .cover-scrim { display: none; }
+    .cover-content {
+      position: relative; z-index: auto;
+      flex: 0 0 auto;
+      background: #000;
+      height: auto;
+      margin-top: 0;
+      padding: 1.6rem 1.4rem 1.8rem;
+      justify-content: flex-start;
+    }
+
+    /* Default resting order: tracks | cover | lyrics, left to right */
+    .sidebar { transform: translateX(-100%); }
+    .cover-pane { transform: translateX(0%); }
+    .text-pane { transform: translateX(100%); }
+
+    .app-main[data-view="tracks"] .sidebar { transform: translateX(0%); }
+    .app-main[data-view="tracks"] .cover-pane { transform: translateX(100%); }
+    .app-main[data-view="tracks"] .text-pane { transform: translateX(200%); }
+
+    .app-main[data-view="cover"] .sidebar { transform: translateX(-100%); }
+    .app-main[data-view="cover"] .cover-pane { transform: translateX(0%); }
+    .app-main[data-view="cover"] .text-pane { transform: translateX(100%); }
+
+    .app-main[data-view="lyrics"] .sidebar { transform: translateX(-200%); }
+    .app-main[data-view="lyrics"] .cover-pane { transform: translateX(-100%); }
+    .app-main[data-view="lyrics"] .text-pane { transform: translateX(0%); }
+
+    .text-body { max-height: none; }
+
+    .album-tabs {
+      max-height: 9.2rem;
+      overflow-y: auto;
+      overflow-x: hidden;
+      flex-shrink: 0;
+    }
+
+    .mobile-tabbar {
+      display: flex; border-top: 1px solid var(--border); background: var(--bg-panel);
+      transition: border-color 0.5s ease, background 0.5s ease;
+    }
+    .mobile-tab-btn {
+      flex: 1; background: transparent; border: none; color: var(--text-dim);
+      font-family: 'Share Tech Mono', monospace; font-size: 0.6rem; letter-spacing: 0.1em;
+      text-transform: uppercase; padding: 0.6rem 0.2rem 0.55rem; display: flex; flex-direction: column;
+      align-items: center; gap: 0.25rem; cursor: pointer; transition: color 0.2s;
+    }
+    .mobile-tab-btn.active { color: var(--accent); }
+    .mtb-icon { font-size: 1.15rem; line-height: 1; }
+  }
+
+  @media (max-width: 480px) {
+    .mini-player { gap: 0.5rem; padding: 0.5rem 0.8rem; }
+    .mp-volume { display: none; }
+    .text-head { padding: 0.8rem 1rem 0.7rem; gap: 0.5rem; }
+    .text-head .th-num { display: none; }
+    .text-head .th-title { font-size: 1.05rem; }
+    .text-body { padding: 1rem 1.1rem 1.6rem; }
+  }
+</style>
+</head>
+<body data-album="1">
+
+<div class="app">
+
+  <div class="topbar">
+    <div class="topbar-brand">
+      <div class="topbar-title">Wondu</div>
+      <div class="topbar-sub">Lyrics &amp; Artwork Archive</div>
+    </div>
+    <div class="topbar-stamp" id="topbarStamp">⊙ THE HUNTER TRILOGY ⊙</div>
+  </div>
+
+  <div class="app-main" id="appMain" data-view="cover">
+
+    <nav class="sidebar">
+      <div class="album-tabs" id="albumTabs"></div>
+      <div class="track-nav" id="trackNav"></div>
+      <div class="sidebar-foot">⬡ Wondu — The Hunter Trilogy ⬡</div>
+    </nav>
+
+    <section class="cover-pane">
+      <div class="cover-img-wrap">
+        <img class="cover-img" id="coverImg" src="" alt="">
+      </div>
+      <div class="cover-scrim"></div>
+      <div class="cover-content">
+        <div class="cover-eyebrow" id="coverEyebrow">// Album I of III //</div>
+        <div class="cover-title" id="coverTitle">The First Hunter</div>
+        <div class="cover-tagline" id="coverTagline"></div>
+        <div class="cover-meta" id="coverMeta"></div>
+      </div>
+    </section>
+
+    <section class="text-pane" id="textPane">
+      <div class="text-head">
+        <button class="text-nav-btn" id="prevBtn" title="Previous track"><span class="icon-tri-left"></span></button>
+        <div class="th-num" id="thNum">// TRACK_01</div>
+        <div class="th-title" id="thTitle">—</div>
+        <button class="text-nav-btn th-play-btn" id="thPlayBtn" title="Play this track"><span class="icon-tri-right"></span></button>
+        <button class="text-nav-btn" id="nextBtn" title="Next track"><span class="icon-tri-right"></span></button>
+      </div>
+      <div class="text-body" id="textBody"></div>
+    </section>
+
+  </div>
+
+  <div class="mini-player" id="miniPlayer">
+    <button class="mp-btn" id="mpPrev" title="Previous track"><span class="icon-tri-left"></span></button>
+    <button class="mp-btn mp-play" id="mpPlayPause" title="Play / Pause"><span class="icon-tri-right" id="mpPlayIcon"></span></button>
+    <button class="mp-btn" id="mpNext" title="Next track"><span class="icon-tri-right"></span></button>
+    <div class="mp-info">
+      <div class="mp-title" id="mpTitle">—</div>
+      <div class="mp-album" id="mpAlbum">—</div>
+    </div>
+    <input type="range" class="mp-progress" id="mpProgress" min="0" max="100" value="0">
+    <span class="mp-time" id="mpTime">0:00 / 0:00</span>
+    <div class="mp-volume">
+      <button class="mp-btn mp-vol-btn" id="mpMute" title="Mute / Unmute">🔊</button>
+      <input type="range" class="mp-vol-slider" id="mpVolume" min="0" max="100" value="100" title="Volume">
+    </div>
+  </div>
+
+  <div class="mobile-tabbar" id="mobileTabbar">
+    <button class="mobile-tab-btn" data-view="tracks"><span class="mtb-icon">☰</span>Tracks</button>
+    <button class="mobile-tab-btn active" data-view="cover"><span class="mtb-icon">◈</span>Cover</button>
+    <button class="mobile-tab-btn" data-view="lyrics"><span class="mtb-icon">▤</span>Lyrics</button>
+  </div>
+</div>
+
+<audio id="audioPlayer" preload="none"></audio>
+
+<script>
+/* ============ ALBUM DATA ============ */
+const ALBUMS = {
+  1: {
+    title: "The First Hunter", cover: "covers/the-first-hunter.png",
+    label: "// Album I of III — The Hunter Trilogy //",
+    tagline: '"Something old is waking up."',
+    meta: [['GENRE','Melodic / Groove Metal'],['TRACKS','11'],['SETTING','Primeval Jungle']],
+    tracks: [
+      { title: "Signal through the Canopy", audio: "", sections: [
+        ["Verse 1", "Static in the leaves tonight\nSomething moving out of sight\nFeel it crawling up my spine\nLike it's always been mine\n\nFootsteps but the ground comes first\nHeavy breath inside the dirt\nEvery shadow, every line\nFeels like it's alive"],
+        ["Pre-Chorus", "I don't know this place\nBut it knows my name\nFeel it in my veins\nI can't walk away"],
+        ["Chorus", "I hear the signal through the canopy\nCalling out the animal in me\nFrom the dark to the sky, it's all I see\nSomething's waking up inside of me"],
+        ["Verse 2", "Marks are carved into the stone\nShapes I somehow always know\nRun my hands across the lines\nLike they're already mine\n\nEyes are watching from the trees\nEvery breath is haunting me\nStill I move toward the sound\nLike it pulls me down"],
+        ["Pre-Chorus", "I don't know this place\nBut it knows my name\nFeel it in my veins\nI can't walk away"],
+        ["Chorus", "I hear the signal through the canopy\nCalling out the animal in me\nFrom the dark to the sky, it's all I see\nSomething's waking up inside of me\n\nFeel it pulling, feel it underneath\nEvery step like it's hunting me\nIf I run, if I fight, it won't release\nSomething's waking up inside of me"],
+        ["Bridge", "Break me down, strip me clean\nShow me what I'm meant to be\nIf I fall, let it take\nEverything I tried to save\n\nDeep below, something calls\nThrough the blood, through it all\nI don't fight it anymore\nI become the war"],
+        ["Final Chorus", "I hear the signal through the canopy\nCalling out the animal in me\nFrom the dark to the sky, it's all I see\nSomething's waking up inside of me\n\nFeel it pulling, feel it underneath\nEvery step like it's hunting me\nIf I run, if I fight, it won't release\nSomething's waking up inside of me"]
+      ]},
+      { title: "Mark of the First Hunter", audio: "", sections: [
+        ["Verse 1", "Woke up with a different skin\nSomething deeper settling in\nEvery scar begins to glow\nLike it's trying to show\n\nHear it beating in my chest\nLike a drum I can't suppress\nEvery step, every breath\nPushing past the rest"],
+        ["Pre-Chorus", "I can feel it now\nI can't shut it out\nEvery part of me\nTurning inside out"],
+        ["Chorus", "I got the mark, I feel it in my veins\nI got the fire, I can't escape\nNo way out, no slowing down\nIt's who I am, I feel it now"],
+        ["Verse 2", "Voices buried in the sound\nPulling me into the ground\nEvery whisper, every tone\nFeels like coming home\n\nSee the shapes behind my eyes\nAncient forms I recognize\nIn the dark they start to move\nLike they know the truth"],
+        ["Pre-Chorus", "I can feel it now\nI can't shut it out\nEvery part of me\nTurning inside out"],
+        ["Chorus", "I got the mark, I feel it in my veins\nI got the fire, I can't escape\nNo way out, no slowing down\nIt's who I am, I feel it now\n\nI got the mark, it's in my blood\nI feel it rise, I feel it flood\nNo turning back, no breaking free\nThe hunter's waking up in me"],
+        ["Bridge", "Cut me open, let it show\nWhat I am and what I know\nIf this power takes control\nLet it take it all\n\nNo more doubt, no more fear\nI was always meant to hear\nEvery call, every cry\nLeading me inside"],
+        ["Chorus", "I got the mark, I feel it in my veins\nI got the fire, I can't escape\nNo way out, no slowing down\nIt's who I am, I feel it now\n\nI got the mark, it's in my blood\nI feel it rise, I feel it flood\nNo turning back, no breaking free\nThe hunter's waking up in me"]
+      ]},
+      { title: "Bones Beneath the Green", audio: "", sections: [
+        ["Verse 1", "Step where the roots run deep\nSomething shifts under me\nGround don't feel the same\nLike it knows my name"],
+        ["Pre-Chorus", "Hear it crack below\nFeel it start to grow\nEvery step I take\nSomething starts to wake"],
+        ["Chorus", "Bones beneath the green, I can feel them move\nBuried in the dark, but they're breaking through\nEvery breath I take, every step I choose\nSomething old is waking up"],
+        ["Verse 2", "Shapes in the soil shift\nLike they're trying to lift\nDust begins to rise\nRight before my eyes"],
+        ["Pre-Chorus", "Hear it crack below\nFeel it start to grow\nEvery step I take\nSomething starts to wake"],
+        ["Chorus", "Bones beneath the green, I can feel them move\nBuried in the dark, but they're breaking through\nEvery breath I take, every step I choose\nSomething old is waking up\n\nBones beneath the green, hear the hollow sound\nLike a thousand hearts beating underground\nI don't run away, I don't turn around\nI can feel it waking up"],
+        ["Bridge", "Let it break, let it rise\nI can see it in my mind\nWhat was buried won't stay gone\nIt was waiting all along"],
+        ["Final Chorus", "Bones beneath the green, I can feel them move\nBuried in the dark, but they're breaking through\nEvery breath I take, every step I choose\nSomething old is waking up\n\nBones beneath the green, hear the hollow sound\nLike a thousand hearts beating underground\nI don't run away, I don't turn around\nI can feel it waking up"]
+      ]},
+      { title: "They Still Breathe", audio: "", sections: [
+        ["Verse 1", "Thought it died long ago\nBuried deep down below\nBut the silence starts to shake\nEvery step I take"],
+        ["Pre-Chorus", "Hear it in the air\nSomething's still there\nEvery shadow moves\nLike it's watching you"],
+        ["Chorus", "They still breathe in the dark below\nIn the places no one goes\nEvery sound, every echo speaks\nThey still breathe, they still breathe\nHear it in the air\nSomething's still there\nEvery shadow moves\nLike it's watching you"],
+        ["Verse 2", "Eyes that never close\nFollow where I go\nEvery broken bone\nFeels like coming home"],
+        ["Pre-Chorus", "Hear it in the air\nSomething's still there\nEvery shadow moves\nLike it's watching you"],
+        ["Chorus", "They still breathe in the dark below\nIn the places no one goes\nEvery sound, every echo speaks\nThey still breathe, they still breathe\nThey still breathe, I can feel the heat\nIn the ground beneath my feet\nEvery step pulls me in too deep\nThey still breathe, they still breathe"],
+        ["Bridge", "You can't kill what won't die\nYou can't hide, you can't hide\nEvery age leaves a trace\nStill alive in this place"],
+        ["Final Chorus", "They still breathe in the dark below\nIn the places no one goes\nEvery sound, every echo speaks\nThey still breathe, they still breathe\nThey still breathe, I can feel the heat\nIn the ground beneath my feet\nEvery step pulls me in too deep\nThey still breathe, they still breathe"]
+      ]},
+      { title: "Iron Gods, Rusted Thrones", audio: "", sections: [
+        ["Verse 1", "Cold light, metal sky\nWires where the roots should lie\nSteel veins, hollow sound\nDead kings underground"],
+        ["Pre-Chorus", "Built to rule, built to last\nNow they're fading into ash\nStill they try to take control\nStill they want my soul"],
+        ["Chorus", "Iron gods on rusted thrones\nBroken crowns and hollow bones\nTry to pull me into code\nBut I won't let go"],
+        ["Verse 2", "Circuits crawl through the ground\nSilent, creeping, all around\nEvery signal cuts so deep\nTrying to rewrite me"],
+        ["Pre-Chorus", "Built to rule, built to last\nNow they're fading into ash\nStill they try to take control\nStill they want my soul"],
+        ["Chorus", "Iron gods on rusted thrones\nBroken crowns and hollow bones\nTry to pull me into code\nBut I won't let go\n\nIron gods, I hear the call\nSystems rise and systems fall\nYou can't own what can't be controlled\nI won't let go"],
+        ["Bridge", "Override, cut the feed\nYou won't take what's in me\nFlesh and blood, I remain\nI won't break to the chain"],
+        ["Chorus", "Iron gods on rusted thrones\nBroken crowns and hollow bones\nTry to pull me into code\nBut I won't let go\n\nIron gods, I hear the call\nSystems rise and systems fall\nYou can't own what can't be controlled\nI won't let go"]
+      ]},
+      { title: "Wired Into the Vein", audio: "", sections: [
+        ["Verse 1", "Cold touch under skin\nFeel it creeping in\nEvery pulse I feel\nDoesn't feel real"],
+        ["Pre-Chorus", "Signal in my head\nFilling me with dread\nTry to cut it out\nBut I feel it now"],
+        ["Chorus", "Wired into the vein, I can't break free\nEvery part of me's not mine to keep\nFeel it take control, feel it rewrite me\nWired into the vein"],
+        ["Verse 2", "Voices in the code\nTelling me to fold\nEvery thought I fight\nFading into white"],
+        ["Pre-Chorus", "Signal in my head\nFilling me with dread\nTry to cut it out\nBut I feel it now"],
+        ["Chorus", "Wired into the vein, I can't break free\nEvery part of me's not mine to keep\nFeel it take control, feel it rewrite me\nWired into the vein\n\nWired into the vein, hear the system speak\nTelling me what I'm supposed to be\nIf I lose myself, what is left of me?\nWired into the vein"],
+        ["Bridge", "Cut it out, rip it clean\nI won't be your machine\nIf I fall, let me fall\nStill I won't lose it all"],
+        ["Chorus", "Wired into the vein, I can't break free\nEvery part of me's not mine to keep\nFeel it take control, feel it rewrite me\nWired into the vein\n\nWired into the vein, hear the system speak\nTelling me what I'm supposed to be\nIf I lose myself, what is left of me?\nWired into the vein"]
+      ]},
+      { title: "Ghosts Don't Die Here", audio: "", sections: [
+        ["Verse 1", "Whispers in the air\nSomeone standing there\nBut there's no one I can see\nStill they follow me"],
+        ["Pre-Chorus", "Every step I take\nFeels like it's too late\nEvery voice I hear\nSounds too close, too near"],
+        ["Chorus", "Ghosts don't die here, they remain\nIn the echo, in the pain\nEvery word, every name\nStill alive inside my brain"],
+        ["Verse 2", "Faces I don't know\nBut I feel them close\nLike I've lived their fall\nLike I've felt it all"],
+        ["Pre-Chorus", "Every step I take\nFeels like it's too late\nEvery voice I hear\nSounds too close, too near"],
+        ["Chorus", "Ghosts don't die here, they remain\nIn the echo, in the pain\nEvery word, every name\nStill alive inside my brain\n\nGhosts don't die here, they stay\nIn the dark, they find a way\nEvery breath that I take\nFeels like theirs to take"],
+        ["Bridge", "All the ones before\nStill behind the door\nCalling out my name\nSaying we're the same"],
+        ["Final Chorus", "Ghosts don't die here, they remain\nIn the echo, in the pain\nEvery word, every name\nStill alive inside my brain\n\nGhosts don't die here, they stay\nIn the dark, they find a way\nEvery breath that I take\nFeels like theirs to take"]
+      ]},
+      { title: "The Hunter Becomes", audio: "", sections: [
+        ["Verse 1", "Feel it in my bones\nSomething taking hold\nEvery step I make\nFeels like it's too late"],
+        ["Pre-Chorus", "I tried to resist\nBut it won't release\nEvery part of me\nStarts to shift and bleed"],
+        ["Chorus", "The hunter becomes what it hunts\nI feel it rise in my blood\nNo more running away\nNo more holding the line"],
+        ["Verse 2", "Every line is crossed\nEvery piece is lost\nWhat I used to be\nDoesn't live in me"],
+        ["Pre-Chorus", "I tried to resist\nBut it won't release\nEvery part of me\nStarts to shift and bleed"],
+        ["Chorus", "The hunter becomes what it hunts\nI feel it rise in my blood\nNo more running away\nNo more holding the line\n\nThe hunter becomes what it fears\nI've been fighting for years\nNow there's nothing to save\nI'm the thing I became"],
+        ["Bridge", "Let it take, let it change\nI don't feel the same\nIf I lose my name\nWas I ever safe?"],
+        ["Chorus", "The hunter becomes what it hunts\nI feel it rise in my blood\nNo more running away\nNo more holding the line\n\nThe hunter becomes what it fears\nI've been fighting for years\nNow there's nothing to save\nI'm the thing I became"]
+      ]},
+      { title: "The Broken Realm", audio: "", sections: [
+        ["Verse 1", "Red sky, black rain\nNothing here remains\nDead trees, burning ground\nHear the sirens sound\n\nCold steel through the stone\nRoots around the bones\nEvery world I've known\nHas become one"],
+        ["Pre-Chorus", "Feel the whole world shake\nFeel the whole world change\nThere's nowhere left to run\nNowhere left to run"],
+        ["Chorus", "Welcome to the broken realm\nWhere nothing stays the same\nEvery world is crashing down\nAnd calling out my name\n\nWelcome to the broken realm\nNo shelter, no escape\nIf I'm gonna make it out\nI'll have to find a way"],
+        ["Verse 2", "Green grows through the steel\nNothing here is real\nGhosts move through the flame\nCalling out my name\n\nOld blood, new machines\nSomething in between\nEvery nightmare lives\nEverything begins"],
+        ["Pre-Chorus", "Feel the whole world shake\nFeel the whole world change\nThere's nowhere left to run\nNowhere left to run"],
+        ["Chorus", "Welcome to the broken realm\nWhere nothing stays the same\nEvery world is crashing down\nAnd calling out my name\n\nWelcome to the broken realm\nNo shelter, no escape\nIf I'm gonna make it out\nI'll have to find a way"],
+        ["Bridge", "Let it fall\nLet it burn\nNo way back\nNo return\n\nLet it fall\nLet it break\nOne more war\nOne more day"],
+        ["Final Chorus", "Welcome to the broken realm\nWhere nothing stays the same\nEvery world is crashing down\nAnd calling out my name\n\nWelcome to the broken realm\nNo shelter, no escape\nIf I'm gonna make it out\nI'll have to find a way"]
+      ]},
+      { title: "War Without End", audio: "", sections: [
+        ["Verse 1", "Fire in the sky tonight\nAsh falling in the light\nEvery step, every breath\nFeels like life or death"],
+        ["Pre-Chorus", "No way out, no retreat\nFeel the ground beneath my feet\nEvery line has been drawn\nNow it's all or nothing"],
+        ["Chorus", "War without end, I feel it begin\nUnder my skin, under my skin\nNo more escape, no more pretend\nWar without end"],
+        ["Verse 2", "Voices turn into noise\nNo more wrong, no more choice\nEvery side looks the same\nAll consumed in the flame"],
+        ["Pre-Chorus", "No way out, no retreat\nFeel the ground beneath my feet\nEvery line has been drawn\nNow it's all or nothing"],
+        ["Chorus", "War without end, I feel it begin\nUnder my skin, under my skin\nNo more escape, no more pretend\nWar without end\n\nWar without end, hear it again\nCalling me in, calling me in\nNo more control, no more defense\nWar without end"],
+        ["Bridge", "If this is what I am\nIf this is where I stand\nI won't break, I won't bend\nEven at the end"],
+        ["Final Chorus", "War without end, I feel it begin\nUnder my skin, under my skin\nNo more escape, no more pretend\nWar without end\n\nWar without end, hear it again\nCalling me in, calling me in\nNo more control, no more defense\nWar without end"]
+      ]},
+      { title: "Last Light of the Line", audio: "", sections: [
+        ["Verse 1", "Silence where the war has been\nNothing left but what remains\nEvery step feels heavier\nCarrying the pain"],
+        ["Pre-Chorus", "All the voices fade\nAll the ghosts remain\nEvery choice I made\nStill runs through my veins"],
+        ["Chorus", "I'm the last light of the line\nFading out, but still alive\nIf I fall, I fall alone\nBut I won't let it die"],
+        ["Verse 2", "All the names I couldn't save\nAll the paths I couldn't change\nEvery loss is carved in me\nEvery wound remains"],
+        ["Pre-Chorus", "All the voices fade\nAll the ghosts remain\nEvery choice I made\nStill runs through my veins"],
+        ["Chorus", "I'm the last light of the line\nFading out, but still alive\nIf I fall, I fall alone\nBut I won't let it die\n\nI'm the last light in the dark\nHolding on with every scar\nIf this ends, it ends with me\nBut I'll leave a mark"],
+        ["Bridge", "If I break, let it be\nNot for nothing, not for me\nIf I burn, let it show\nI was here, I was known"],
+        ["Final Chorus", "I'm the last light of the line\nFading out, but still alive\nIf I fall, I fall alone\nBut I won't let it die\n\nI'm the last light in the dark\nHolding on with every scar\nIf this ends, it ends with me\nBut I'll leave a mark"]
+      ]}
+    ]
+  },
+  2: {
+    title: "Legacy of the Mark", cover: "covers/legacy-of-the-mark.png",
+    label: "// Album II of III — The Hunter Trilogy //",
+    tagline: '"A thousand years. What have you done?"',
+    meta: [['GENRE','Industrial / Groove Metal'],['TRACKS','11'],['SETTING','Cyberpunk Empire']],
+    tracks: [
+      { title: "A Thousand Years", audio: "", sections: [
+        ["Verse 1", "I wake beneath a foreign sky\nWhite towers rising twice as high\nNo trace of where I stood before\nJust concrete stretching shore to shore\n\nA thousand lights burn through the rain\nA thousand faces look the same\nI hear a language I don't know\nWhere did the old world go?"],
+        ["Pre-Chorus", "Something changed\nSomething's wrong\nI've been gone\nI've been gone too long"],
+        ["Chorus", "A thousand years\nGone in a night\nI closed my eyes\nAnd lost my life\n\nA thousand years\nWhat have you done?\nThe world I knew\nIs dead and gone"],
+        ["Verse 2", "Black towers cut across the sun\nSteel soldiers marching one by one\nA symbol burns above the street\nThe same damn mark that's branded me\n\nThey wear it proudly on their arms\nAbove the gates, beneath the stars\nI don't know what they think they know\nBut they know me wherever I go"],
+        ["Pre-Chorus", "Something changed\nSomething's wrong\nThey know my face\nBut I've been gone too long"],
+        ["Chorus", "A thousand years\nGone in a night\nI closed my eyes\nAnd lost my life\n\nA thousand years\nWhat have you done?\nThe world I knew\nIs dead and gone"],
+        ["Bridge", "Take me back\nTake me home\nTo the land\nI used to know\n\nNo way back\nNo way home\nSo tell me—\nWhat have you become?"],
+        ["Final Chorus", "A thousand years\nGone in a night\nI closed my eyes\nAnd lost my life\n\nA thousand years\nNow here I stand\nA stranger in\nA stranger's land\n\nA thousand years\nBut I remain\nYou know the mark\nYou know the name\n\nA thousand years\nNow let me see\nWhat you have made\nOut of me"]
+      ]},
+      { title: "Neon Empire", audio: "", sections: [
+        ["Verse 1", "Red lights over empty streets\nCold eyes watching over me\nHigh walls reaching to the sky\nNo one stops to wonder why\n\nEvery door is numbered here\nEvery word controlled by fear\nHeads down when the sirens call\nAnother shadow on the wall"],
+        ["Pre-Chorus", "Fall in line\nKnow your place\nKeep your head down\nHide your face"],
+        ["Chorus", "Welcome to the neon empire\nWhere the lights never go down\nEverybody serves somebody\nEverybody wears a crown\n\nWelcome to the neon empire\nBuilt on everything you lost\nYou can have whatever you want\nIf you never count the cost"],
+        ["Verse 2", "Big screens hanging overhead\nSelling dreams to walking dead\nPerfect lives and perfect lies\nTwenty stories high\n\nSteel boots marching through the rain\nDifferent number, all the same\nNo one speaks and no one turns\nWhile another building burns"],
+        ["Pre-Chorus", "Fall in line\nKnow your place\nKeep your head down\nHide your face"],
+        ["Chorus", "Welcome to the neon empire\nWhere the lights never go down\nEverybody serves somebody\nEverybody wears a crown\n\nWelcome to the neon empire\nBuilt on everything you lost\nYou can have whatever you want\nIf you never count the cost"],
+        ["Bridge", "Lights on\nHeads down\nMove when they say move\n\nStand straight\nDon't speak\nNothing left to prove\n\nLights on\nHeads down\nDo what you've been told\n\nThis city owns\nEverything\nThat you thought you owned"],
+        ["Final Chorus", "Welcome to the neon empire\nWhere the lights never go down\nEverybody serves somebody\nEverybody wears a crown\n\nWelcome to the neon empire\nBuilt on everything you lost\nYou can have whatever you want\nIf you never count the cost\n\nWelcome to the neon empire\nHear a million voices drown\nI don't serve anybody\nAnd I won't be bowing down"]
+      ]},
+      { title: "No Gods Above", audio: "", sections: [
+        ["Verse 1", "Golden towers, empty halls\nNew commandments on the walls\nEvery answer bought and sold\nEvery future under control\n\nNo one kneels and no one prays\nThey left that for another age\nBuilt a heaven out of steel\nMade themselves the only real"],
+        ["Pre-Chorus", "You killed the old\nYou built the new\nNow nothing stands\nAbove you"],
+        ["Chorus", "No gods above\nNo kings below\nNothing left\nYou don't control\n\nNo gods above\nThat's what you say\nBut every empire\nEnds the same"],
+        ["Verse 2", "You made power into law\nBuilt your world without a flaw\nEvery weakness cut away\nEvery difference made the same\n\nYou call freedom obsolete\nWhile the cameras watch the streets\nYou can change the words you use\nBut chains are chains\nNo matter who"],
+        ["Pre-Chorus", "You killed the old\nYou built the new\nNow nothing stands\nAbove you"],
+        ["Chorus", "No gods above\nNo kings below\nNothing left\nYou don't control\n\nNo gods above\nThat's what you say\nBut every empire\nEnds the same"],
+        ["Bridge", "Build it higher\nBuild it strong\nTell yourself\nYou can't be wrong\n\nRaise your towers\nMake your laws\nSooner or later\nThey all fall"],
+        ["Final Chorus", "No gods above\nNo kings below\nYou took it all\nYou lost your soul\n\nNo gods above\nThat's what you say\nBut every empire\nEnds the same\n\nNo gods above\nSo hear me now\nYou built this world\n\nI'll tear it down"]
+      ]},
+      { title: "Marked", audio: "", sections: [
+        ["Verse 1", "There it is above the gate\nCarved in black, ten stories straight\nOn every uniform I see\nThe same old mark that follows me\n\nI wore it long before this place\nBefore these towers had a name\nNow a million wear it proud\nBut they don't know what it's about"],
+        ["Pre-Chorus", "Who took the sign?\nWho changed the name?\nWho turned my past\nInto their claim?"],
+        ["Chorus", "Marked\nEvery wall, every street\nIs marked\nwith a piece of me\n\nYou took the sign\nYou made it law\nBut you don't know\nWhat it stands for\n\nMarked\nNow I finally see\nYou built your whole empire\nOn the memory of me"],
+        ["Verse 2", "They carved my face into the stone\nMade a man I never knew\nPut their words into my mouth\nTurned the truth inside out\n\nMade a weapon of my name\nMade obedience from pain\nEverything I fought against\nNow carries my defense"],
+        ["Pre-Chorus", "Who took the sign?\nWho changed the name?\nWho turned my past\nInto their claim?"],
+        ["Chorus", "Marked\nEvery wall, every street\nIs marked\nwith a piece of me\n\nYou took the sign\nYou made it law\nBut you don't know\nWhat it stands for\n\nMarked\nNow I finally see\nYou built your whole empire\nOn the memory of me"],
+        ["Bridge", "That's not my face\nThose aren't my words\nThat's not the reason\nThat I fought\n\nThat's not my law\nThat's not my throne\nYou stole the mark\n\nBut it's still my own"],
+        ["Final Chorus", "Marked\nEvery wall, every street\nIs Marked\nNow they look at me\n\nYou took the sign\nYou made it law\nNow I'll remind you\nWhat it stands for\n\nMarked\nLet the whole city see\nYou built your whole empire\nOn the memory of me\n\nYou stole my name\nYou stole my past\n\nNow I'm taking it back"]
+      ]},
+      { title: "Savage Circuit", audio: "", sections: [
+        ["Verse 1", "Boots hit hard against the floor\nFive come in, I drop four\nRed lights flash, alarms ignite\nNow they know I'm here to fight\n\nLock the doors, shut me in\nSend another unit in\nYou can track my every move\nStill don't know what I will do"],
+        ["Pre-Chorus", "Lock it down\nSound the call\nSend them in\nI'll take them all"],
+        ["Chorus", "Savage circuit\nOverload\nI don't follow\nWhat you know\n\nSavage circuit\nLose control\nYou built the system\nI'll break the code"],
+        ["Verse 2", "Cold machines predict the fight\nRead my left, I move my right\nEvery pattern that they learn\nI change again, tables turn\n\nCut the power, kill the light\nI don't need it for the fight\nNow your perfect system's blind\nCome and find me if you like"],
+        ["Pre-Chorus", "Lock it down\nSound the call\nSend them in\nI'll take them all"],
+        ["Chorus", "Savage circuit\nOverload\nI don't follow\nWhat you know\n\nSavage circuit\nLose control\nYou built the system\nI'll break the code"],
+        ["Bridge", "Calculate\nAnticipate\nEvery move\nThat I could make\n\nRun it back\nTry again\nYour machine\nCan't understand\n\nInstinct\nNo command\n\nInstinct\nNo command"],
+        ["Final Chorus", "Savage circuit\nOverload\nI don't follow\nWhat you know\n\nSavage circuit\nLose control\nYou built the system\nI'll break the code\n\nSavage circuit\nNow you know\nYou can't predict me\nYou can't control\n\nShut it down\nLet it blow\n\nI was never\nIn your code"]
+      ]},
+      { title: "The Hollow King", audio: "", sections: [
+        ["Verse 1", "Top floor, behind the glass\nWatching every second pass\nNever walking through the streets\nNever standing on your feet\n\nEvery screen repeats your face\nEvery order bears your name\nThey all fear the man above\nBut fear is never enough"],
+        ["Pre-Chorus", "Come on down\nShow your face\nCome and stand\nIn what you made"],
+        ["Chorus", "Hollow king\nOn a hollow throne\nYou own everything\nBut nothing of your own\n\nHollow king\nLet the whole world sing\nWhen the walls come down\nYou won't own a thing"],
+        ["Verse 2", "How long have you ruled this place?\nHow long have you worn that face?\nSomething in your eyes is wrong\nLike the man inside is gone\n\nYou know the mark upon my skin\nYou know exactly where I've been\nBefore I even speak my name\nYou tell me why I came"],
+        ["Pre-Chorus", "Come on down\nShow your face\nCome and stand\nIn what you made"],
+        ["Chorus", "Hollow king\nOn a hollow throne\nYou own everything\nBut nothing of your own\n\nHollow king\nLet the whole world sing\nWhen the walls come down\nYou won't own a thing"],
+        ["Bridge", "You say—\n\n\"I've waited all this time\nI knew you'd come alive\nA thousand years have passed\nAnd you're here at last\"\n\nSo tell me what you want\nTell me why I'm here\n\nHe looks at me and says—\n\n\"You brought me here.\""],
+        ["Final Chorus", "Hollow king\nOn a hollow throne\nNow I know there's something\nI was never told\n\nHollow king\nWhat did I begin?\nIf I brought you here\n\nI'll take you out again\n\nHollow king\nYour time is done\nA thousand years\n\nAnd now I've come"]
+      ]},
+      { title: "Ghost in my Blood", audio: "", sections: [
+        ["Verse 1", "They put my blood beneath the glass\nCompare it to a buried past\nNumbers running down the screen\nShowing things I've never seen\n\nA thousand years, they tried and failed\nBuilt their copies, watched them fail\nEvery version came undone\nThey were waiting for the one"],
+        ["Pre-Chorus", "What did you find?\nWhat do you know?\nWhat did I bring\nSo long ago?"],
+        ["Chorus", "There's a ghost in my blood\nSomething you can't reproduce\nYou can take what you want\nBut it won't belong to you\n\nThere's a ghost in my blood\nFrom a world you never knew\nYou can make another man\nBut you can't make what made me"],
+        ["Verse 2", "Rows of bodies, numbered names\nEvery face almost the same\nMade to carry what I bear\nBut there's nothing living there\n\nNow I know why I was brought\nWhy a thousand years were bought\nYou don't need the man I am\nYou just need what makes the mark"],
+        ["Pre-Chorus", "What did you find?\nWhat do you know?\nWhat did I bring\nSo long ago?"],
+        ["Chorus", "There's a ghost in my blood\nSomething you can't reproduce\nYou can take what you want\nBut it won't belong to you\n\nThere's a ghost in my blood\nFrom a world you never knew\nYou can make another man\nBut you can't make what made me"],
+        ["Bridge", "Take my blood\nTake my skin\nBuild your army\nTry again\n\nMake a thousand\nMake them strong\n\nYou can copy everything\nAnd still get it wrong"],
+        ["Final Chorus", "There's a ghost in my blood\nAnd you'll never make it yours\nYou can build another body\nYou can manufacture war\n\nThere's a ghost in my blood\nFrom before your world began\nYou can make another weapon\n\nBut you can't make who I am\n\nYou wanted what was in me\n\nNow you know\nYou can't have it"]
+      ]},
+      { title: "Losing my Name", audio: "", sections: [
+        ["Verse 1", "My face is carved in every wall\nBut I don't know that man at all\nThey tell the stories like they know\nWhere I came from, where I'd go\n\nEvery word has been replaced\nEvery truth has been erased\nSay it long enough, it seems\nEven I forget what it means"],
+        ["Pre-Chorus", "What was I\nBefore the fight?\nWho was I\nBefore that night?"],
+        ["Chorus", "I'm losing my name\nA little every day\nEverybody knows me\nBut they don't know me\n\nI'm losing my name\nTo the man they say I am\nIf I tear the whole thing down\nWill I know myself again?"],
+        ["Verse 2", "I can't remember home so clear\nA thousand years have disappeared\nFaces fading one by one\nI can't remember everyone\n\nAll I have is what I know\nKeep on moving, never slow\nBut if the fight is all I am\nThen maybe they were right"],
+        ["Pre-Chorus", "What was I\nBefore the fight?\nWho was I\nBefore that night?"],
+        ["Chorus", "I'm losing my name\nA little every day\nEverybody knows me\nBut they don't know me\n\nI'm losing my name\nTo the man they say I am\nIf I tear the whole thing down\nWill I know myself again?"],
+        ["Bridge", "Take the statues down\nTake the banners down\nTake the stories\nBurn them out\n\nKeep the mark\nKeep the crown\nI don't need them\nI know now"],
+        ["Final Chorus", "I won't lose my name\nTo the man you made of me\nI don't need your history\nTo tell me who to be\n\nI won't lose my name\nI remember who I am\nYou can tear the whole world down\nBut I will still remain\n\nI know my name\nI know my name\n\nAnd you don't own it"]
+      ]},
+      { title: "Break the Machine", audio: "", sections: [
+        ["Verse 1", "Shut the gates, cut the lines\nKill the power, kill the lights\nEvery tower, every screen\nTake away what keeps them clean\n\nHear the boots out in the street\nMore and more with every beat\nFor the first time they can see\nThis city isn't what it seemed"],
+        ["Pre-Chorus", "One by one\nSide by side\nNo more fear\nNo place to hide"],
+        ["Chorus", "You can lock us down\nYou can shut us out\nBut you can't stop what's coming now\n\nEvery wall you built\nEvery lie you sold\nWe're taking back what you controlled\n\nSound the alarm\nBring the whole thing down\n\nTonight we break the machine"],
+        ["Verse 2", "Factory doors are opening\nWorkers pouring to the streets\nEvery block begins to turn\nEvery symbol starts to burn\n\nSoldiers lower what they hold\nSome still do what they are told\nNow the lines are breaking wide\nEverybody picks a side"],
+        ["Pre-Chorus", "One by one\nSide by side\nNo more fear\nNo place to hide"],
+        ["Chorus", "You can lock us down\nYou can shut us out\nBut you can't stop what's coming now\n\nEvery wall you built\nEvery lie you sold\nWe're taking back what you controlled\n\nSound the alarm\nBring the whole thing down\n\nTonight we break the machine"],
+        ["Bridge", "Cut the feed\nCut the wire\nOpen every door\n\nKill the screens\nKill the power\nWe don't need them anymore\n\nNo command\nNo control\nNo one owns us now\n\nThree\nTwo\nOne\n\nShut it down"],
+        ["Final Chorus", "You can't lock us down\nYou can't shut us out\nLook at what you've started now\n\nEvery wall you built\nEvery lie you sold\nNothing here is yours to hold\n\nSound the alarm\nHear the whole city now\n\nTonight we break the machine\n\nNo more commands\nNo more bowing down\n\nTonight we take back everything"]
+      ]},
+      { title: "Empire Fall", audio: "", sections: [
+        ["Verse 1", "First light breaks across the street\nNo commands beneath our feet\nEvery screen has lost its face\nSilence running through the place\n\nSirens die one by one\nSmoke is rising with the sun\nAll the walls that stood so tall\nDon't look so high before they fall"],
+        ["Pre-Chorus", "Hear that sound\nAll around\nWhat goes up\nIs coming down"],
+        ["Chorus", "When the empire falls\nLet it fall\nLet it fall\n\nWhen the empire calls\nDon't answer anymore\n\nWe gave it everything\nIt took everything\n\nNow we stand\nAnd watch it fall\n\nWhen the empire falls"],
+        ["Verse 2", "Upper floors begin to shake\nEvery lock begins to break\nAll the names above the doors\nDon't mean anything anymore\n\nNow the king is on his own\nNo more army, no more throne\nAll the power that he held\nCouldn't save him from himself"],
+        ["Pre-Chorus", "Hear that sound\nAll around\nWhat goes up\nIs coming down"],
+        ["Chorus", "When the empire falls\nLet it fall\nLet it fall\n\nWhen the empire calls\nDon't answer anymore\n\nWe gave it everything\nIt took everything\n\nNow we stand\nAnd watch it fall\n\nWhen the empire falls"],
+        ["Bridge", "You wanted forever\nYou wanted it all\nYou wanted a kingdom\nThat never could fall\n\nLook out your window\nLook what remains\n\nNobody's coming\nWhen you call their names\n\nNo one is listening\nNo one obeys\n\nYour empire ends\nToday"],
+        ["Final Chorus", "When the empire falls\nLet it fall\nLet it fall\n\nWhen the empire calls\nWe won't answer anymore\n\nYou took everything\nNow you have nothing\n\nHere we stand\nAnd watch it fall\n\nWhen the empire falls\nLet it fall\nLet it fall\n\nA thousand years\nTo build these walls\n\nOne night\n\nTo lose it all"]
+      ]},
+      { title: "The Wild Remains", audio: "", sections: [
+        ["Verse 1", "Morning comes without the lights\nNo machines across the sky\nFor the first time since I came\nI can hear the falling rain\n\nThrough the cracks beneath my feet\nSomething reaches through the street\nSmall and green against the grey\nSomething they couldn't take away"],
+        ["Pre-Chorus", "All this time\nUnderneath\nIt was waiting\nTo be free"],
+        ["Chorus", "The wild remains\nThe wild remains\nYou can bury it\nBut it won't stay down\n\nThe wild remains\nAfter everything\nGive it time\nIt will take back the ground"],
+        ["Verse 2", "Roots are breaking through the stone\nGrowing where they don't belong\nThrough the towers, through the roads\nLife returns to what was cold\n\nI remember somewhere green\nAlmost like it came from dreams\nFor a moment I can see\nThe world that used to carry me"],
+        ["Pre-Chorus", "All this time\nUnderneath\nIt was waiting\nTo be free"],
+        ["Chorus", "The wild remains\nThe wild remains\nYou can bury it\nBut it won't stay down\n\nThe wild remains\nAfter everything\nGive it time\nIt will take back the ground"],
+        ["Bridge", "No more orders\nNo alarms\nNo more numbers\nOn their arms\n\nNo more towers\nBlocking out the sun\n\nFor the first time\nIn a thousand years\n\nThe old world\nHas begun"],
+        ["Final Chorus", "The wild remains\nThe wild remains\nYou can bury it\nBut it won't stay down\n\nThe wild remains\nAfter everything\nNow I see it\nBreaking through the ground\n\nThe wild remains\nAnd so do I\nDifferent world\nUnder the same sky\n\nA thousand years\nCouldn't end this place\n\nEverything changes\n\nBut the wild remains"]
+      ]}
+    ]
+  },
+  3: {
+    title: "Where Worlds End", cover: "covers/where-worlds-end.png",
+    label: "// Album III of III — The Hunter Trilogy //",
+    tagline: '"Some things end so life can grow."',
+    meta: [['GENRE','Epic / Cosmic Metal'],['TRACKS','11'],['SETTING','Beyond the Stars']],
+    tracks: [
+      { title: "Dead Signal", audio: "", sections: [
+        ["Verse 1", "Morning breaks across the grey\nSmoke is slowly blown away\nNo more orders, no machines\nJust the sound of something free\n\nPeople walking through the rain\nLearning how to live again\nFor a moment I believe\nMaybe I can finally leave"],
+        ["Pre-Chorus", "Then the sky\nStarts to change\nOne red light\nFar away"],
+        ["Chorus", "There's a dead signal\nCalling out my name\nA dead signal\nFrom a world away\n\nI thought it ended\nI thought I was free\nBut that dead signal\nIs calling me"],
+        ["Verse 2", "Every screen begins to glow\nOne by one, row by row\nNo command and no control\nJust a sound from somewhere cold\n\nThen the mark upon my skin\nBurns like it did back then\nI remember that old call\nBefore I ever knew at all"],
+        ["Pre-Chorus", "In the sky\nSomething burns\nAfter all\nIt has returned"],
+        ["Chorus", "There's a dead signal\nCalling out my name\nA dead signal\nFrom a world away\n\nI thought it ended\nI thought I was free\nBut that dead signal\nIs calling me"],
+        ["Bridge", "Not again\nNot this time\nI've been yours\nAll my life\n\nTell me where\nTell me why\nWhat the hell\nIs in that sky?"],
+        ["Final Chorus", "There's a dead signal\nCalling out my name\nA dead signal\nFrom a world away\n\nI thought it ended\nI thought I was free\nBut that dead signal\nIs calling me\n\nThere's a dead signal\nBurning through the sky\nA dead signal\nAnd I don't know why\n\nThen one voice\nCuts through the air—\n\n\"We found you.\""]
+      ]},
+      { title: "From Beyond", audio: "", sections: [
+        ["Verse 1", "Black sun hanging overhead\nAll the city glowing red\nEvery signal, every screen\nShows a place I've never seen\nSomething moving past the light\nComing closer through the night\nThen the ground begins to shake\nAnd the heavens start to break"],
+        ["Pre-Chorus", "Hear the sound\nFeel it grow\nSomething's coming\nFrom below"],
+        ["Chorus", "From beyond\nThey are calling\nFrom beyond\nI hear them now\nThrough the dark\nThrough the silence\nFrom beyond\nThey're coming down"],
+        ["Verse 2", "Fire falling from the sky\nPeople running for their lives\nShapes are forming in the clouds\nThen the first one touches down\nSteel and stone begin to burn\nNow the whole damn city turns\nEvery soldier takes their place\nWaiting for what comes our way"],
+        ["Pre-Chorus", "Hear the sound\nFeel it grow\nNow we know\nWe're not alone"],
+        ["Chorus", "From beyond\nThey are calling\nFrom beyond\nI hear them now\nThrough the dark\nThrough the silence\nFrom beyond\nThey're coming down\n\nFrom beyond\nLet them find me\nI've been running long enough\nIf they came\nTo take this world\nThen they're coming through us"],
+        ["Bridge", "Raise the walls\nSound the call\nYesterday\nWe watched them fall\nNow the ones\nI came to fight\nStand with me\nHere tonight"],
+        ["Final Chorus", "From beyond\nThey are calling\nFrom beyond\nWe hear them now\nThrough the dark\nThrough the silence\nFrom beyond\nThey're coming down\n\nFrom beyond\nLet them find us\nWe have nowhere left to run\nIf they came\nTo take this world\nThen let them fucking come\n\nFrom beyond\nFrom beyond\n<strong>LET THEM COME</strong>"]
+      ]},
+      { title: "Black Horizon", audio: "", sections: [
+        ["Verse 1", "Fire burns across the ground\nBroken ships are falling down\nWhat came through is pulling back\nDisappearing into black\nThere's a doorway in the sky\nWide enough to swallow light\nAnd the mark begins to burn\nLike it knows where they return"],
+        ["Pre-Chorus", "One way in\nNo way back\nOne more road\nInto the black"],
+        ["Chorus", "Black horizon\nOpen wide\nThere's another world\nOn the other side\nBlack horizon\nTake me through\nIf you're calling me\nI'm coming for you"],
+        ["Verse 2", "Leave the towers far behind\nCross the edge and lose the light\nNo more ground beneath my feet\nNothing here looks real to me\nWorlds are hanging in the dark\nBroken pieces, burning stars\nAncient ruins drift alone\nOlder than the world I know"],
+        ["Pre-Chorus", "No way down\nNo way back\nOnly forward\nThrough the black"],
+        ["Chorus", "Black horizon\nOpen wide\nThere's another world\nOn the other side\nBlack horizon\nTake me through\nIf you're calling me\nI'm coming for you\n\nBlack horizon\nHere I stand\nTake me further\nThan I've ever been\nI don't know\nWhat waits inside\nBut I'm crossing\nThe other side"],
+        ["Bridge", "World after world\nEnd after end\nHow far does this go?\nName after name\nGone without trace\nHow many came before?\nThen I see\nAcross the dark\nAnother world\n<strong>With my mark</strong>"],
+        ["Final Chorus", "Black horizon\nNow I see\nThere's something here\nThat remembers me\nBlack horizon\nWorlds collide\nA thousand fires\nBurning side by side\nBlack horizon\nNo turning back\nI've come too far\nTo fear the black\nWhatever waits\nBeyond that light\n<strong>I'm coming through\nTo find out why</strong>\n<strong>I'm coming through\nTo find out why</strong>"]
+      ]},
+      { title: "No Stars Here", audio: "", sections: [
+        ["Verse 1", "No sun rising in the east\nNo moon hanging over me\nOnly worlds across the black\nSome are whole and some are cracked\n\nNo wind moving through this place\nNo direction, time or day\nI look up but nothing's clear\nThere are no stars here"],
+        ["Pre-Chorus", "Where am I?\nWhat is this?\nHow many worlds\nEnd like this?"],
+        ["Chorus", "There are no stars here\nNo light above\nNothing to guide me\nNothing I know\n\nThere are no stars here\nJust worlds in the dark\nSomething came through them\nAnd tore them apart"],
+        ["Verse 2", "Cities broken clean in two\nEmpty roads still running through\nShips lie buried in the stone\nEvery world has been left cold\n\nThen I find it on a wall\nSame damn mark above them all\nCut into the blackened stone\nFar away from home"],
+        ["Pre-Chorus", "Who was here?\nWho survived?\nWho left the mark\nBefore they died?"],
+        ["Chorus", "There are no stars here\nNo light above\nNothing to guide me\nNothing I know\n\nThere are no stars here\nJust worlds in the dark\nSomething came through them\nAnd tore them apart"],
+        ["Bridge", "One world\nThen another\nOne grave\nThen another\n\nSame mark\nEvery time\nSame warning\nEvery line"],
+        ["Final Chorus", "There are no stars here\nNow I know why\nSomething is moving\nOutside of the light\n\nThere are no stars here\nJust worlds left behind\nWhatever destroyed them\nIs coming for mine\n\nCut in the stone\nOne final word—\n\n<strong>\"RUN.\"</strong>"]
+      ]},
+      { title: "The Others", audio: "", sections: [
+        ["Verse 1", "Figures carved into the stone\nStanding there in rows alone\nDifferent faces, different names\nEvery one who came this way\n\nEvery weapon, every scar\nEvery world beneath a mark\nThen I see above their hands\nThe same damn sign I understand"],
+        ["Pre-Chorus", "One by one\nSide by side\nThey were here\nBefore they died"],
+        ["Chorus", "There were others\nJust like me\nThere were others\nI can see\n\nDifferent worlds\nDifferent wars\nSame old mark\nThat we all wore"],
+        ["Verse 2", "Some were kings and some were slaves\nSome were young and some were grey\nEvery carving tells the same\nThey were called and then they came\n\nThrough the dark and through the gate\nEvery one was brought this way\nNow their weapons line the wall\nBut no one came back at all"],
+        ["Pre-Chorus", "One by one\nSide by side\nThey came here\nAnd here they died"],
+        ["Chorus", "There were others\nJust like me\nThere were others\nI can see\n\nDifferent worlds\nDifferent wars\nSame old mark\nThat we all wore"],
+        ["Bridge", "Not the first\nNot alone\nNot the only\nOne they chose\n\nEvery road\nEvery sign\nBrought them here\nJust like mine"],
+        ["Final Chorus", "There were others\nJust like me\nThere were others\nNow I see\n\nDifferent worlds\nDifferent wars\nSame old mark\nThat we all wore\n\nThey came before\nThey crossed the line\n\n<strong>Now I'm the last\nOne left alive</strong>"]
+      ]},
+      { title: "World Eater", audio: "", sections: [
+        ["Verse 1", "Something moves behind the dark\nBig enough to hide the stars\nI can feel it drawing near\nNow I know what happened here\n\nBroken worlds begin to shake\nPieces pulling in its wake\nEverything it passes through\nDisappears without a trace"],
+        ["Pre-Chorus", "Now I know\nNow I see\nWhat was waiting\nHere for me"],
+        ["Chorus", "World eater\nHere it comes\nWorld eater\nBlot the sun\n\nTake the sky\nTake the ground\nWorld eater\nTear it down"],
+        ["Verse 2", "Armies rise across the stone\nWeapons fire into the void\nEvery shot is swallowed whole\nNothing seems to slow it down\n\nThen the mark begins to burn\nAnd the creature starts to turn\nAll that darkness shifts to me\nLike I'm all it came to see"],
+        ["Pre-Chorus", "Now I know\nWhy they died\nIt was waiting\nAll this time"],
+        ["Chorus", "World eater\nHere it comes\nWorld eater\nBlot the sun\n\nTake the sky\nTake the ground\nWorld eater\nTear it down"],
+        ["Bridge", "It sees the mark\nIt knows the sign\nIt killed the others\nNow it wants mine\n\nCome and take it\nCome and try\nI've watched two worlds\nRefuse to die"],
+        ["Final Chorus", "World eater\nLook at me\nWorld eater\nNow I see\n\nYou took them all\nOne by one\nBut this time\nI won't run\n\nWorld eater\nHear me now\n\n<strong>YOU WANT MY WORLD?\nCOME TAKE IT DOWN</strong>"]
+      ]},
+      { title: "Open The Gate", audio: "", sections: [
+        ["Verse 1", "Words are written in the stone\nOlder than the worlds I know\nEvery line begins to show\nWhy the others had to go\n\nEvery mark became a door\nEvery door became a war\nThey were never called to fight\nThey were made to turn the lock"],
+        ["Pre-Chorus", "All this time\nI wore the sign\nNever knew\nWhat lived inside"],
+        ["Chorus", "Open the gate\nOpen the way\nOne world falls\nAnother remains\n\nOpen the gate\nNow I understand\nThe key was never\nIn my hand"],
+        ["Verse 2", "It was carried in my blood\nLong before I knew what was\nEvery time I crossed a line\nSomething crossed behind\n\nThat's how he came through with me\nThat's what I could never see\nEvery door I opened wide\nLet another thing inside"],
+        ["Pre-Chorus", "All this time\nI blamed the world\nNow I know\nWhat I have done"],
+        ["Chorus", "Open the gate\nOpen the way\nOne world falls\nAnother remains\n\nOpen the gate\nNow I understand\nThe key was never\nIn my hand"],
+        ["Bridge", "Not a crown\nNot a name\nNot a gift\nNot a chain\n\nIt's a key\nIt's a door\nAnd I won't\nUse it anymore"],
+        ["Final Chorus", "Open the gate\nOpen the way\nThat's what they wanted\nThat's why they came\n\nOpen the gate\nNow I understand\nThe key was never\nIn my hand\n\nIt was the mark\nUnder my skin\n\n<strong>I OPENED THE DOOR\nAND LET THEM IN</strong>"]
+      ]},
+      { title: "No Way Back", audio: "", sections: [
+        ["Verse 1", "Every road I ever crossed\nEvery world and every loss\nEvery door I opened wide\nLeft a way to get inside\n\nI can stand and curse the past\nI can wish I knew the facts\nBut the ones who came before\nNever made it through that door"],
+        ["Pre-Chorus", "No more doubt\nNo more fear\nIf it wants me\nI am here"],
+        ["Chorus", "No way back\nNo way home\nI go further\nOn my own\n\nNo way back\nLet it close\nWhere this ends\nNobody knows"],
+        ["Verse 2", "Leave the broken worlds behind\nFollow where the darkness hides\nEvery step it pulls away\nLike it wants me in this place\n\nIf the mark can lead me through\nThen I'll make it useful too\nOne last door and one last road\nTake me where I need to go"],
+        ["Pre-Chorus", "No more doubt\nNo more fear\nIf it wants me\nI am here"],
+        ["Chorus", "No way back\nNo way home\nI go further\nOn my own\n\nNo way back\nLet it close\nWhere this ends\nNobody knows"],
+        ["Bridge", "Close the door\nBehind my back\nCut the road\nSeal the path\n\nIf I fall\nLet me fall\nAt least it ends\nHere with us"],
+        ["Final Chorus", "No way back\nNo way home\nNow I face it\nOn my own\n\nNo way back\nLet it close\nI don't care\nWhere this road goes\n\nOne last gate\nOne last fight\n\n<strong>I'M GOING STRAIGHT\nINTO THE NIGHT</strong>"]
+      ]},
+      { title: "Call To War", audio: "", sections: [
+        ["Verse 1", "Black walls rising from the ground\nArmies moving all around\nEvery world they ever took\nBrought another soldier here\n\nI can see the gates ahead\nLeading to the worlds they bled\nIf they used them to destroy\nI can give the worlds a choice"],
+        ["Pre-Chorus", "Open wide\nOne last time\nNot for them\nThis time it's mine"],
+        ["Chorus", "Call to war\nCall them all\nEvery world\nThat hasn't fallen\n\nCall to war\nSide by side\nIf we stand\nWe stand tonight"],
+        ["Verse 2", "First the city answers back\nSteel boots marching through the black\nThen another gate burns bright\nWarriors step into the light\n\nDifferent banners, different names\nEvery one has felt the same\nWorld by world the numbers grow\nNow our enemy will know"],
+        ["Pre-Chorus", "Open wide\nOne last time\nNot for them\nThis time it's mine"],
+        ["Chorus", "Call to war\nCall them all\nEvery world\nThat hasn't fallen\n\nCall to war\nSide by side\nIf we stand\nWe stand tonight"],
+        ["Bridge", "From the wild\nFrom the steel\nFrom the worlds\nThat wouldn't kneel\n\nRaise the mark\nRaise it high\nFor the living\nFor the ones who died"],
+        ["Final Chorus", "Call to war\nCall them all\nEvery world\nThat hasn't fallen\n\nCall to war\nSide by side\nNow we stand\nHere tonight\n\nLet them come\nLet them see\n\n<strong>EVERY WORLD\nSTANDS WITH ME</strong>"]
+      ]},
+      { title: "One Last Hunt", audio: "", sections: [
+        ["Verse 1", "War is burning at my back\nNo one follows through the black\nThey can hold the armies here\nBut they cannot follow me\n\nOne more doorway waits ahead\nOne more road beneath my feet\nEverything has led to this\nOne last thing I have to kill"],
+        ["Pre-Chorus", "Close the gate\nHold the line\nThis one ends\nWith me tonight"],
+        ["Chorus", "One last hunt\nOne last fight\nOne last road\nInto the night\n\nOne last hunt\nLet it run\nI've come too far\nTo leave this undone"],
+        ["Verse 2", "There it stands beyond the gate\nLike it knew that I would come\nAll the worlds it left behind\nBurn like fire around the dark\n\nThen the mark begins to shine\nAnd the darkness answers mine\nNo more running, no more doors\nOnly me and only war"],
+        ["Pre-Chorus", "Close the gate\nHold the line\nThis one ends\nWith me tonight"],
+        ["Chorus", "One last hunt\nOne last fight\nOne last road\nInto the night\n\nOne last hunt\nLet it run\nI've come too far\nTo leave this undone"],
+        ["Bridge", "For the wild\nFor the lost\nFor the ones\nWho paid the cost\n\nFor the worlds\nThat still remain\nI won't let you\nTake again"],
+        ["Final Chorus", "One last hunt\nOne last fight\nOne last road\nInto the night\n\nOne last hunt\nNowhere to run\nAfter all these years\nIt ends with one\n\nYou wanted me\nHere I come\n\n<strong>ONE LAST HUNT\nUNTIL IT'S DONE</strong>"]
+      ]},
+      { title: "Where Worlds End", audio: "", sections: [
+        ["Verse 1", "Silence after one last blow\nNothing moving anymore\nAll around me worlds appear\nLike they waited for me here\n\nSome are dying, some are new\nSome are burning bright and blue\nNow I finally understand\nNothing lives without an end"],
+        ["Pre-Chorus", "Let it go\nLet it change\nNothing ever\nStays the same"],
+        ["Chorus", "Where worlds end\nWorlds begin\nEverything\nTurns again\n\nWhere worlds end\nLet them go\nThere's a life\nBeyond what we know"],
+        ["Verse 2", "All my life I wore the mark\nThrough the green and through the dark\nThrough the steel and through the flame\nEvery world still knew my name\n\nNow I hold it in my hand\nFor the first time, I command\nNo more doors and no more chains\nNo one follows me again"],
+        ["Pre-Chorus", "Let it go\nLet it break\nThis is one road\nI won't take"],
+        ["Chorus", "Where worlds end\nWorlds begin\nEverything\nTurns again\n\nWhere worlds end\nLet them go\nThere's a life\nBeyond what we know"],
+        ["Bridge", "No more mark\nNo more call\nNo more walking\nThrough it all\n\nNo more hunter\nNo more name\nJust the man\nWho still remains"],
+        ["Final Chorus", "Where worlds end\nWorlds begin\nEverything\nTurns again\n\nWhere worlds end\nLet them go\nSome things end\nSo life can grow\n\nI break the mark\nI close the way\n\n<strong>AND FOR THE FIRST TIME\nI CHOOSE TO STAY</strong>"]
+      ]}
+    ]
+  }
+};
+
+/* ============ STATE ============ */
+// state = what's being VIEWED in the sidebar/cover/lyrics panes.
+// playingAlbum/playingIdx = what's actually PLAYING — deliberately decoupled,
+// so browsing around doesn't interrupt playback.
+const state = { album: 1, track: 0 };
+let playingAlbum = null;
+let playingIdx = null;
+const audioPlayer = document.getElementById('audioPlayer');
+const MIN_ALBUM = 1;
+const MAX_ALBUM = Object.keys(ALBUMS).length;
+
+/* ============ HELPERS ============ */
+function sectionClass(label) {
+  const l = label.toLowerCase();
+  if (l.includes('final')) return 'final-chorus';
+  if (l.includes('bridge')) return 'bridge';
+  return '';
+}
+
+function formatTime(s) {
+  if (!isFinite(s) || s < 0) return '0:00';
+  const m = Math.floor(s / 60);
+  const sec = Math.floor(s % 60).toString().padStart(2, '0');
+  return `${m}:${sec}`;
+}
+
+function isRowPlaying(albumNum, idx) {
+  return playingAlbum === albumNum && playingIdx === idx;
+}
+
+/* ============ RENDER ============ */
+function renderAlbumTabs() {
+  const wrap = document.getElementById('albumTabs');
+  wrap.innerHTML = '';
+  Object.keys(ALBUMS).forEach(num => {
+    const a = ALBUMS[num];
+    const btn = document.createElement('div');
+    btn.className = 'album-tab' + (Number(num) === state.album ? ' active' : '');
+    btn.style.setProperty('--tab-cover', `url('${a.cover}')`);
+    btn.innerHTML = `<span class="num">${String(num).padStart(2,'0')}</span><span class="title-text">${a.title}</span>`;
+    btn.addEventListener('click', () => selectAlbum(Number(num)));
+    wrap.appendChild(btn);
+  });
+}
+
+function renderTrackNav() {
+  const wrap = document.getElementById('trackNav');
+  wrap.innerHTML = '';
+  const album = ALBUMS[state.album];
+  album.tracks.forEach((t, i) => {
+    const row = document.createElement('div');
+    row.className = 'track-row' + (i === state.track ? ' active' : '');
+    row.dataset.idx = i;
+    row.innerHTML = `<span class="t-num">${String(i+1).padStart(2,'0')}</span><span class="t-title">${t.title}</span><button class="row-play-btn" title="Play"><span class="icon-tri-right"></span></button>`;
+    row.addEventListener('click', (e) => {
+      if (e.target.closest('.row-play-btn')) return;
+      selectTrack(i);
+    });
+    row.querySelector('.row-play-btn').addEventListener('click', () => {
+      toggleOrPlay(state.album, i);
+    });
+    wrap.appendChild(row);
+  });
+  refreshPlayingIndicators();
+}
+
+function renderCover() {
+  const album = ALBUMS[state.album];
+  document.getElementById('coverImg').src = album.cover;
+  document.getElementById('coverEyebrow').textContent = album.label;
+  document.getElementById('coverTitle').textContent = album.title;
+  document.getElementById('coverTagline').textContent = album.tagline;
+  const metaWrap = document.getElementById('coverMeta');
+  metaWrap.innerHTML = '';
+  album.meta.forEach(([label, val]) => {
+    const div = document.createElement('div');
+    div.innerHTML = `${label}: <span>${val}</span>`;
+    metaWrap.appendChild(div);
+  });
+}
+
+function renderText() {
+  const album = ALBUMS[state.album];
+  const track = album.tracks[state.track];
+  document.getElementById('thNum').textContent = `// TRACK_${String(state.track+1).padStart(2,'0')}`;
+  document.getElementById('thTitle').textContent = track.title;
+  document.getElementById('prevBtn').disabled = state.track === 0 && state.album === MIN_ALBUM;
+  document.getElementById('nextBtn').disabled = state.track === album.tracks.length - 1 && state.album === MAX_ALBUM;
+
+  const body = document.getElementById('textBody');
+  body.innerHTML = '';
+  track.sections.forEach(([label, text]) => {
+    const sec = document.createElement('div');
+    sec.className = 'lyric-section ' + sectionClass(label);
+    sec.innerHTML = `<div class="sec-label">${label}</div><div class="sec-lines">${text.replace(/\n/g,'<br>')}</div>`;
+    body.appendChild(sec);
+  });
+  body.scrollTop = 0;
+  refreshPlayingIndicators();
+}
+
+/* ============ VIEW NAVIGATION (browsing — independent of playback) ============ */
+function selectAlbum(num) {
+  state.album = num;
+  state.track = 0;
+  document.body.setAttribute('data-album', num);
+  renderAlbumTabs();
+  renderTrackNav();
+  renderCover();
+  renderText();
+}
+
+function selectTrack(i) {
+  state.track = i;
+  renderTrackNav();
+  renderText();
+  setMobileView('lyrics');
+}
+
+function stepTrack(delta) {
+  const album = ALBUMS[state.album];
+  let next = state.track + delta;
+  if (next < 0) {
+    if (state.album > MIN_ALBUM) { selectAlbum(state.album - 1); selectTrack(ALBUMS[state.album].tracks.length - 1); }
+    return;
+  }
+  if (next >= album.tracks.length) {
+    if (state.album < MAX_ALBUM) { selectAlbum(state.album + 1); }
+    return;
+  }
+  selectTrack(next);
+}
+
+document.getElementById('prevBtn').addEventListener('click', () => stepTrack(-1));
+document.getElementById('nextBtn').addEventListener('click', () => stepTrack(1));
+document.addEventListener('keydown', (e) => {
+  if (e.target.tagName === 'INPUT') return;
+  if (e.key === 'ArrowRight') stepTrack(1);
+  if (e.key === 'ArrowLeft') stepTrack(-1);
+});
+
+/* ============ AUDIO PLAYER ENGINE (decoupled from browsing) ============ */
+
+// Selects the track for viewing (switching album if needed) AND starts playback.
+function playTrackDirect(albumNum, idx) {
+  const album = ALBUMS[albumNum];
+  if (idx < 0 || idx >= album.tracks.length) return;
+  if (state.album !== albumNum) {
+    selectAlbum(albumNum);
+  }
+  state.track = idx;
+  renderTrackNav();
+  renderCover();
+  renderText();
+  loadAndPlay(albumNum, idx);
+}
+
+// Same track already loaded → toggle pause/resume. Different track → start it fresh.
+function toggleOrPlay(albumNum, idx) {
+  if (isRowPlaying(albumNum, idx)) {
+    togglePlayPause();
+  } else {
+    playTrackDirect(albumNum, idx);
+  }
+}
+
+function loadAndPlay(albumNum, idx) {
+  const album = ALBUMS[albumNum];
+  const track = album.tracks[idx];
+  playingAlbum = albumNum;
+  playingIdx = idx;
+  if (track.audio) {
+    audioPlayer.src = track.audio;
+    audioPlayer.play().catch(err => console.warn('Playback failed — check the file exists:', track.audio, err));
+  } else {
+    audioPlayer.removeAttribute('src');
+    console.warn('No audio file set yet for track:', track.title);
+  }
+  updateMiniPlayer(albumNum, idx);
+  refreshPlayingIndicators();
+}
+
+function togglePlayPause() {
+  if (!audioPlayer.src) return;
+  if (audioPlayer.paused) {
+    audioPlayer.play().catch(err => {
+      console.warn('Resume failed, retrying after reload:', err);
+      const t = audioPlayer.currentTime;
+      audioPlayer.load();
+      audioPlayer.currentTime = t;
+      audioPlayer.play().catch(err2 => console.error('Retry also failed:', err2));
+    });
+  } else {
+    audioPlayer.pause();
+  }
+}
+
+audioPlayer.addEventListener('error', () => {
+  const err = audioPlayer.error;
+  let msg = 'Unknown playback error';
+  if (err) {
+    switch (err.code) {
+      case err.MEDIA_ERR_ABORTED: msg = 'Playback aborted'; break;
+      case err.MEDIA_ERR_NETWORK: msg = 'Network error while loading audio'; break;
+      case err.MEDIA_ERR_DECODE: msg = 'File could not be decoded (corrupt or unsupported encoding)'; break;
+      case err.MEDIA_ERR_SRC_NOT_SUPPORTED: msg = 'File not found or format not supported'; break;
+    }
+  }
+  console.error('Audio error on', audioPlayer.src, '—', msg);
+  refreshPlayingIndicators();
+});
+
+// Autoplay: rolls from track to track, then album to album.
+function playNextGlobal() {
+  if (playingAlbum === null) return;
+  const album = ALBUMS[playingAlbum];
+  if (playingIdx + 1 < album.tracks.length) {
+    playTrackDirect(playingAlbum, playingIdx + 1);
+  } else if (playingAlbum < MAX_ALBUM) {
+    playTrackDirect(playingAlbum + 1, 0);
+  }
+}
+
+function playPrevGlobal() {
+  if (playingAlbum === null) return;
+  if (playingIdx - 1 >= 0) {
+    playTrackDirect(playingAlbum, playingIdx - 1);
+  } else if (playingAlbum > MIN_ALBUM) {
+    const prevAlbum = ALBUMS[playingAlbum - 1];
+    playTrackDirect(playingAlbum - 1, prevAlbum.tracks.length - 1);
+  }
+}
+
+function updateMiniPlayer(albumNum, idx) {
+  const album = ALBUMS[albumNum];
+  const t = album.tracks[idx];
+  document.getElementById('mpTitle').textContent = t.title;
+  document.getElementById('mpAlbum').textContent = album.title.toUpperCase() + ' — TRACK ' + String(idx+1).padStart(2,'0');
+  document.getElementById('miniPlayer').classList.add('active');
+}
+
+function refreshPlayingIndicators() {
+  document.querySelectorAll('.track-row').forEach(row => {
+    const idx = parseInt(row.dataset.idx, 10);
+    const btn = row.querySelector('.row-play-btn span');
+    const isThis = isRowPlaying(state.album, idx);
+    const nowPlaying = isThis && !audioPlayer.paused && audioPlayer.src;
+    row.classList.toggle('playing', nowPlaying);
+    if (btn) btn.className = nowPlaying ? 'icon-pause' : 'icon-tri-right';
+    if (nowPlaying) row.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  });
+  const thBtn = document.getElementById('thPlayBtn');
+  const thIcon = thBtn.querySelector('span');
+  const isThisView = isRowPlaying(state.album, state.track);
+  thIcon.className = (isThisView && !audioPlayer.paused && audioPlayer.src) ? 'icon-pause' : 'icon-tri-right';
+  const mpIcon = document.getElementById('mpPlayIcon');
+  mpIcon.className = (audioPlayer.src && !audioPlayer.paused) ? 'icon-pause' : 'icon-tri-right';
+}
+
+document.getElementById('thPlayBtn').addEventListener('click', () => {
+  toggleOrPlay(state.album, state.track);
+});
+document.getElementById('mpPlayPause').addEventListener('click', togglePlayPause);
+document.getElementById('mpNext').addEventListener('click', playNextGlobal);
+document.getElementById('mpPrev').addEventListener('click', playPrevGlobal);
+document.getElementById('mpProgress').addEventListener('input', (e) => {
+  if (audioPlayer.duration) audioPlayer.currentTime = (e.target.value / 100) * audioPlayer.duration;
+});
+
+audioPlayer.addEventListener('play', refreshPlayingIndicators);
+audioPlayer.addEventListener('pause', refreshPlayingIndicators);
+audioPlayer.addEventListener('ended', playNextGlobal);
+audioPlayer.addEventListener('timeupdate', () => {
+  const prog = document.getElementById('mpProgress');
+  if (audioPlayer.duration) prog.value = (audioPlayer.currentTime / audioPlayer.duration) * 100;
+  document.getElementById('mpTime').textContent = `${formatTime(audioPlayer.currentTime)} / ${formatTime(audioPlayer.duration)}`;
+});
+
+/* ============ VOLUME CONTROL ============ */
+const mpMuteBtn = document.getElementById('mpMute');
+const mpVolumeSlider = document.getElementById('mpVolume');
+let lastVolume = 1;
+audioPlayer.volume = 1;
+
+function updateVolumeIcon() {
+  if (audioPlayer.muted || audioPlayer.volume === 0) mpMuteBtn.textContent = '🔇';
+  else if (audioPlayer.volume < 0.5) mpMuteBtn.textContent = '🔉';
+  else mpMuteBtn.textContent = '🔊';
+}
+
+mpVolumeSlider.addEventListener('input', (e) => {
+  const v = e.target.value / 100;
+  audioPlayer.volume = v;
+  audioPlayer.muted = false;
+  if (v > 0) lastVolume = v;
+  updateVolumeIcon();
+});
+
+mpMuteBtn.addEventListener('click', () => {
+  if (audioPlayer.muted || audioPlayer.volume === 0) {
+    audioPlayer.muted = false;
+    audioPlayer.volume = lastVolume || 1;
+    mpVolumeSlider.value = Math.round(audioPlayer.volume * 100);
+  } else {
+    lastVolume = audioPlayer.volume;
+    audioPlayer.muted = true;
+    mpVolumeSlider.value = 0;
+  }
+  updateVolumeIcon();
+});
+
+/* ============ MOBILE TAB SWITCHING ============ */
+function setMobileView(view) {
+  document.getElementById('appMain').setAttribute('data-view', view);
+  document.querySelectorAll('.mobile-tab-btn').forEach(b => b.classList.toggle('active', b.dataset.view === view));
+}
+document.querySelectorAll('.mobile-tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => setMobileView(btn.dataset.view));
+});
+
+/* ============ INIT ============ */
+renderAlbumTabs();
+renderTrackNav();
+renderCover();
+renderText();
+</script>
+</body>
+</html>
