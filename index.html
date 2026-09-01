@@ -50,20 +50,24 @@
   .album-tabs { display: flex; flex-direction: column; gap: 0.55rem; padding: 0.8rem; border-bottom: 1px solid var(--border); transition: border-color 0.5s ease; }
   .album-tab {
     font-family:'Rajdhani',sans-serif; border: 1px solid #333; color: #999; cursor: pointer;
-    text-transform: uppercase; transition: all 0.2s; position: relative; overflow: hidden;
-    background-image: linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.92) 100%), var(--tab-cover, none);
-    background-size: cover; background-position: center top;
-    height: 5.4rem; display: flex; flex-direction: column; justify-content: flex-end;
-    padding: 0.5rem 0.7rem; text-align: left;
+    transition: all 0.2s; position: relative; display: flex; align-items: center; gap: 0.7rem;
+    padding: 0.5rem 0.6rem; text-align: left; background: var(--bg-raise);
   }
-  .album-tab .num { font-size: 0.55rem; font-weight: bold; letter-spacing: 0.2em; position: relative; z-index: 1; color: rgba(255,255,255,0.6); text-shadow: 0 1px 4px rgba(0,0,0,0.9); margin-bottom: 0.15rem; }
-  .album-tab .title-text { font-size: 0.92rem; font-weight: 700; letter-spacing: 0.03em; position: relative; z-index: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #eee; text-shadow: 0 1px 6px rgba(0,0,0,0.9); }
+  .album-tab .tab-thumb {
+    width: 3.6rem; height: 3.6rem; flex-shrink: 0; background: var(--bg);
+    border: 1px solid var(--border-dim); display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+  }
+  .album-tab .tab-thumb img { width: 100%; height: 100%; object-fit: contain; display: block; }
+  .album-tab .tab-info { display: flex; flex-direction: column; gap: 0.2rem; min-width: 0; }
+  .album-tab .num { font-size: 0.55rem; font-weight: bold; letter-spacing: 0.2em; color: var(--text-dim); transition: color 0.5s ease; }
+  .album-tab .title-text { font-size: 0.88rem; font-weight: 700; letter-spacing: 0.03em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #ccc; }
   .album-tab:hover { border-color: #888; }
   .album-tab:hover .title-text { color: #fff; }
-  .album-tab.active { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent), 0 0 14px var(--accent-glow, rgba(0,0,0,0)); }
+  .album-tab.active { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+  .album-tab.active .tab-thumb { border-color: var(--accent-deep); }
   .album-tab.active .num { color: var(--accent-pale); }
   .album-tab.active .title-text { color: #fff; }
-  .album-tab.active::after { content: ''; position: absolute; inset: 0; pointer-events: none; box-shadow: inset 0 -2.2rem 1.6rem -1rem var(--accent); opacity: 0.35; }
 
   .track-nav { flex: 1; overflow-y: auto; padding: 0.4rem; }
   .track-row {
@@ -249,7 +253,7 @@
     .text-body { max-height: none; }
 
     .album-tabs {
-      max-height: 9.2rem;
+      max-height: 40vh;
       overflow-y: auto;
       overflow-x: hidden;
       flex-shrink: 0;
@@ -747,8 +751,13 @@ function renderAlbumTabs() {
     const a = ALBUMS[num];
     const btn = document.createElement('div');
     btn.className = 'album-tab' + (Number(num) === state.album ? ' active' : '');
-    btn.style.setProperty('--tab-cover', `url('${a.cover}')`);
-    btn.innerHTML = `<span class="num">${String(num).padStart(2,'0')}</span><span class="title-text">${a.title}</span>`;
+    btn.innerHTML = `
+      <div class="tab-thumb"><img src="${a.cover}" alt="${a.title} cover"></div>
+      <div class="tab-info">
+        <span class="num">ALBUM ${String(num).padStart(2,'0')}</span>
+        <span class="title-text">${a.title}</span>
+      </div>
+    `;
     btn.addEventListener('click', () => selectAlbum(Number(num)));
     wrap.appendChild(btn);
   });
@@ -1071,6 +1080,42 @@ function setMobileView(view) {
 document.querySelectorAll('.mobile-tab-btn').forEach(btn => {
   btn.addEventListener('click', () => setMobileView(btn.dataset.view));
 });
+
+/* ============ SWIPE GESTURES (mobile) ============ */
+const MOBILE_VIEW_ORDER = ['tracks', 'cover', 'lyrics'];
+const appMainEl = document.getElementById('appMain');
+let swipeStartX = 0, swipeStartY = 0, swipeTracking = false;
+
+appMainEl.addEventListener('touchstart', (e) => {
+  if (!window.matchMedia('(max-width: 980px)').matches) return;
+  const t = e.touches[0];
+  swipeStartX = t.clientX;
+  swipeStartY = t.clientY;
+  swipeTracking = true;
+}, { passive: true });
+
+appMainEl.addEventListener('touchend', (e) => {
+  if (!swipeTracking) return;
+  swipeTracking = false;
+  if (!window.matchMedia('(max-width: 980px)').matches) return;
+
+  const t = e.changedTouches[0];
+  const dx = t.clientX - swipeStartX;
+  const dy = t.clientY - swipeStartY;
+
+  // Require a mostly-horizontal swipe of meaningful distance so vertical
+  // scrolling (lyrics body, track list) is never hijacked.
+  if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 1.4) return;
+
+  const current = appMainEl.getAttribute('data-view');
+  const idx = MOBILE_VIEW_ORDER.indexOf(current);
+
+  if (dx < 0 && idx < MOBILE_VIEW_ORDER.length - 1) {
+    setMobileView(MOBILE_VIEW_ORDER[idx + 1]); // swipe left → next view
+  } else if (dx > 0 && idx > 0) {
+    setMobileView(MOBILE_VIEW_ORDER[idx - 1]); // swipe right → previous view
+  }
+}, { passive: true });
 
 /* ============ INIT ============ */
 renderAlbumTabs();
