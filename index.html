@@ -168,7 +168,7 @@
   }
   .mp-btn:hover { border-color: var(--accent); color: var(--accent); }
   .mp-play { width: 2.3rem; height: 2.3rem; font-size: 0.8rem; }
-  .mp-info { min-width: 0; flex: 0 0 auto; width: 200px; overflow: hidden; }
+  .mp-info { min-width: 0; flex: 0 0 auto; width: 180px; overflow: hidden; }
   .mp-title { font-family:'Rajdhani',sans-serif; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .mp-album { font-size: 0.55rem; color: var(--text-dim); letter-spacing: 0.12em; text-transform: uppercase; margin-top: 0.15rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: color 0.5s ease; }
   .mp-progress {
@@ -185,15 +185,23 @@
   }
   .mp-vol-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); cursor: pointer; }
   .mp-vol-slider::-moz-range-thumb { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); border: none; cursor: pointer; }
-  @media (max-width: 700px) {
-    .mp-info { width: 110px; }
-    .mp-time { display: none; }
-    .mp-vol-slider { width: 46px; }
-  }
   .icon-pause { display:inline-block; width: 8px; height: 10px; position: relative; }
   .icon-pause::before, .icon-pause::after { content: ''; position: absolute; top: 0; width: 3px; height: 10px; background: currentColor; }
   .icon-pause::before { left: 0; }
   .icon-pause::after { left: 5px; }
+  .mp-suno-cta {
+    flex-shrink: 0; text-decoration: none; cursor: pointer;
+    font-family: 'Rajdhani', sans-serif; font-weight: 700; letter-spacing: 0.08em; font-size: 0.65rem; text-transform: uppercase;
+    color: var(--accent); border: 1px solid var(--accent-deep); padding: 0.4rem 0.7rem; border-radius: 3px;
+    transition: all 0.2s;
+  }
+  .mp-suno-cta:hover { background: var(--accent); color: #000; }
+  @media (max-width: 700px) {
+    .mp-info { width: 100px; }
+    .mp-time { display: none; }
+    .mp-vol-slider { width: 46px; }
+    .mp-suno-cta { display: none; }
+  }
 
   ::-webkit-scrollbar { width: 8px; height: 8px; }
   ::-webkit-scrollbar-track { background: transparent; }
@@ -277,7 +285,6 @@
 
   @media (max-width: 480px) {
     .mini-player { gap: 0.5rem; padding: 0.5rem 0.8rem; }
-    .mp-volume { display: none; }
     .text-head { padding: 0.8rem 1rem 0.7rem; gap: 0.5rem; }
     .text-head .th-num { display: none; }
     .text-head .th-title { font-size: 1.05rem; }
@@ -324,7 +331,7 @@
         <button class="text-nav-btn" id="prevBtn" title="Previous track"><span class="icon-tri-left"></span></button>
         <div class="th-num" id="thNum">// TRACK_01</div>
         <div class="th-title" id="thTitle">—</div>
-        <button class="text-nav-btn th-play-btn" id="thPlayBtn" title="Play this track"><span class="icon-tri-right"></span></button>
+        <button class="text-nav-btn th-play-btn" id="thPlayBtn" title="Play / Pause"><span class="icon-tri-right"></span></button>
         <button class="text-nav-btn" id="nextBtn" title="Next track"><span class="icon-tri-right"></span></button>
       </div>
       <div class="text-body" id="textBody"></div>
@@ -346,7 +353,10 @@
       <button class="mp-btn mp-vol-btn" id="mpMute" title="Mute / Unmute">🔊</button>
       <input type="range" class="mp-vol-slider" id="mpVolume" min="0" max="100" value="100" title="Volume">
     </div>
+    <a class="mp-suno-cta" id="mpSunoLink" href="#" target="_blank" rel="noopener" title="Open this track's page on Suno">Suno ↗</a>
   </div>
+
+  <audio id="audioPlayer" preload="none"></audio>
 
   <div class="mobile-tabbar" id="mobileTabbar">
     <button class="mobile-tab-btn" data-view="tracks"><span class="mtb-icon">☰</span>Tracks</button>
@@ -355,7 +365,6 @@
   </div>
 </div>
 
-<audio id="audioPlayer" preload="none"></audio>
 
 <script>
 /* ============ ALBUM DATA ============ */
@@ -366,7 +375,7 @@ const ALBUMS = {
     tagline: '"Something old is waking up."',
     meta: [['GENRE','Melodic / Groove Metal'],['TRACKS','11'],['SETTING','Primeval Jungle']],
     tracks: [
-      { title: "Signal through the Canopy", audio: "", image: "Album 1 - The First Hunter/01-signal-through-the-canopy.png", story: "The story begins in an ancient, hostile wilderness. The Hunter hears an unnatural signal moving through the canopy and feels that the land somehow recognizes him. The call is both external and internal: something in the realm is waking, and something inside The Hunter is waking with it. He does not yet understand the Mark, the realms, or why he has been called.", sections: [
+      { title: "Signal through the Canopy", audio: "https://cdn1.suno.ai/a49f0419-c942-4a81-bb78-182aa5fcbb09.mp3", sunoUrl: "https://suno.com/song/a49f0419-c942-4a81-bb78-182aa5fcbb09", image: "Album 1 - The First Hunter/01-signal-through-the-canopy.png", story: "The story begins in an ancient, hostile wilderness. The Hunter hears an unnatural signal moving through the canopy and feels that the land somehow recognizes him. The call is both external and internal: something in the realm is waking, and something inside The Hunter is waking with it. He does not yet understand the Mark, the realms, or why he has been called.", sections: [
         ["Verse 1", "Static in the leaves tonight\nSomething moving out of sight\nFeel it crawling up my spine\nLike it's always been mine\n\nFootsteps but the ground comes first\nHeavy breath inside the dirt\nEvery shadow, every line\nFeels like it's alive"],
         ["Pre-Chorus", "I don't know this place\nBut it knows my name\nFeel it in my veins\nI can't walk away"],
         ["Chorus", "I hear the signal through the canopy\nCalling out the animal in me\nFrom the dark to the sky, it's all I see\nSomething's waking up inside of me"],
@@ -376,7 +385,7 @@ const ALBUMS = {
         ["Bridge", "Break me down, strip me clean\nShow me what I'm meant to be\nIf I fall, let it take\nEverything I tried to save\n\nDeep below, something calls\nThrough the blood, through it all\nI don't fight it anymore\nI become the war"],
         ["Final Chorus", "I hear the signal through the canopy\nCalling out the animal in me\nFrom the dark to the sky, it's all I see\nSomething's waking up inside of me\n\nFeel it pulling, feel it underneath\nEvery step like it's hunting me\nIf I run, if I fight, it won't release\nSomething's waking up inside of me"]
       ]},
-      { title: "Mark of the First Hunter", audio: "", image: "Album 1 - The First Hunter/02-mark-of-the-first-hunter.png", story: "The Hunter discovers that he carries an ancient Mark and begins to understand that it is tied to a lineage of warriors. Pale shapes gather at the edge of the light to watch him find it, as if they have done this before. The Mark changes how he experiences the realm and seems to awaken instincts and knowledge he should not possess. He is forced to accept that his identity is connected to a role that existed before him.", sections: [
+      { title: "Mark of the First Hunter", audio: "https://cdn1.suno.ai/83100493-d675-43b2-b3c0-685ae5f554c6.mp3", sunoUrl: "https://suno.com/song/83100493-d675-43b2-b3c0-685ae5f554c6", image: "Album 1 - The First Hunter/02-mark-of-the-first-hunter.png", story: "The Hunter discovers that he carries an ancient Mark and begins to understand that it is tied to a lineage of warriors. Pale shapes gather at the edge of the light to watch him find it, as if they have done this before. The Mark changes how he experiences the realm and seems to awaken instincts and knowledge he should not possess. He is forced to accept that his identity is connected to a role that existed before him.", sections: [
         ["Verse 1", "Woke up with a different skin\nSomething deeper settling in\nEvery scar begins to glow\nLike it's trying to show\n\nHear it beating in my chest\nLike a drum I can't suppress\nEvery step, every breath\nPushing past the rest"],
         ["Pre-Chorus", "I can feel it now\nI can't shut it out\nEvery part of me\nTurning inside out"],
         ["Chorus", "I got the mark, I feel it in my veins\nI got the fire, I can't escape\nNo way out, no slowing down\nIt's who I am, I feel it now"],
@@ -386,7 +395,7 @@ const ALBUMS = {
         ["Bridge", "Cut me open, let it show\nWhat I am and what I know\nIf this power takes control\nLet it take it all\n\nNo more doubt, no more fear\nI was always meant to hear\nEvery call, every cry\nLeading me inside"],
         ["Chorus", "I got the mark, I feel it in my veins\nI got the fire, I can't escape\nNo way out, no slowing down\nIt's who I am, I feel it now\n\nI got the mark, it's in my blood\nI feel it rise, I feel it flood\nNo turning back, no breaking free\nThe hunter's waking up in me"]
       ]},
-      { title: "Bones Beneath the Green", audio: "", image: "Album 1 - The First Hunter/03-bones-beneath-the-green.png", story: "Moving deeper into the wilderness, The Hunter finds evidence of enormous ancient life and civilizations buried beneath the living world. Rib-like stone arches, vast enough to swallow a temple, curve up out of the canyon wall below him. The ground itself seems to hold memory. The realm is not simply a jungle: it is layered over forgotten ages, and the past is beginning to surface.", sections: [
+      { title: "Bones Beneath the Green", audio: "https://cdn1.suno.ai/f7ce2913-01ed-48b7-a4c6-66e82ef2e3e5.mp3", sunoUrl: "https://suno.com/song/f7ce2913-01ed-48b7-a4c6-66e82ef2e3e5", image: "Album 1 - The First Hunter/03-bones-beneath-the-green.png", story: "Moving deeper into the wilderness, The Hunter finds evidence of enormous ancient life and civilizations buried beneath the living world. Rib-like stone arches, vast enough to swallow a temple, curve up out of the canyon wall below him. The ground itself seems to hold memory. The realm is not simply a jungle: it is layered over forgotten ages, and the past is beginning to surface.", sections: [
         ["Verse 1", "Step where the roots run deep\nSomething shifts under me\nGround don't feel the same\nLike it knows my name"],
         ["Pre-Chorus", "Hear it crack below\nFeel it start to grow\nEvery step I take\nSomething starts to wake"],
         ["Chorus", "Bones beneath the green, I can feel them move\nBuried in the dark, but they're breaking through\nEvery breath I take, every step I choose\nSomething old is waking up"],
@@ -396,7 +405,7 @@ const ALBUMS = {
         ["Bridge", "Let it break, let it rise\nI can see it in my mind\nWhat was buried won't stay gone\nIt was waiting all along"],
         ["Final Chorus", "Bones beneath the green, I can feel them move\nBuried in the dark, but they're breaking through\nEvery breath I take, every step I choose\nSomething old is waking up\n\nBones beneath the green, hear the hollow sound\nLike a thousand hearts beating underground\nI don't run away, I don't turn around\nI can feel it waking up"]
       ]},
-      { title: "They Still Breathe", audio: "", image: "Album 1 - The First Hunter/04-they-still-breathe.png", story: "The Hunter learns that the ancient world is not truly dead. Things believed buried or extinct still move in hidden places. Time behaves strangely in these realms, and old ages can survive beneath new ones. The Hunter stops treating the wilderness as merely dangerous and begins to see it as a living archive.", sections: [
+      { title: "They Still Breathe", audio: "https://cdn1.suno.ai/4b755798-5f29-47d9-acd7-f7dcc76a8292.mp3", sunoUrl: "https://suno.com/song/4b755798-5f29-47d9-acd7-f7dcc76a8292", image: "Album 1 - The First Hunter/04-they-still-breathe.png", story: "The Hunter learns that the ancient world is not truly dead. Things believed buried or extinct still move in hidden places. Time behaves strangely in these realms, and old ages can survive beneath new ones. The Hunter stops treating the wilderness as merely dangerous and begins to see it as a living archive.", sections: [
         ["Verse 1", "Thought it died long ago\nBuried deep down below\nBut the silence starts to shake\nEvery step I take"],
         ["Pre-Chorus", "Hear it in the air\nSomething's still there\nEvery shadow moves\nLike it's watching you"],
         ["Chorus", "They still breathe in the dark below\nIn the places no one goes\nEvery sound, every echo speaks\nThey still breathe, they still breathe\nHear it in the air\nSomething's still there\nEvery shadow moves\nLike it's watching you"],
@@ -406,7 +415,7 @@ const ALBUMS = {
         ["Bridge", "You can't kill what won't die\nYou can't hide, you can't hide\nEvery age leaves a trace\nStill alive in this place"],
         ["Final Chorus", "They still breathe in the dark below\nIn the places no one goes\nEvery sound, every echo speaks\nThey still breathe, they still breathe\nThey still breathe, I can feel the heat\nIn the ground beneath my feet\nEvery step pulls me in too deep\nThey still breathe, they still breathe"]
       ]},
-      { title: "Iron Gods, Rusted Thrones", audio: "", image: "Album 1 - The First Hunter/05-iron-gods-rusted-thrones.png", story: "The Hunter crosses into a realm dominated by technology and the remains of a fallen machine civilization. Nature gives way to steel, circuitry, ruins and artificial power. The rulers of this realm tried to create permanence through technology, but their empire has decayed.", sections: [
+      { title: "Iron Gods, Rusted Thrones", audio: "https://cdn1.suno.ai/e9a6f3f8-af98-4903-afb6-6061dba73834.mp3", sunoUrl: "https://suno.com/song/e9a6f3f8-af98-4903-afb6-6061dba73834", image: "Album 1 - The First Hunter/05-iron-gods-rusted-thrones.png", story: "The Hunter crosses into a realm dominated by technology and the remains of a fallen machine civilization. Nature gives way to steel, circuitry, ruins and artificial power. The rulers of this realm tried to create permanence through technology, but their empire has decayed.", sections: [
         ["Verse 1", "Cold light, metal sky\nWires where the roots should lie\nSteel veins, hollow sound\nDead kings underground"],
         ["Pre-Chorus", "Built to rule, built to last\nNow they're fading into ash\nStill they try to take control\nStill they want my soul"],
         ["Chorus", "Iron gods on rusted thrones\nBroken crowns and hollow bones\nTry to pull me into code\nBut I won't let go"],
@@ -416,7 +425,7 @@ const ALBUMS = {
         ["Bridge", "Override, cut the feed\nYou won't take what's in me\nFlesh and blood, I remain\nI won't break to the chain"],
         ["Chorus", "Iron gods on rusted thrones\nBroken crowns and hollow bones\nTry to pull me into code\nBut I won't let go\n\nIron gods, I hear the call\nSystems rise and systems fall\nYou can't own what can't be controlled\nI won't let go"]
       ]},
-      { title: "Wired Into the Vein", audio: "", image: "Album 1 - The First Hunter/06-wired-into-the-vein.png", story: "Cables from the throne behind him bite into his arms as blue current races under his skin. The technology of the machine realm attempts to enter, alter or control The Hunter. His body and the Mark react to it in ways neither he nor the machines fully understand. He fights to retain his identity while discovering that the boundary between biology and technology is less absolute than he believed.", sections: [
+      { title: "Wired Into the Vein", audio: "https://cdn1.suno.ai/9692aa6c-bce3-4b29-bc39-656015c9b0c6.mp3", sunoUrl: "https://suno.com/song/9692aa6c-bce3-4b29-bc39-656015c9b0c6", image: "Album 1 - The First Hunter/06-wired-into-the-vein.png", story: "Cables from the throne behind him bite into his arms as blue current races under his skin. The technology of the machine realm attempts to enter, alter or control The Hunter. His body and the Mark react to it in ways neither he nor the machines fully understand. He fights to retain his identity while discovering that the boundary between biology and technology is less absolute than he believed.", sections: [
         ["Verse 1", "Cold touch under skin\nFeel it creeping in\nEvery pulse I feel\nDoesn't feel real"],
         ["Pre-Chorus", "Signal in my head\nFilling me with dread\nTry to cut it out\nBut I feel it now"],
         ["Chorus", "Wired into the vein, I can't break free\nEvery part of me's not mine to keep\nFeel it take control, feel it rewrite me\nWired into the vein"],
@@ -426,7 +435,7 @@ const ALBUMS = {
         ["Bridge", "Cut it out, rip it clean\nI won't be your machine\nIf I fall, let me fall\nStill I won't lose it all"],
         ["Chorus", "Wired into the vein, I can't break free\nEvery part of me's not mine to keep\nFeel it take control, feel it rewrite me\nWired into the vein\n\nWired into the vein, hear the system speak\nTelling me what I'm supposed to be\nIf I lose myself, what is left of me?\nWired into the vein"]
       ]},
-      { title: "Ghosts Don't Die Here", audio: "", image: "Album 1 - The First Hunter/07-ghosts-dont-die-here.png", story: "The Hunter enters a realm shaped by memory and the dead. Shapes crowned like warriors line a flooded hall, and their reflections in the water seem to move on their own. He encounters echoes of those who came before him and begins to understand that the role he carries has a history. These presences suggest that other warriors have walked similar roads, but the truth remains incomplete.", sections: [
+      { title: "Ghosts Don't Die Here", audio: "https://cdn1.suno.ai/8c61a12d-2bd4-449c-8a5d-6f1e55f35588.mp3", sunoUrl: "https://suno.com/song/8c61a12d-2bd4-449c-8a5d-6f1e55f35588", image: "Album 1 - The First Hunter/07-ghosts-dont-die-here.png", story: "The Hunter enters a realm shaped by memory and the dead. Shapes crowned like warriors line a flooded hall, and their reflections in the water seem to move on their own. He encounters echoes of those who came before him and begins to understand that the role he carries has a history. These presences suggest that other warriors have walked similar roads, but the truth remains incomplete.", sections: [
         ["Verse 1", "Whispers in the air\nSomeone standing there\nBut there's no one I can see\nStill they follow me"],
         ["Pre-Chorus", "Every step I take\nFeels like it's too late\nEvery voice I hear\nSounds too close, too near"],
         ["Chorus", "Ghosts don't die here, they remain\nIn the echo, in the pain\nEvery word, every name\nStill alive inside my brain"],
@@ -436,7 +445,7 @@ const ALBUMS = {
         ["Bridge", "All the ones before\nStill behind the door\nCalling out my name\nSaying we're the same"],
         ["Final Chorus", "Ghosts don't die here, they remain\nIn the echo, in the pain\nEvery word, every name\nStill alive inside my brain\n\nGhosts don't die here, they stay\nIn the dark, they find a way\nEvery breath that I take\nFeels like theirs to take"]
       ]},
-      { title: "The Hunter Becomes", audio: "", image: "Album 1 - The First Hunter/08-the-hunter-becomes.png", story: "After resisting the changes forced upon him, The Hunter finally accepts that he cannot return to who he was before the journey. He has been transformed by every realm he has crossed. This is not a simple victory: he fears that becoming powerful enough to survive may also mean becoming like the things he fights.", sections: [
+      { title: "The Hunter Becomes", audio: "https://cdn1.suno.ai/a4a2dbc3-41a5-4b05-b042-3962faec2fad.mp3", sunoUrl: "https://suno.com/song/a4a2dbc3-41a5-4b05-b042-3962faec2fad", image: "Album 1 - The First Hunter/08-the-hunter-becomes.png", story: "After resisting the changes forced upon him, The Hunter finally accepts that he cannot return to who he was before the journey. He has been transformed by every realm he has crossed. This is not a simple victory: he fears that becoming powerful enough to survive may also mean becoming like the things he fights.", sections: [
         ["Verse 1", "Feel it in my bones\nSomething taking hold\nEvery step I make\nFeels like it's too late"],
         ["Pre-Chorus", "I tried to resist\nBut it won't release\nEvery part of me\nStarts to shift and bleed"],
         ["Chorus", "The hunter becomes what it hunts\nI feel it rise in my blood\nNo more running away\nNo more holding the line"],
@@ -446,7 +455,7 @@ const ALBUMS = {
         ["Bridge", "Let it take, let it change\nI don't feel the same\nIf I lose my name\nWas I ever safe?"],
         ["Chorus", "The hunter becomes what it hunts\nI feel it rise in my blood\nNo more running away\nNo more holding the line\n\nThe hunter becomes what it fears\nI've been fighting for years\nNow there's nothing to save\nI'm the thing I became"]
       ]},
-      { title: "The Broken Realm", audio: "", image: "Album 1 - The First Hunter/09-the-broken-realm.png", story: "The boundaries separating the realms collapse. Pale figures drift through the seam where green jungle bleeds into red iron sky. Wilderness, machines, ruins, spirits and ancient forces begin occupying the same impossible space. The Hunter reaches a realm created from the collision of everything he has encountered. The walls between worlds were never as permanent as they appeared.", sections: [
+      { title: "The Broken Realm", audio: "https://cdn1.suno.ai/511a7b2b-24c0-4b13-b208-d4cc5f636122.mp3", sunoUrl: "https://suno.com/song/511a7b2b-24c0-4b13-b208-d4cc5f636122", image: "Album 1 - The First Hunter/09-the-broken-realm.png", story: "The boundaries separating the realms collapse. Pale figures drift through the seam where green jungle bleeds into red iron sky. Wilderness, machines, ruins, spirits and ancient forces begin occupying the same impossible space. The Hunter reaches a realm created from the collision of everything he has encountered. The walls between worlds were never as permanent as they appeared.", sections: [
         ["Verse 1", "Red sky, black rain\nNothing here remains\nDead trees, burning ground\nHear the sirens sound\n\nCold steel through the stone\nRoots around the bones\nEvery world I've known\nHas become one"],
         ["Pre-Chorus", "Feel the whole world shake\nFeel the whole world change\nThere's nowhere left to run\nNowhere left to run"],
         ["Chorus", "Welcome to the broken realm\nWhere nothing stays the same\nEvery world is crashing down\nAnd calling out my name\n\nWelcome to the broken realm\nNo shelter, no escape\nIf I'm gonna make it out\nI'll have to find a way"],
@@ -456,7 +465,7 @@ const ALBUMS = {
         ["Bridge", "Let it fall\nLet it burn\nNo way back\nNo return\n\nLet it fall\nLet it break\nOne more war\nOne more day"],
         ["Final Chorus", "Welcome to the broken realm\nWhere nothing stays the same\nEvery world is crashing down\nAnd calling out my name\n\nWelcome to the broken realm\nNo shelter, no escape\nIf I'm gonna make it out\nI'll have to find a way"]
       ]},
-      { title: "War Without End", audio: "", image: "Album 1 - The First Hunter/10-war-without-end.png", story: "The collapse erupts into open war. Forces from different realms collide, and The Hunter fights at the center of a conflict much larger than his original quest. The battle forces him to stop running from the role he has inherited and act decisively, even though he still does not understand the full purpose of the Mark.", sections: [
+      { title: "War Without End", audio: "https://cdn1.suno.ai/274deb13-acdb-452a-b1ed-43f9ae2124ae.mp3", sunoUrl: "https://suno.com/song/274deb13-acdb-452a-b1ed-43f9ae2124ae", image: "Album 1 - The First Hunter/10-war-without-end.png", story: "The collapse erupts into open war. Forces from different realms collide, and The Hunter fights at the center of a conflict much larger than his original quest. The battle forces him to stop running from the role he has inherited and act decisively, even though he still does not understand the full purpose of the Mark.", sections: [
         ["Verse 1", "Fire in the sky tonight\nAsh falling in the light\nEvery step, every breath\nFeels like life or death"],
         ["Pre-Chorus", "No way out, no retreat\nFeel the ground beneath my feet\nEvery line has been drawn\nNow it's all or nothing"],
         ["Chorus", "War without end, I feel it begin\nUnder my skin, under my skin\nNo more escape, no more pretend\nWar without end"],
@@ -466,7 +475,7 @@ const ALBUMS = {
         ["Bridge", "If this is what I am\nIf this is where I stand\nI won't break, I won't bend\nEven at the end"],
         ["Final Chorus", "War without end, I feel it begin\nUnder my skin, under my skin\nNo more escape, no more pretend\nWar without end\n\nWar without end, hear it again\nCalling me in, calling me in\nNo more control, no more defense\nWar without end"]
       ]},
-      { title: "Last Light of the Line", audio: "", image: "Album 1 - The First Hunter/11-last-light-of-the-line.png", story: "After the war, The Hunter survives as the remaining bearer of his legacy. Smoke still rises across the valley below as dawn breaks through the clouds. The immediate conflict is over, but the signal and the Mark have not been fully explained. He believes he has reached the end of the cycle. Instead, the ending leaves him vulnerable to the event that will throw him far beyond his own age.", sections: [
+      { title: "Last Light of the Line", audio: "https://cdn1.suno.ai/72412e6e-93f7-454c-8083-2e36361de39c.mp3", sunoUrl: "https://suno.com/song/72412e6e-93f7-454c-8083-2e36361de39c", image: "Album 1 - The First Hunter/11-last-light-of-the-line.png", story: "After the war, The Hunter survives as the remaining bearer of his legacy. Smoke still rises across the valley below as dawn breaks through the clouds. The immediate conflict is over, but the signal and the Mark have not been fully explained. He believes he has reached the end of the cycle. Instead, the ending leaves him vulnerable to the event that will throw him far beyond his own age.", sections: [
         ["Verse 1", "Silence where the war has been\nNothing left but what remains\nEvery step feels heavier\nCarrying the pain"],
         ["Pre-Chorus", "All the voices fade\nAll the ghosts remain\nEvery choice I made\nStill runs through my veins"],
         ["Chorus", "I'm the last light of the line\nFading out, but still alive\nIf I fall, I fall alone\nBut I won't let it die"],
@@ -484,7 +493,7 @@ const ALBUMS = {
     tagline: '"A thousand years. What have you done?"',
     meta: [['GENRE','Industrial / Groove Metal'],['TRACKS','11'],['SETTING','Cyberpunk Empire']],
     tracks: [
-      { title: "A Thousand Years", audio: "", image: "Album 2 - Legacy of the Mark/01-a-thousand-years.png", story: "The Hunter awakens beneath a foreign sky and discovers that roughly a thousand years have passed. The wilderness and world he knew have been replaced by immense towers, concrete and a technologically advanced civilization. The same Mark he carries is displayed throughout the city, and strangers appear to know his face and name. He has become a legend while being absent from history. A banner bearing his own symbol hangs from a tower a hundred feet tall above the gates.", sections: [
+      { title: "A Thousand Years", audio: "https://cdn1.suno.ai/bc59a2ba-2f38-43bb-812c-28149b224828.mp3", sunoUrl: "https://suno.com/song/bc59a2ba-2f38-43bb-812c-28149b224828", image: "Album 2 - Legacy of the Mark/01-a-thousand-years.png", story: "The Hunter awakens beneath a foreign sky and discovers that roughly a thousand years have passed. The wilderness and world he knew have been replaced by immense towers, concrete and a technologically advanced civilization. The same Mark he carries is displayed throughout the city, and strangers appear to know his face and name. He has become a legend while being absent from history. A banner bearing his own symbol hangs from a tower a hundred feet tall above the gates.", sections: [
         ["Verse 1", "I wake beneath a foreign sky\nWhite towers rising twice as high\nNo trace of where I stood before\nJust concrete stretching shore to shore\n\nA thousand lights burn through the rain\nA thousand faces look the same\nI hear a language I don't know\nWhere did the old world go?"],
         ["Pre-Chorus", "Something changed\nSomething's wrong\nI've been gone\nI've been gone too long"],
         ["Chorus", "A thousand years\nGone in a night\nI closed my eyes\nAnd lost my life\n\nA thousand years\nWhat have you done?\nThe world I knew\nIs dead and gone"],
@@ -494,7 +503,7 @@ const ALBUMS = {
         ["Bridge", "Take me back\nTake me home\nTo the land\nI used to know\n\nNo way back\nNo way home\nSo tell me—\nWhat have you become?"],
         ["Final Chorus", "A thousand years\nGone in a night\nI closed my eyes\nAnd lost my life\n\nA thousand years\nNow here I stand\nA stranger in\nA stranger's land\n\nA thousand years\nBut I remain\nYou know the mark\nYou know the name\n\nA thousand years\nNow let me see\nWhat you have made\nOut of me"]
       ]},
-      { title: "Neon Empire", audio: "", image: "Album 2 - Legacy of the Mark/02-neon-empire.png", story: "The Hunter explores the future city and sees an authoritarian society built on surveillance, obedience and controlled identity. The city is spectacular but oppressive: citizens live beneath constant observation while propaganda sells perfection. The Hunter immediately rejects the idea that this is progress simply because it is technologically advanced.", sections: [
+      { title: "Neon Empire", audio: "https://cdn1.suno.ai/e3e8cb69-43ee-4960-9276-e306c0185359.mp3", sunoUrl: "https://suno.com/song/e3e8cb69-43ee-4960-9276-e306c0185359", image: "Album 2 - Legacy of the Mark/02-neon-empire.png", story: "The Hunter explores the future city and sees an authoritarian society built on surveillance, obedience and controlled identity. The city is spectacular but oppressive: citizens live beneath constant observation while propaganda sells perfection. The Hunter immediately rejects the idea that this is progress simply because it is technologically advanced.", sections: [
         ["Verse 1", "Red lights over empty streets\nCold eyes watching over me\nHigh walls reaching to the sky\nNo one stops to wonder why\n\nEvery door is numbered here\nEvery word controlled by fear\nHeads down when the sirens call\nAnother shadow on the wall"],
         ["Pre-Chorus", "Fall in line\nKnow your place\nKeep your head down\nHide your face"],
         ["Chorus", "Welcome to the neon empire\nWhere the lights never go down\nEverybody serves somebody\nEverybody wears a crown\n\nWelcome to the neon empire\nBuilt on everything you lost\nYou can have whatever you want\nIf you never count the cost"],
@@ -504,7 +513,7 @@ const ALBUMS = {
         ["Bridge", "Lights on\nHeads down\nMove when they say move\n\nStand straight\nDon't speak\nNothing left to prove\n\nLights on\nHeads down\nDo what you've been told\n\nThis city owns\nEverything\nThat you thought you owned"],
         ["Final Chorus", "Welcome to the neon empire\nWhere the lights never go down\nEverybody serves somebody\nEverybody wears a crown\n\nWelcome to the neon empire\nBuilt on everything you lost\nYou can have whatever you want\nIf you never count the cost\n\nWelcome to the neon empire\nHear a million voices drown\nI don't serve anybody\nAnd I won't be bowing down"]
       ]},
-      { title: "No Gods Above", audio: "", image: "Album 2 - Legacy of the Mark/03-no-gods-above.png", story: "The ideology of the new civilization becomes clear. Its rulers believe they have surpassed old faith, old weakness and old forms of authority, yet they have simply replaced them with technological control. The Hunter recognizes the same cycle of power wearing a new face and begins openly opposing the empire.", sections: [
+      { title: "No Gods Above", audio: "https://cdn1.suno.ai/acd901b5-d1df-427d-a46c-ded0d223a685.mp3", sunoUrl: "https://suno.com/song/acd901b5-d1df-427d-a46c-ded0d223a685", image: "Album 2 - Legacy of the Mark/03-no-gods-above.png", story: "The ideology of the new civilization becomes clear. Its rulers believe they have surpassed old faith, old weakness and old forms of authority, yet they have simply replaced them with technological control. The Hunter recognizes the same cycle of power wearing a new face and begins openly opposing the empire.", sections: [
         ["Verse 1", "Golden towers, empty halls\nNew commandments on the walls\nEvery answer bought and sold\nEvery future under control\n\nNo one kneels and no one prays\nThey left that for another age\nBuilt a heaven out of steel\nMade themselves the only real"],
         ["Pre-Chorus", "You killed the old\nYou built the new\nNow nothing stands\nAbove you"],
         ["Chorus", "No gods above\nNo kings below\nNothing left\nYou don't control\n\nNo gods above\nThat's what you say\nBut every empire\nEnds the same"],
@@ -514,7 +523,7 @@ const ALBUMS = {
         ["Bridge", "Build it higher\nBuild it strong\nTell yourself\nYou can't be wrong\n\nRaise your towers\nMake your laws\nSooner or later\nThey all fall"],
         ["Final Chorus", "No gods above\nNo kings below\nYou took it all\nYou lost your soul\n\nNo gods above\nThat's what you say\nBut every empire\nEnds the same\n\nNo gods above\nSo hear me now\nYou built this world\n\nI'll tear it down"]
       ]},
-      { title: "Marked", audio: "", image: "Album 2 - Legacy of the Mark/04-marked.png", story: "The Hunter discovers the most personal violation of the new regime: his Mark, face and legend have been appropriated as symbols of state authority. He tears at a banner bearing his own face with his bare hands. The empire claims continuity with the First Hunter and has rewritten his history to justify obedience. He decides to reclaim both the Mark and his name.", sections: [
+      { title: "Marked", audio: "https://cdn1.suno.ai/3173b7e7-41e7-4aa8-a479-f556a1a82ebb.mp3", sunoUrl: "https://suno.com/song/3173b7e7-41e7-4aa8-a479-f556a1a82ebb", image: "Album 2 - Legacy of the Mark/04-marked.png", story: "The Hunter discovers the most personal violation of the new regime: his Mark, face and legend have been appropriated as symbols of state authority. He tears at a banner bearing his own face with his bare hands. The empire claims continuity with the First Hunter and has rewritten his history to justify obedience. He decides to reclaim both the Mark and his name.", sections: [
         ["Verse 1", "There it is above the gate\nCarved in black, ten stories straight\nOn every uniform I see\nThe same old mark that follows me\n\nI wore it long before this place\nBefore these towers had a name\nNow a million wear it proud\nBut they don't know what it's about"],
         ["Pre-Chorus", "Who took the sign?\nWho changed the name?\nWho turned my past\nInto their claim?"],
         ["Chorus", "Marked\nEvery wall, every street\nIs marked\nwith a piece of me\n\nYou took the sign\nYou made it law\nBut you don't know\nWhat it stands for\n\nMarked\nNow I finally see\nYou built your whole empire\nOn the memory of me"],
@@ -524,7 +533,7 @@ const ALBUMS = {
         ["Bridge", "That's not my face\nThose aren't my words\nThat's not the reason\nThat I fought\n\nThat's not my law\nThat's not my throne\nYou stole the mark\n\nBut it's still my own"],
         ["Final Chorus", "Marked\nEvery wall, every street\nIs Marked\nNow they look at me\n\nYou took the sign\nYou made it law\nNow I'll remind you\nWhat it stands for\n\nMarked\nLet the whole city see\nYou built your whole empire\nOn the memory of me\n\nYou stole my name\nYou stole my past\n\nNow I'm taking it back"]
       ]},
-      { title: "Savage Circuit", audio: "", image: "Album 2 - Legacy of the Mark/05-savage-circuit.png", story: "The regime attempts to contain The Hunter using predictive systems, automated security and mechanized soldiers. His instinctive fighting style defeats systems built around patterns and calculation. He represents something its machines can observe but cannot fully predict.", sections: [
+      { title: "Savage Circuit", audio: "https://cdn1.suno.ai/fcc6a04b-8ada-4847-a5f1-3ce7513a125f.mp3", sunoUrl: "https://suno.com/song/fcc6a04b-8ada-4847-a5f1-3ce7513a125f", image: "Album 2 - Legacy of the Mark/05-savage-circuit.png", story: "The regime attempts to contain The Hunter using predictive systems, automated security and mechanized soldiers. His instinctive fighting style defeats systems built around patterns and calculation. He represents something its machines can observe but cannot fully predict.", sections: [
         ["Verse 1", "Boots hit hard against the floor\nFive come in, I drop four\nRed lights flash, alarms ignite\nNow they know I'm here to fight\n\nLock the doors, shut me in\nSend another unit in\nYou can track my every move\nStill don't know what I will do"],
         ["Pre-Chorus", "Lock it down\nSound the call\nSend them in\nI'll take them all"],
         ["Chorus", "Savage circuit\nOverload\nI don't follow\nWhat you know\n\nSavage circuit\nLose control\nYou built the system\nI'll break the code"],
@@ -534,7 +543,7 @@ const ALBUMS = {
         ["Bridge", "Calculate\nAnticipate\nEvery move\nThat I could make\n\nRun it back\nTry again\nYour machine\nCan't understand\n\nInstinct\nNo command\n\nInstinct\nNo command"],
         ["Final Chorus", "Savage circuit\nOverload\nI don't follow\nWhat you know\n\nSavage circuit\nLose control\nYou built the system\nI'll break the code\n\nSavage circuit\nNow you know\nYou can't predict me\nYou can't control\n\nShut it down\nLet it blow\n\nI was never\nIn your code"]
       ]},
-      { title: "The Hollow King", audio: "", image: "Album 2 - Legacy of the Mark/06-the-hollow-king.png", story: "Screens on either side of the hall play back his own myth as he climbs the last steps toward the throne. The Hunter confronts the ruler at the top of the empire. The Hollow King knows far more about The Hunter and the Mark than expected and reveals that he has been waiting for The Hunter's return. His statement that The Hunter 'brought me here' suggests that The Hunter's earlier crossings between realms had consequences he never understood.", sections: [
+      { title: "The Hollow King", audio: "https://cdn1.suno.ai/5668acc9-e2ef-4dd6-9190-f81220652c29.mp3", sunoUrl: "https://suno.com/song/5668acc9-e2ef-4dd6-9190-f81220652c29", image: "Album 2 - Legacy of the Mark/06-the-hollow-king.png", story: "Screens on either side of the hall play back his own myth as he climbs the last steps toward the throne. The Hunter confronts the ruler at the top of the empire. The Hollow King knows far more about The Hunter and the Mark than expected and reveals that he has been waiting for The Hunter's return. His statement that The Hunter 'brought me here' suggests that The Hunter's earlier crossings between realms had consequences he never understood.", sections: [
         ["Verse 1", "Top floor, behind the glass\nWatching every second pass\nNever walking through the streets\nNever standing on your feet\n\nEvery screen repeats your face\nEvery order bears your name\nThey all fear the man above\nBut fear is never enough"],
         ["Pre-Chorus", "Come on down\nShow your face\nCome and stand\nIn what you made"],
         ["Chorus", "Hollow king\nOn a hollow throne\nYou own everything\nBut nothing of your own\n\nHollow king\nLet the whole world sing\nWhen the walls come down\nYou won't own a thing"],
@@ -544,7 +553,7 @@ const ALBUMS = {
         ["Bridge", "You say—\n\n\"I've waited all this time\nI knew you'd come alive\nA thousand years have passed\nAnd you're here at last\"\n\nSo tell me what you want\nTell me why I'm here\n\nHe looks at me and says—\n\n\"You brought me here.\""],
         ["Final Chorus", "Hollow king\nOn a hollow throne\nNow I know there's something\nI was never told\n\nHollow king\nWhat did I begin?\nIf I brought you here\n\nI'll take you out again\n\nHollow king\nYour time is done\nA thousand years\n\nAnd now I've come"]
       ]},
-      { title: "Ghost in my Blood", audio: "", image: "Album 2 - Legacy of the Mark/07-ghost-in-my-blood.png", story: "The empire studies The Hunter's biology and reveals that it has spent centuries trying to reproduce whatever allows him to carry the Mark. Rows of failed copies prove that the essential quality cannot simply be manufactured. The Mark is tied to something deeper than genetics or technology.", sections: [
+      { title: "Ghost in my Blood", audio: "https://cdn1.suno.ai/be2a1476-468e-4a50-8987-baeeff8285c2.mp3", sunoUrl: "https://suno.com/song/be2a1476-468e-4a50-8987-baeeff8285c2", image: "Album 2 - Legacy of the Mark/07-ghost-in-my-blood.png", story: "The empire studies The Hunter's biology and reveals that it has spent centuries trying to reproduce whatever allows him to carry the Mark. Rows of failed copies prove that the essential quality cannot simply be manufactured. The Mark is tied to something deeper than genetics or technology.", sections: [
         ["Verse 1", "They put my blood beneath the glass\nCompare it to a buried past\nNumbers running down the screen\nShowing things I've never seen\n\nA thousand years, they tried and failed\nBuilt their copies, watched them fail\nEvery version came undone\nThey were waiting for the one"],
         ["Pre-Chorus", "What did you find?\nWhat do you know?\nWhat did I bring\nSo long ago?"],
         ["Chorus", "There's a ghost in my blood\nSomething you can't reproduce\nYou can take what you want\nBut it won't belong to you\n\nThere's a ghost in my blood\nFrom a world you never knew\nYou can make another man\nBut you can't make what made me"],
@@ -554,7 +563,7 @@ const ALBUMS = {
         ["Bridge", "Take my blood\nTake my skin\nBuild your army\nTry again\n\nMake a thousand\nMake them strong\n\nYou can copy everything\nAnd still get it wrong"],
         ["Final Chorus", "There's a ghost in my blood\nAnd you'll never make it yours\nYou can build another body\nYou can manufacture war\n\nThere's a ghost in my blood\nFrom before your world began\nYou can make another weapon\n\nBut you can't make who I am\n\nYou wanted what was in me\n\nNow you know\nYou can't have it"]
       ]},
-      { title: "Losing my Name", audio: "", image: "Album 2 - Legacy of the Mark/08-losing-my-name.png", story: "Surrounded by monuments, stories and propaganda about the First Hunter, The Hunter begins losing his sense of the man he was before becoming a legend. He rejects the identity constructed for him by history and the regime. By the end, he consciously reclaims his own name.", sections: [
+      { title: "Losing my Name", audio: "https://cdn1.suno.ai/fad0d229-17af-46b5-b4d2-fe00903e44ae.mp3", sunoUrl: "https://suno.com/song/fad0d229-17af-46b5-b4d2-fe00903e44ae", image: "Album 2 - Legacy of the Mark/08-losing-my-name.png", story: "Surrounded by monuments, stories and propaganda about the First Hunter, The Hunter begins losing his sense of the man he was before becoming a legend. He rejects the identity constructed for him by history and the regime. By the end, he consciously reclaims his own name.", sections: [
         ["Verse 1", "My face is carved in every wall\nBut I don't know that man at all\nThey tell the stories like they know\nWhere I came from, where I'd go\n\nEvery word has been replaced\nEvery truth has been erased\nSay it long enough, it seems\nEven I forget what it means"],
         ["Pre-Chorus", "What was I\nBefore the fight?\nWho was I\nBefore that night?"],
         ["Chorus", "I'm losing my name\nA little every day\nEverybody knows me\nBut they don't know me\n\nI'm losing my name\nTo the man they say I am\nIf I tear the whole thing down\nWill I know myself again?"],
@@ -564,7 +573,7 @@ const ALBUMS = {
         ["Bridge", "Take the statues down\nTake the banners down\nTake the stories\nBurn them out\n\nKeep the mark\nKeep the crown\nI don't need them\nI know now"],
         ["Final Chorus", "I won't lose my name\nTo the man you made of me\nI don't need your history\nTo tell me who to be\n\nI won't lose my name\nI remember who I am\nYou can tear the whole world down\nBut I will still remain\n\nI know my name\nI know my name\n\nAnd you don't own it"]
       ]},
-      { title: "Break the Machine", audio: "", image: "Album 2 - Legacy of the Mark/09-break-the-machine.png", story: "The Hunter's resistance becomes a mass uprising. Workers enter the streets, soldiers begin choosing sides, symbols of the regime burn and the city's systems are deliberately shut down. The Hunter is no longer fighting alone; his refusal to submit has given others permission to do the same.", sections: [
+      { title: "Break the Machine", audio: "https://cdn1.suno.ai/84a20301-f8bc-4b45-ae01-7c380afb98d9.mp3", sunoUrl: "https://suno.com/song/84a20301-f8bc-4b45-ae01-7c380afb98d9", image: "Album 2 - Legacy of the Mark/09-break-the-machine.png", story: "The Hunter's resistance becomes a mass uprising. Workers enter the streets, soldiers begin choosing sides, symbols of the regime burn and the city's systems are deliberately shut down. The Hunter is no longer fighting alone; his refusal to submit has given others permission to do the same.", sections: [
         ["Verse 1", "Shut the gates, cut the lines\nKill the power, kill the lights\nEvery tower, every screen\nTake away what keeps them clean\n\nHear the boots out in the street\nMore and more with every beat\nFor the first time they can see\nThis city isn't what it seemed"],
         ["Pre-Chorus", "One by one\nSide by side\nNo more fear\nNo place to hide"],
         ["Chorus", "You can lock us down\nYou can shut us out\nBut you can't stop what's coming now\n\nEvery wall you built\nEvery lie you sold\nWe're taking back what you controlled\n\nSound the alarm\nBring the whole thing down\n\nTonight we break the machine"],
@@ -574,7 +583,7 @@ const ALBUMS = {
         ["Bridge", "Cut the feed\nCut the wire\nOpen every door\n\nKill the screens\nKill the power\nWe don't need them anymore\n\nNo command\nNo control\nNo one owns us now\n\nThree\nTwo\nOne\n\nShut it down"],
         ["Final Chorus", "You can't lock us down\nYou can't shut us out\nLook at what you've started now\n\nEvery wall you built\nEvery lie you sold\nNothing here is yours to hold\n\nSound the alarm\nHear the whole city now\n\nTonight we break the machine\n\nNo more commands\nNo more bowing down\n\nTonight we take back everything"]
       ]},
-      { title: "Empire Fall", audio: "", image: "Album 2 - Legacy of the Mark/10-empire-fall.png", story: "The authoritarian system collapses. Screens go dark, orders stop, locks open and the Hollow King loses the obedience on which his power depended. A civilization that took a thousand years to construct its system of control loses it in a single night. The Hunter witnesses the end rather than replacing the king.", sections: [
+      { title: "Empire Fall", audio: "https://cdn1.suno.ai/32475b7d-66c3-458e-8173-e9c7b0d38483.mp3", sunoUrl: "https://suno.com/song/32475b7d-66c3-458e-8173-e9c7b0d38483", image: "Album 2 - Legacy of the Mark/10-empire-fall.png", story: "The authoritarian system collapses. Screens go dark, orders stop, locks open and the Hollow King loses the obedience on which his power depended. A civilization that took a thousand years to construct its system of control loses it in a single night. The Hunter witnesses the end rather than replacing the king.", sections: [
         ["Verse 1", "First light breaks across the street\nNo commands beneath our feet\nEvery screen has lost its face\nSilence running through the place\n\nSirens die one by one\nSmoke is rising with the sun\nAll the walls that stood so tall\nDon't look so high before they fall"],
         ["Pre-Chorus", "Hear that sound\nAll around\nWhat goes up\nIs coming down"],
         ["Chorus", "When the empire falls\nLet it fall\nLet it fall\n\nWhen the empire calls\nDon't answer anymore\n\nWe gave it everything\nIt took everything\n\nNow we stand\nAnd watch it fall\n\nWhen the empire falls"],
@@ -584,7 +593,7 @@ const ALBUMS = {
         ["Bridge", "You wanted forever\nYou wanted it all\nYou wanted a kingdom\nThat never could fall\n\nLook out your window\nLook what remains\n\nNobody's coming\nWhen you call their names\n\nNo one is listening\nNo one obeys\n\nYour empire ends\nToday"],
         ["Final Chorus", "When the empire falls\nLet it fall\nLet it fall\n\nWhen the empire calls\nWe won't answer anymore\n\nYou took everything\nNow you have nothing\n\nHere we stand\nAnd watch it fall\n\nWhen the empire falls\nLet it fall\nLet it fall\n\nA thousand years\nTo build these walls\n\nOne night\n\nTo lose it all"]
       ]},
-      { title: "The Wild Remains", audio: "", image: "Album 2 - Legacy of the Mark/11-the-wild-remains.png", story: "Morning arrives without machines filling the sky. In the silence, The Hunter notices green life pushing through cracks in the city. Nature survived beneath the empire and begins reclaiming the ground as soon as control disappears. The Hunter accepts that he, too, has survived change.", sections: [
+      { title: "The Wild Remains", audio: "https://cdn1.suno.ai/d9e7f740-43d8-40ab-91fb-375eac05b500.mp3", sunoUrl: "https://suno.com/song/d9e7f740-43d8-40ab-91fb-375eac05b500", image: "Album 2 - Legacy of the Mark/11-the-wild-remains.png", story: "Morning arrives without machines filling the sky. In the silence, The Hunter notices green life pushing through cracks in the city. Nature survived beneath the empire and begins reclaiming the ground as soon as control disappears. The Hunter accepts that he, too, has survived change.", sections: [
         ["Verse 1", "Morning comes without the lights\nNo machines across the sky\nFor the first time since I came\nI can hear the falling rain\n\nThrough the cracks beneath my feet\nSomething reaches through the street\nSmall and green against the grey\nSomething they couldn't take away"],
         ["Pre-Chorus", "All this time\nUnderneath\nIt was waiting\nTo be free"],
         ["Chorus", "The wild remains\nThe wild remains\nYou can bury it\nBut it won't stay down\n\nThe wild remains\nAfter everything\nGive it time\nIt will take back the ground"],
@@ -602,7 +611,7 @@ const ALBUMS = {
     tagline: '"Some things end so life can grow."',
     meta: [['GENRE','Epic / Cosmic Metal'],['TRACKS','11'],['SETTING','Beyond the Stars']],
     tracks: [
-      { title: "Dead Signal", audio: "", image: "Album 3 - Where Worlds End/01-dead-signal.png", story: "In the aftermath of the empire's fall, the city begins learning how to live without constant control. The Hunter briefly believes his journey may finally be over. Then dead screens reactivate without any surviving command network, his Mark burns again, and an impossible signal arrives from far beyond the known world. A voice cuts through the transmission: 'We found you.'", sections: [
+      { title: "Dead Signal", audio: "https://cdn1.suno.ai/fce18a8d-a4c5-4791-bca2-7e448d351ffa.mp3", sunoUrl: "https://suno.com/song/fce18a8d-a4c5-4791-bca2-7e448d351ffa", image: "Album 3 - Where Worlds End/01-dead-signal.png", story: "In the aftermath of the empire's fall, the city begins learning how to live without constant control. The Hunter briefly believes his journey may finally be over. Then dead screens reactivate without any surviving command network, his Mark burns again, and an impossible signal arrives from far beyond the known world. A voice cuts through the transmission: 'We found you.'", sections: [
         ["Verse 1", "Morning breaks across the grey\nSmoke is slowly blown away\nNo more orders, no machines\nJust the sound of something free\n\nPeople walking through the rain\nLearning how to live again\nFor a moment I believe\nMaybe I can finally leave"],
         ["Pre-Chorus", "Then the sky\nStarts to change\nOne red light\nFar away"],
         ["Chorus", "There's a dead signal\nCalling out my name\nA dead signal\nFrom a world away\n\nI thought it ended\nI thought I was free\nBut that dead signal\nIs calling me"],
@@ -612,7 +621,7 @@ const ALBUMS = {
         ["Bridge", "Not again\nNot this time\nI've been yours\nAll my life\n\nTell me where\nTell me why\nWhat the hell\nIs in that sky?"],
         ["Final Chorus", "There's a dead signal\nCalling out my name\nA dead signal\nFrom a world away\n\nI thought it ended\nI thought I was free\nBut that dead signal\nIs calling me\n\nThere's a dead signal\nBurning through the sky\nA dead signal\nAnd I don't know why\n\nThen one voice\nCuts through the air—\n\n\"We found you.\""]
       ]},
-      { title: "From Beyond", audio: "", image: "Album 3 - Where Worlds End/02-from-beyond.png", story: "The signal becomes an incursion. Something crosses into The Hunter's world from outside the known realms, and the recovering city is forced into immediate defense. Former enemies stand together because the threat does not distinguish between factions. The danger is no longer a single realm or empire, but something approaching from beyond all of them.", sections: [
+      { title: "From Beyond", audio: "https://cdn1.suno.ai/cf3e1090-60b2-4dae-93ce-7b7c6073a02a.mp3", sunoUrl: "https://suno.com/song/cf3e1090-60b2-4dae-93ce-7b7c6073a02a", image: "Album 3 - Where Worlds End/02-from-beyond.png", story: "The signal becomes an incursion. Something crosses into The Hunter's world from outside the known realms, and the recovering city is forced into immediate defense. Former enemies stand together because the threat does not distinguish between factions. The danger is no longer a single realm or empire, but something approaching from beyond all of them.", sections: [
         ["Verse 1", "Black sun hanging overhead\nAll the city glowing red\nEvery signal, every screen\nShows a place I've never seen\nSomething moving past the light\nComing closer through the night\nThen the ground begins to shake\nAnd the heavens start to break"],
         ["Pre-Chorus", "Hear the sound\nFeel it grow\nSomething's coming\nFrom below"],
         ["Chorus", "From beyond\nThey are calling\nFrom beyond\nI hear them now\nThrough the dark\nThrough the silence\nFrom beyond\nThey're coming down"],
@@ -622,7 +631,7 @@ const ALBUMS = {
         ["Bridge", "Raise the walls\nSound the call\nYesterday\nWe watched them fall\nNow the ones\nI came to fight\nStand with me\nHere tonight"],
         ["Final Chorus", "From beyond\nThey are calling\nFrom beyond\nWe hear them now\nThrough the dark\nThrough the silence\nFrom beyond\nThey're coming down\n\nFrom beyond\nLet them find us\nWe have nowhere left to run\nIf they came\nTo take this world\nThen let them fucking come\n\nFrom beyond\nFrom beyond\n<strong>LET THEM COME</strong>"]
       ]},
-      { title: "Black Horizon", audio: "", image: "Album 3 - Where Worlds End/03-black-horizon.png", story: "The invading force withdraws through a vast rupture in the sky. The Hunter realizes the Mark recognizes the passage and chooses to follow. He crosses beyond his world into a region where broken worlds, ancient structures and impossible distances hang in darkness. On a distant world, carved into a tower drifting in the wreckage, he sees the same Mark.", sections: [
+      { title: "Black Horizon", audio: "https://cdn1.suno.ai/85c55a22-e0e6-4395-b7b0-d032545cc59e.mp3", sunoUrl: "https://suno.com/song/85c55a22-e0e6-4395-b7b0-d032545cc59e", image: "Album 3 - Where Worlds End/03-black-horizon.png", story: "The invading force withdraws through a vast rupture in the sky. The Hunter realizes the Mark recognizes the passage and chooses to follow. He crosses beyond his world into a region where broken worlds, ancient structures and impossible distances hang in darkness. On a distant world, carved into a tower drifting in the wreckage, he sees the same Mark.", sections: [
         ["Verse 1", "Fire burns across the ground\nBroken ships are falling down\nWhat came through is pulling back\nDisappearing into black\nThere's a doorway in the sky\nWide enough to swallow light\nAnd the mark begins to burn\nLike it knows where they return"],
         ["Pre-Chorus", "One way in\nNo way back\nOne more road\nInto the black"],
         ["Chorus", "Black horizon\nOpen wide\nThere's another world\nOn the other side\nBlack horizon\nTake me through\nIf you're calling me\nI'm coming for you"],
@@ -632,7 +641,7 @@ const ALBUMS = {
         ["Bridge", "World after world\nEnd after end\nHow far does this go?\nName after name\nGone without trace\nHow many came before?\nThen I see\nAcross the dark\nAnother world\n<strong>With my mark</strong>"],
         ["Final Chorus", "Black horizon\nNow I see\nThere's something here\nThat remembers me\nBlack horizon\nWorlds collide\nA thousand fires\nBurning side by side\nBlack horizon\nNo turning back\nI've come too far\nTo fear the black\nWhatever waits\nBeyond that light\n<strong>I'm coming through\nTo find out why</strong>\n<strong>I'm coming through\nTo find out why</strong>"]
       ]},
-      { title: "No Stars Here", audio: "", image: "Album 3 - Where Worlds End/04-no-stars-here.png", story: "The Hunter travels among dead and shattered worlds. There are no familiar stars or natural sky, only the remains of civilizations that have already been destroyed. The Mark appears repeatedly in their ruins. A single word, scratched into stone by someone who didn't survive long enough to write more, confirms that a force moves from world to world and eventually comes for everything.", sections: [
+      { title: "No Stars Here", audio: "https://cdn1.suno.ai/32809614-56a2-4656-a7a3-f6d5eb2764cc.mp3", sunoUrl: "https://suno.com/song/32809614-56a2-4656-a7a3-f6d5eb2764cc", image: "Album 3 - Where Worlds End/04-no-stars-here.png", story: "The Hunter travels among dead and shattered worlds. There are no familiar stars or natural sky, only the remains of civilizations that have already been destroyed. The Mark appears repeatedly in their ruins. A single word, scratched into stone by someone who didn't survive long enough to write more, confirms that a force moves from world to world and eventually comes for everything.", sections: [
         ["Verse 1", "No sun rising in the east\nNo moon hanging over me\nOnly worlds across the black\nSome are whole and some are cracked\n\nNo wind moving through this place\nNo direction, time or day\nI look up but nothing's clear\nThere are no stars here"],
         ["Pre-Chorus", "Where am I?\nWhat is this?\nHow many worlds\nEnd like this?"],
         ["Chorus", "There are no stars here\nNo light above\nNothing to guide me\nNothing I know\n\nThere are no stars here\nJust worlds in the dark\nSomething came through them\nAnd tore them apart"],
@@ -642,7 +651,7 @@ const ALBUMS = {
         ["Bridge", "One world\nThen another\nOne grave\nThen another\n\nSame mark\nEvery time\nSame warning\nEvery line"],
         ["Final Chorus", "There are no stars here\nNow I know why\nSomething is moving\nOutside of the light\n\nThere are no stars here\nJust worlds left behind\nWhatever destroyed them\nIs coming for mine\n\nCut in the stone\nOne final word—\n\n<strong>\"RUN.\"</strong>"]
       ]},
-      { title: "The Others", audio: "", image: "Album 3 - Where Worlds End/05-the-others.png", story: "The Hunter finds a memorial containing images and weapons of other Mark-bearers from different worlds and ages. Some were rulers, some slaves, some warriors, but all were called across the boundaries between worlds. None returned. The Hunter understands that he is neither the first nor the only one.", sections: [
+      { title: "The Others", audio: "https://cdn1.suno.ai/6a9ca9a2-7bd7-4055-9e77-1fdb6dd8c0d0.mp3", sunoUrl: "https://suno.com/song/6a9ca9a2-7bd7-4055-9e77-1fdb6dd8c0d0", image: "Album 3 - Where Worlds End/05-the-others.png", story: "The Hunter finds a memorial containing images and weapons of other Mark-bearers from different worlds and ages. Some were rulers, some slaves, some warriors, but all were called across the boundaries between worlds. None returned. The Hunter understands that he is neither the first nor the only one.", sections: [
         ["Verse 1", "Figures carved into the stone\nStanding there in rows alone\nDifferent faces, different names\nEvery one who came this way\n\nEvery weapon, every scar\nEvery world beneath a mark\nThen I see above their hands\nThe same damn sign I understand"],
         ["Pre-Chorus", "One by one\nSide by side\nThey were here\nBefore they died"],
         ["Chorus", "There were others\nJust like me\nThere were others\nI can see\n\nDifferent worlds\nDifferent wars\nSame old mark\nThat we all wore"],
@@ -652,7 +661,7 @@ const ALBUMS = {
         ["Bridge", "Not the first\nNot alone\nNot the only\nOne they chose\n\nEvery road\nEvery sign\nBrought them here\nJust like mine"],
         ["Final Chorus", "There were others\nJust like me\nThere were others\nNow I see\n\nDifferent worlds\nDifferent wars\nSame old mark\nThat we all wore\n\nThey came before\nThey crossed the line\n\n<strong>Now I'm the last\nOne left alive</strong>"]
       ]},
-      { title: "World Eater", audio: "", image: "Album 3 - Where Worlds End/06-world-eater.png", story: "The force responsible for the dead worlds finally appears. It is vast enough to consume or erase entire realms and is drawn specifically to the Mark. The Hunter sees why the previous bearers died. When the World Eater turns toward him, the same force that destroyed countless worlds now has a path toward his.", sections: [
+      { title: "World Eater", audio: "https://cdn1.suno.ai/ba2ba266-79e5-462e-b2cb-ed8664cbc936.mp3", sunoUrl: "https://suno.com/song/ba2ba266-79e5-462e-b2cb-ed8664cbc936", image: "Album 3 - Where Worlds End/06-world-eater.png", story: "The force responsible for the dead worlds finally appears. It is vast enough to consume or erase entire realms and is drawn specifically to the Mark. The Hunter sees why the previous bearers died. When the World Eater turns toward him, the same force that destroyed countless worlds now has a path toward his.", sections: [
         ["Verse 1", "Something moves behind the dark\nBig enough to hide the stars\nI can feel it drawing near\nNow I know what happened here\n\nBroken worlds begin to shake\nPieces pulling in its wake\nEverything it passes through\nDisappears without a trace"],
         ["Pre-Chorus", "Now I know\nNow I see\nWhat was waiting\nHere for me"],
         ["Chorus", "World eater\nHere it comes\nWorld eater\nBlot the sun\n\nTake the sky\nTake the ground\nWorld eater\nTear it down"],
@@ -662,7 +671,7 @@ const ALBUMS = {
         ["Bridge", "It sees the mark\nIt knows the sign\nIt killed the others\nNow it wants mine\n\nCome and take it\nCome and try\nI've watched two worlds\nRefuse to die"],
         ["Final Chorus", "World eater\nLook at me\nWorld eater\nNow I see\n\nYou took them all\nOne by one\nBut this time\nI won't run\n\nWorld eater\nHear me now\n\n<strong>YOU WANT MY WORLD?\nCOME TAKE IT DOWN</strong>"]
       ]},
-      { title: "Open The Gate", audio: "", image: "Album 3 - Where Worlds End/07-open-the-gate.png", story: "The Hunter discovers the true function of the Mark. It was never merely a warrior's symbol or biological anomaly: it is a key capable of opening passages between realms. Every crossing in his past potentially created a route that other forces could exploit. His greatest gift has also been the mechanism through which danger followed him.", sections: [
+      { title: "Open The Gate", audio: "https://cdn1.suno.ai/3f23af0d-3807-46e0-90ea-1a6c2aead85c.mp3", sunoUrl: "https://suno.com/song/3f23af0d-3807-46e0-90ea-1a6c2aead85c", image: "Album 3 - Where Worlds End/07-open-the-gate.png", story: "The Hunter discovers the true function of the Mark. It was never merely a warrior's symbol or biological anomaly: it is a key capable of opening passages between realms. Every crossing in his past potentially created a route that other forces could exploit. His greatest gift has also been the mechanism through which danger followed him.", sections: [
         ["Verse 1", "Words are written in the stone\nOlder than the worlds I know\nEvery line begins to show\nWhy the others had to go\n\nEvery mark became a door\nEvery door became a war\nThey were never called to fight\nThey were made to turn the lock"],
         ["Pre-Chorus", "All this time\nI wore the sign\nNever knew\nWhat lived inside"],
         ["Chorus", "Open the gate\nOpen the way\nOne world falls\nAnother remains\n\nOpen the gate\nNow I understand\nThe key was never\nIn my hand"],
@@ -672,7 +681,7 @@ const ALBUMS = {
         ["Bridge", "Not a crown\nNot a name\nNot a gift\nNot a chain\n\nIt's a key\nIt's a door\nAnd I won't\nUse it anymore"],
         ["Final Chorus", "Open the gate\nOpen the way\nThat's what they wanted\nThat's why they came\n\nOpen the gate\nNow I understand\nThe key was never\nIn my hand\n\nIt was the mark\nUnder my skin\n\n<strong>I OPENED THE DOOR\nAND LET THEM IN</strong>"]
       ]},
-      { title: "No Way Back", audio: "", image: "Album 3 - Where Worlds End/08-no-way-back.png", story: "The Hunter refuses to remain trapped in guilt. He deliberately uses the Mark to pursue the enemy deeper into its territory, then seals the route behind himself so the threat cannot simply follow him home. For the first time, he is using the Mark with full knowledge of what it does.", sections: [
+      { title: "No Way Back", audio: "https://cdn1.suno.ai/8f8120e2-98f2-4e0d-ad67-a6422d942324.mp3", sunoUrl: "https://suno.com/song/8f8120e2-98f2-4e0d-ad67-a6422d942324", image: "Album 3 - Where Worlds End/08-no-way-back.png", story: "The Hunter refuses to remain trapped in guilt. He deliberately uses the Mark to pursue the enemy deeper into its territory, then seals the route behind himself so the threat cannot simply follow him home. For the first time, he is using the Mark with full knowledge of what it does.", sections: [
         ["Verse 1", "Every road I ever crossed\nEvery world and every loss\nEvery door I opened wide\nLeft a way to get inside\n\nI can stand and curse the past\nI can wish I knew the facts\nBut the ones who came before\nNever made it through that door"],
         ["Pre-Chorus", "No more doubt\nNo more fear\nIf it wants me\nI am here"],
         ["Chorus", "No way back\nNo way home\nI go further\nOn my own\n\nNo way back\nLet it close\nWhere this ends\nNobody knows"],
@@ -682,7 +691,7 @@ const ALBUMS = {
         ["Bridge", "Close the door\nBehind my back\nCut the road\nSeal the path\n\nIf I fall\nLet me fall\nAt least it ends\nHere with us"],
         ["Final Chorus", "No way back\nNo way home\nNow I face it\nOn my own\n\nNo way back\nLet it close\nI don't care\nWhere this road goes\n\nOne last gate\nOne last fight\n\n<strong>I'M GOING STRAIGHT\nINTO THE NIGHT</strong>"]
       ]},
-      { title: "Call To War", audio: "", image: "Album 3 - Where Worlds End/09-call-to-war.png", story: "The Hunter reaches the enemy's domain and discovers that the World Eater is connected to a larger organized force. He uses the Mark one final time in a radically different way: not to let an enemy through, but to call surviving worlds together. Gates open, and forces from many worlds answer.", sections: [
+      { title: "Call To War", audio: "https://cdn1.suno.ai/12fff1c7-bcb3-48e2-bb53-b0b178c38cb3.mp3", sunoUrl: "https://suno.com/song/12fff1c7-bcb3-48e2-bb53-b0b178c38cb3", image: "Album 3 - Where Worlds End/09-call-to-war.png", story: "The Hunter reaches the enemy's domain and discovers that the World Eater is connected to a larger organized force. He uses the Mark one final time in a radically different way: not to let an enemy through, but to call surviving worlds together. Gates open, and forces from many worlds answer.", sections: [
         ["Verse 1", "Black walls rising from the ground\nArmies moving all around\nEvery world they ever took\nBrought another soldier here\n\nI can see the gates ahead\nLeading to the worlds they bled\nIf they used them to destroy\nI can give the worlds a choice"],
         ["Pre-Chorus", "Open wide\nOne last time\nNot for them\nThis time it's mine"],
         ["Chorus", "Call to war\nCall them all\nEvery world\nThat hasn't fallen\n\nCall to war\nSide by side\nIf we stand\nWe stand tonight"],
@@ -692,7 +701,7 @@ const ALBUMS = {
         ["Bridge", "From the wild\nFrom the steel\nFrom the worlds\nThat wouldn't kneel\n\nRaise the mark\nRaise it high\nFor the living\nFor the ones who died"],
         ["Final Chorus", "Call to war\nCall them all\nEvery world\nThat hasn't fallen\n\nCall to war\nSide by side\nNow we stand\nHere tonight\n\nLet them come\nLet them see\n\n<strong>EVERY WORLD\nSTANDS WITH ME</strong>"]
       ]},
-      { title: "One Last Hunt", audio: "", image: "Album 3 - Where Worlds End/10-one-last-hunt.png", story: "The allied armies cannot cross the final threshold; only a Mark-bearer can continue. Inside the World Eater, The Hunter reaches its Heart, suspended in a cathedral-sized chamber built from fused metal and tissue. The broken weapons of Mark-bearers who came before him litter the floor — all of them reached this same place, and all of them died. One of them left a deep fracture in the Heart before falling. The Hunter has found it, and means to finish what it started.", sections: [
+      { title: "One Last Hunt", audio: "https://cdn1.suno.ai/52f23c59-4f76-43f5-837b-275bcf1f7f28.mp3", sunoUrl: "https://suno.com/song/52f23c59-4f76-43f5-837b-275bcf1f7f28", image: "Album 3 - Where Worlds End/10-one-last-hunt.png", story: "The allied armies cannot cross the final threshold; only a Mark-bearer can continue. Inside the World Eater, The Hunter reaches its Heart, suspended in a cathedral-sized chamber built from fused metal and tissue. The broken weapons of Mark-bearers who came before him litter the floor — all of them reached this same place, and all of them died. One of them left a deep fracture in the Heart before falling. The Hunter has found it, and means to finish what it started.", sections: [
         ["Verse 1", "War is burning at my back\nNo one follows through the black\nThey can hold the armies here\nBut they cannot follow me\n\nOne more doorway waits ahead\nOne more road beneath my feet\nEverything has led to this\nOne last thing I have to kill"],
         ["Pre-Chorus", "Close the gate\nHold the line\nThis one ends\nWith me tonight"],
         ["Chorus", "One last hunt\nOne last fight\nOne last road\nInto the night\n\nOne last hunt\nLet it run\nI've come too far\nTo leave this undone"],
@@ -702,7 +711,7 @@ const ALBUMS = {
         ["Bridge", "For the wild\nFor the lost\nFor the ones\nWho paid the cost\n\nFor the worlds\nThat still remain\nI won't let you\nTake again"],
         ["Final Chorus", "One last hunt\nOne last fight\nOne last road\nInto the night\n\nOne last hunt\nNowhere to run\nAfter all these years\nIt ends with one\n\nYou wanted me\nHere I come\n\n<strong>ONE LAST HUNT\nUNTIL IT'S DONE</strong>"]
       ]},
-      { title: "Where Worlds End", audio: "", image: "Album 3 - Where Worlds End/11-where-worlds-end.png", story: "After the final confrontation, The Hunter reaches the place where the cycle of worlds can be seen clearly. Some worlds die while others begin. The Hunter understands that his own endless role as Realmwalker must also end. He sets his sword down beside a quiet stream. He destroys the Mark and chooses to remain in one world as a man rather than continue forever as the First Hunter.", sections: [
+      { title: "Where Worlds End", audio: "https://cdn1.suno.ai/e3922731-c8ee-43cd-aaeb-5efc312d29a1.mp3", sunoUrl: "https://suno.com/song/e3922731-c8ee-43cd-aaeb-5efc312d29a1", image: "Album 3 - Where Worlds End/11-where-worlds-end.png", story: "After the final confrontation, The Hunter reaches the place where the cycle of worlds can be seen clearly. Some worlds die while others begin. The Hunter understands that his own endless role as Realmwalker must also end. He sets his sword down beside a quiet stream. He destroys the Mark and chooses to remain in one world as a man rather than continue forever as the First Hunter.", sections: [
         ["Verse 1", "Silence after one last blow\nNothing moving anymore\nAll around me worlds appear\nLike they waited for me here\n\nSome are dying, some are new\nSome are burning bright and blue\nNow I finally understand\nNothing lives without an end"],
         ["Pre-Chorus", "Let it go\nLet it change\nNothing ever\nStays the same"],
         ["Chorus", "Where worlds end\nWorlds begin\nEverything\nTurns again\n\nWhere worlds end\nLet them go\nThere's a life\nBeyond what we know"],
@@ -723,7 +732,6 @@ const ALBUMS = {
 const state = { album: 1, track: -1 };
 let playingAlbum = null;
 let playingIdx = null;
-const audioPlayer = document.getElementById('audioPlayer');
 const MIN_ALBUM = 1;
 const MAX_ALBUM = Object.keys(ALBUMS).length;
 
@@ -733,13 +741,6 @@ function sectionClass(label) {
   if (l.includes('final')) return 'final-chorus';
   if (l.includes('bridge')) return 'bridge';
   return '';
-}
-
-function formatTime(s) {
-  if (!isFinite(s) || s < 0) return '0:00';
-  const m = Math.floor(s / 60);
-  const sec = Math.floor(s % 60).toString().padStart(2, '0');
-  return `${m}:${sec}`;
 }
 
 function isRowPlaying(albumNum, idx) {
@@ -907,6 +908,14 @@ document.addEventListener('keydown', (e) => {
 });
 
 /* ============ AUDIO PLAYER ENGINE (decoupled from browsing) ============ */
+const audioPlayer = document.getElementById('audioPlayer');
+
+function formatTime(s) {
+  if (!isFinite(s) || s < 0) return '0:00';
+  const m = Math.floor(s / 60);
+  const sec = Math.floor(s % 60).toString().padStart(2, '0');
+  return `${m}:${sec}`;
+}
 
 // Selects the track for viewing (switching album if needed) AND starts playback.
 function playTrackDirect(albumNum, idx) {
@@ -938,10 +947,10 @@ function loadAndPlay(albumNum, idx) {
   playingIdx = idx;
   if (track.audio) {
     audioPlayer.src = track.audio;
-    audioPlayer.play().catch(err => console.warn('Playback failed — check the file exists:', track.audio, err));
+    audioPlayer.play().catch(err => console.warn('Playback failed:', track.audio, err));
   } else {
     audioPlayer.removeAttribute('src');
-    console.warn('No audio file set yet for track:', track.title);
+    console.warn('No audio set yet for track:', track.title);
   }
   updateMiniPlayer(albumNum, idx);
   refreshPlayingIndicators();
@@ -969,7 +978,7 @@ audioPlayer.addEventListener('error', () => {
     switch (err.code) {
       case err.MEDIA_ERR_ABORTED: msg = 'Playback aborted'; break;
       case err.MEDIA_ERR_NETWORK: msg = 'Network error while loading audio'; break;
-      case err.MEDIA_ERR_DECODE: msg = 'File could not be decoded (corrupt or unsupported encoding)'; break;
+      case err.MEDIA_ERR_DECODE: msg = 'File could not be decoded'; break;
       case err.MEDIA_ERR_SRC_NOT_SUPPORTED: msg = 'File not found or format not supported'; break;
     }
   }
@@ -1003,6 +1012,7 @@ function updateMiniPlayer(albumNum, idx) {
   const t = album.tracks[idx];
   document.getElementById('mpTitle').textContent = t.title;
   document.getElementById('mpAlbum').textContent = album.title.toUpperCase() + ' — TRACK ' + String(idx+1).padStart(2,'0');
+  document.getElementById('mpSunoLink').href = t.sunoUrl || '#';
   document.getElementById('miniPlayer').classList.add('active');
 }
 
