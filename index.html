@@ -20,7 +20,6 @@
     --bg: #03060f; --bg-panel: #070d1a; --bg-raise: #0a1220;
     --border: #2a4a6a; --border-dim: #0d3b6e;
     --text-dim: #5a7fa8;
-    --red-line: #c41f22;
   }
 
   html, body {
@@ -75,8 +74,8 @@
   }
 
   /* ── SHARED SIGNATURE MOTIF: thin red line under topbar / around mini-player ── */
-  .topbar { border-bottom: none !important; box-shadow: 0 2px 0 0 var(--red-line), 0 2px 6px 0 rgba(196,31,34,0.4); }
-  .mini-player { border-top: none !important; box-shadow: 0 -2px 0 0 var(--red-line); }
+  .topbar { border-bottom: none !important; box-shadow: 0 2px 0 0 var(--accent), 0 2px 6px 0 rgba(0,0,0,0.4); }
+  .mini-player { border-top: none !important; box-shadow: 0 -2px 0 0 var(--accent); }
 
   /* ══════════════════ PER-ALBUM SHAPE LANGUAGE ══════════════════ */
 
@@ -176,8 +175,8 @@
   .banner, .scan-line, .portal-ring, .starfield { display: none; }
   .banner {
     position: absolute; top: -20px; right: 40px; width: 100px; height: 240px;
-    background: transparent; border: 2px solid var(--accent); opacity: 1; z-index: 4;
-    clip-path: polygon(0 0, 100% 0, 100% 90%, 50% 100%, 0 90%);
+    background: var(--accent); opacity: 1; z-index: 4;
+    clip-path: path(evenodd, "M0 0 L100 0 L100 216 L50 240 L0 216 Z M7 7 L93 7 L93 209 L50 227 L7 209 Z");
   }
   .portal-ring { position: absolute; border-radius: 50%; pointer-events: none; z-index: 3; }
   .portal-ring.ring-outer { width: 460px; height: 460px; top: -140px; right: -160px; border: 2px solid var(--accent); opacity: 0.65; box-shadow: 0 0 40px 0 rgba(0,0,0,0.5); }
@@ -424,14 +423,34 @@
   .mp-vol-slider::-moz-range-thumb { width: 11px; height: 11px; border-radius: 50%; background: var(--accent); border: none; cursor: pointer; }
 
   /* ── Album I: chunky chipped buttons, moss glow behind progress ── */
-  body[data-album="1"] .mp-btn { clip-path: polygon(0 6px, 6px 0, 100% 0, 100% 100%, 0 100%); border-radius: 0; background: var(--bg-panel); }
-  body[data-album="1"] .mp-progress::-webkit-slider-thumb { border-radius: 2px; }
-  body[data-album="1"] .mp-play { box-shadow: 2px 2px 0 #000; }
+  /* Album I mini-player: weapon-case latch bar, chunky beveled buttons, all green */
+  body[data-album="1"] .mini-player { position: relative; background: linear-gradient(180deg, var(--bg-raise), var(--bg-panel)); }
+  body[data-album="1"] .mini-player::before,
+  body[data-album="1"] .mini-player::after {
+    content: ''; position: absolute; top: -8px; width: 16px; height: 16px;
+    background: var(--border); border: 1px solid #000; border-radius: 2px; z-index: 1;
+  }
+  body[data-album="1"] .mini-player::before { left: 56px; }
+  body[data-album="1"] .mini-player::after { right: 56px; }
+  body[data-album="1"] .mp-btn {
+    clip-path: none; border-radius: 3px; background: var(--bg-raise); border: 1px solid #000;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 2px 2px 0 #000;
+  }
+  body[data-album="1"] .mp-btn:hover { border-color: #000; }
+  body[data-album="1"] .mp-play {
+    background: var(--accent); color: #06110a; border-color: #000;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.25), 2px 2px 0 #000;
+  }
+  body[data-album="1"] .mp-play:hover { background: var(--accent-pale); color: #06110a; }
+  body[data-album="1"] .mp-progress { height: 6px; border: 1px solid #000; background: var(--bg-raise); border-radius: 1px; }
+  body[data-album="1"] .mp-progress::-webkit-slider-thumb { background: var(--accent); box-shadow: 2px 2px 0 #000; border-radius: 2px; }
+  body[data-album="1"] .mp-progress::-moz-range-thumb { background: var(--accent); border-radius: 2px; }
 
   /* ── Album II: sharp precise-cut buttons, cold square thumb ── */
   body[data-album="2"] .mp-btn { clip-path: polygon(0 0, calc(100% - 4px) 0, 100% 4px, 100% 100%, 0 100%); border-radius: 0; background: var(--bg-panel); }
   body[data-album="2"] .mp-progress { background: repeating-linear-gradient(90deg, var(--border) 0px, var(--border) 8px, var(--bg-raise) 8px, var(--bg-raise) 9px); }
-  body[data-album="2"] .mp-progress::-webkit-slider-thumb { border-radius: 0; }
+  body[data-album="2"] .mp-progress::-webkit-slider-thumb { border-radius: 0; background: var(--accent); box-shadow: 0 0 6px var(--accent); }
+  body[data-album="2"] .mp-progress::-moz-range-thumb { border-radius: 0; background: var(--accent); }
 
   /* ── Album III: soft rings, wider glow, ancient dial feel ── */
   body[data-album="3"] .mp-btn { border-width: 1px; box-shadow: 0 0 0 3px var(--bg-raise); }
@@ -849,7 +868,7 @@ const ALBUMS = {
     "roman": "I",
     "title": "The First Hunter",
     "cover": "Album 1 - The First Hunter/00-the-first-hunter-cover.png",
-    "intro": "The Hunter begins as a lone warrior in an ancient wilderness and is drawn through increasingly strange realms. He discovers the Mark, confronts living remnants of forgotten ages, survives machine and spirit realms, and becomes the warrior the journey demands. The album ends with apparent victory but leaves the origin and true purpose of the Mark unresolved.",
+    "intro": "Deep in an ancient wilderness, something has been calling for longer than anyone can remember \u2014 and tonight, it finally gets an answer. The Hunter doesn\u2019t know why the signal chose him, or what waking up will cost him. But the jungle has stopped testing his strength. Now it\u2019s testing what he\u2019s willing to become.",
     "label": "// Album I of III \u2014 The Hunter Trilogy //",
     "tagline": "\"Something old is waking up.\"",
     "meta": [
@@ -1408,7 +1427,7 @@ const ALBUMS = {
     "roman": "II",
     "title": "Legacy of the Mark",
     "cover": "Album 2 - Legacy of the Mark/00-legacy-of-the-mark-cover.png",
-    "intro": "The Hunter is thrown a thousand years into the future. A technological empire has stolen his symbol, rewritten his history and attempted to reproduce the power in his blood. He moves from displaced outsider to rebel, destroys the system built around his legend, and watches the natural world begin returning beneath the dead machinery.",
+    "intro": "A thousand years gone, and the world The Hunter wakes up to worships a version of him that never existed. His face is carved into monuments he never posed for. His name opens doors he\u2019s never walked through. Somewhere beneath the propaganda and the neon, the real Hunter is still out there \u2014 and he\u2019s about to find out exactly what they built in his absence.",
     "label": "// Album II of III \u2014 The Hunter Trilogy //",
     "tagline": "\"A thousand years. What have you done?\"",
     "meta": [
@@ -1967,7 +1986,7 @@ const ALBUMS = {
     "roman": "III",
     "title": "Where Worlds End",
     "cover": "Album 3 - Where Worlds End/00-where-worlds-end-cover.png",
-    "intro": "The final album expands the conflict from civilizations to worlds. The Hunter learns that the Mark is a key between realms, discovers previous bearers, confronts the force that consumed them, unites surviving worlds for a final war and ultimately ends the cycle by destroying the Mark itself.",
+    "intro": "The war is over. The city is finally, unbearably quiet. Then the dead screens flicker back to life on their own, and a signal arrives from somewhere that should not exist. Something out there has been searching for a very long time \u2014 and it has just found what it was looking for.",
     "label": "// Album III of III \u2014 The Hunter Trilogy //",
     "tagline": "\"Some things end so life can grow.\"",
     "meta": [
