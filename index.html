@@ -43,14 +43,14 @@
   }
 
   /* ── ALBUM THEMES ── */
-  /* Album I — The First Hunter: late-90s action boxart. Blood-red accent, khaki/bone text, moss wash. */
+  /* Album I — The First Hunter: late-90s action boxart. Khaki/moss primary identity, blood-red as a sparing highlight only. */
   body[data-album="1"] {
     --font-flavor: 'Black Ops One', sans-serif;
-    --accent: #c41f16; --accent-deep: #7a130e; --accent-pale: #e8342f;
-    --accent2: #5a6b3a;
+    --accent: #8a8264; --accent-deep: #5a5540; --accent-pale: #cfc4a0;
+    --accent2: #c41f16;
     --bg: #060503; --bg-panel: #0e0c09; --bg-raise: #1a1611;
     --border: #3a3226; --border-dim: #241f18;
-    --text-dim: #8a8264;
+    --text-dim: #6a6350;
   }
   /* Album II — Legacy of the Mark: surveillance-state sci-fi. Propaganda red, cold steel, blue flicker. */
   body[data-album="2"] {
@@ -97,15 +97,23 @@
   }
   body[data-album="1"] .cover-title::before {
     content: ''; position: absolute; left: -1.5rem; right: -1.5rem; top: 48%; height: 0.55em;
-    background: var(--accent); transform: translateY(-50%) skewY(-3deg); z-index: -1; opacity: 0.92;
+    background: var(--accent2); transform: translateY(-50%) skewY(-3deg); z-index: -1; opacity: 0.92;
   }
 
   /* Album II — precise grid cuts, propaganda banner + scanline */
   body[data-album="2"] .album-tab {
     clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 0 100%);
   }
-  body[data-album="2"] .track-row { border-bottom: 1px solid var(--border-dim); }
-  body[data-album="2"] .track-row.active { clip-path: none; border-left: 2px solid var(--accent); }
+  /* ── Album II track list: Option D — staggered organic rows ── */
+  body[data-album="2"] .track-row {
+    align-items: center; border-left: 2px solid var(--border); border-bottom: none;
+    border-radius: 0; padding: 0.5rem 0.6rem; margin-bottom: 0.35rem;
+    background: var(--bg-raise);
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+  }
+  body[data-album="2"] .track-row.idx-even { margin-left: 0.9rem; }
+  body[data-album="2"] .track-row:hover { background: var(--panel2, var(--bg-raise)); border-left-color: var(--accent-deep); }
+  body[data-album="2"] .track-row.active { border-left-color: var(--accent); background: var(--bg-raise); clip-path: polygon(0 0, 100% 0, 100% 100%, 8px 100%, 0 calc(100% - 8px)); }
   body[data-album="2"] .cover-pane {
     background:
       linear-gradient(rgba(5,5,6,0.7), rgba(5,5,6,0.85)),
@@ -122,6 +130,43 @@
   }
   body[data-album="3"] .portal-ring, body[data-album="3"] .starfield { display: block; }
   body[data-album="3"] .cover-title { text-shadow: 0 0 30px rgba(197,139,72,0.35); }
+
+  /* ── Album I track list: Option C — oversized number ledger ── */
+  body[data-album="1"] .track-row {
+    align-items: flex-start; border-left: none; border-bottom: 1px solid var(--border);
+    border-radius: 0; padding: 0.6rem 0.4rem;
+  }
+  body[data-album="1"] .track-row:hover { background: transparent; }
+  body[data-album="1"] .track-row.active { background: transparent; border-left: none; }
+  body[data-album="1"] .track-row .row-play-btn { order: 3; margin-left: auto; align-self: center; }
+  body[data-album="1"] .track-row .t-num {
+    font-family: var(--font-logo); font-weight: 400; font-size: 1.5rem; color: var(--border);
+    line-height: 1; min-width: 2.1rem; transition: color 0.2s ease;
+  }
+  body[data-album="1"] .track-row.active .t-num,
+  body[data-album="1"] .track-row:hover .t-num { color: var(--accent2); }
+  body[data-album="1"] .track-row .t-title { white-space: normal; line-height: 1.25; }
+
+  /* ── Album III track list: Option G — chain of realms ── */
+  body[data-album="3"] .track-nav { position: relative; padding-left: 1.4rem; }
+  body[data-album="3"] .track-nav::before {
+    content: ''; position: absolute; left: 1.05rem; top: 0.6rem; bottom: 0.6rem; width: 1px;
+    background: linear-gradient(180deg, var(--accent), var(--accent2)); opacity: 0.45;
+  }
+  body[data-album="3"] .track-row { position: relative; border-left: none; }
+  body[data-album="3"] .track-row::before {
+    content: ''; position: absolute; left: -0.75rem; top: 50%; width: 7px; height: 7px; border-radius: 50%;
+    background: var(--bg); border: 1px solid var(--accent); transform: translateY(-50%); z-index: 1;
+  }
+  body[data-album="3"] .track-row.active::before,
+  body[data-album="3"] .track-row.playing::before {
+    background: var(--accent); box-shadow: 0 0 8px var(--accent);
+  }
+  body[data-album="3"] .track-row .row-play-btn { opacity: 0; width: 0; margin: 0; pointer-events: none; }
+  body[data-album="3"] .track-row:hover .row-play-btn,
+  body[data-album="3"] .track-row.active .row-play-btn {
+    opacity: 1; width: 1.5rem; margin-right: 0.2rem; pointer-events: auto;
+  }
 
   /* ── Decorative elements: hidden by default, shown per album above ── */
   .rivet { display: none; }
@@ -332,7 +377,7 @@
   /* ── MINI PLAYER ── */
   .mini-player {
     display: none; align-items: center; gap: 1rem;
-    padding: 0.55rem 1.4rem;
+    padding: 0.55rem 1.4rem; position: relative; overflow: hidden;
     background: var(--bg-panel); border-top: 1px solid var(--border);
     transition: border-color 0.5s ease, background 0.5s ease;
   }
@@ -351,34 +396,49 @@
   .icon-pause::after { left: 5px; }
 
   .mp-btn {
-    background: transparent; border: 1px solid var(--border); color: var(--text-dim);
-    width: 2rem; height: 2rem; border-radius: 50%; flex-shrink: 0;
+    background: var(--bg-raise); border: 1px solid var(--border); color: var(--text-dim);
+    width: 2.1rem; height: 2.1rem; border-radius: 50%; flex-shrink: 0;
     cursor: pointer; font-size: 0.7rem; display: flex; align-items: center; justify-content: center;
     transition: all 0.2s;
   }
   .mp-btn:hover { border-color: var(--accent); color: var(--accent); }
-  .mp-play { width: 2.3rem; height: 2.3rem; font-size: 0.8rem; }
+  .mp-play { width: 2.5rem; height: 2.5rem; font-size: 0.8rem; border-color: var(--accent2, var(--accent)); color: var(--accent2, var(--accent)); }
   .mp-info { min-width: 0; flex: 1 1 auto; max-width: 240px; overflow: hidden; }
-  .mp-title { font-family:'Rajdhani',sans-serif; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .mp-title { font-family: var(--font-ui); font-size: 0.82rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .mp-album { font-family: var(--font-data); font-size: 0.55rem; color: var(--text-dim); letter-spacing: 0.12em; text-transform: uppercase; margin-top: 0.15rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: color 0.5s ease; }
   .mp-progress {
-    flex: 1; min-width: 0; height: 3px; -webkit-appearance: none; appearance: none;
+    flex: 1; min-width: 0; height: 4px; -webkit-appearance: none; appearance: none;
     background: var(--border); border-radius: 2px; cursor: pointer; outline: none;
     transition: background 0.5s ease;
   }
-  .mp-progress::-webkit-slider-thumb { -webkit-appearance: none; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); cursor: pointer; }
-  .mp-progress::-moz-range-thumb { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); border: none; cursor: pointer; }
-  .mp-time { font-size: 0.55rem; color: var(--text-dim); letter-spacing: 0.05em; white-space: nowrap; flex-shrink: 0; transition: color 0.5s ease; }
+  .mp-progress::-webkit-slider-thumb { -webkit-appearance: none; width: 11px; height: 11px; border-radius: 50%; background: var(--accent2, var(--accent)); cursor: pointer; box-shadow: 0 0 6px var(--accent2, var(--accent)); }
+  .mp-progress::-moz-range-thumb { width: 11px; height: 11px; border-radius: 50%; background: var(--accent2, var(--accent)); border: none; cursor: pointer; }
+  .mp-time { font-family: var(--font-data); font-size: 0.55rem; color: var(--text-dim); letter-spacing: 0.05em; white-space: nowrap; flex-shrink: 0; transition: color 0.5s ease; }
 
   .mp-volume { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; }
   .mp-vol-btn { font-size: 0.85rem; }
   .mp-vol-slider {
-    width: 70px; height: 3px; -webkit-appearance: none; appearance: none;
+    width: 70px; height: 4px; -webkit-appearance: none; appearance: none;
     background: var(--border); border-radius: 2px; cursor: pointer; outline: none;
     transition: background 0.5s ease;
   }
-  .mp-vol-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); cursor: pointer; }
-  .mp-vol-slider::-moz-range-thumb { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); border: none; cursor: pointer; }
+  .mp-vol-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 11px; height: 11px; border-radius: 50%; background: var(--accent); cursor: pointer; }
+  .mp-vol-slider::-moz-range-thumb { width: 11px; height: 11px; border-radius: 50%; background: var(--accent); border: none; cursor: pointer; }
+
+  /* ── Album I: chunky chipped buttons, moss glow behind progress ── */
+  body[data-album="1"] .mp-btn { clip-path: polygon(0 6px, 6px 0, 100% 0, 100% 100%, 0 100%); border-radius: 0; background: var(--bg-panel); }
+  body[data-album="1"] .mp-progress::-webkit-slider-thumb { border-radius: 2px; }
+  body[data-album="1"] .mp-play { box-shadow: 2px 2px 0 #000; }
+
+  /* ── Album II: sharp precise-cut buttons, cold square thumb ── */
+  body[data-album="2"] .mp-btn { clip-path: polygon(0 0, calc(100% - 4px) 0, 100% 4px, 100% 100%, 0 100%); border-radius: 0; background: var(--bg-panel); }
+  body[data-album="2"] .mp-progress { background: repeating-linear-gradient(90deg, var(--border) 0px, var(--border) 8px, var(--bg-raise) 8px, var(--bg-raise) 9px); }
+  body[data-album="2"] .mp-progress::-webkit-slider-thumb { border-radius: 0; }
+
+  /* ── Album III: soft rings, wider glow, ancient dial feel ── */
+  body[data-album="3"] .mp-btn { border-width: 1px; box-shadow: 0 0 0 3px var(--bg-raise); }
+  body[data-album="3"] .mp-play { box-shadow: 0 0 14px 1px var(--accent2), 0 0 0 3px var(--bg-raise); }
+  body[data-album="3"] .mp-progress::-webkit-slider-thumb { box-shadow: 0 0 10px 2px var(--accent2); }
 
   @media (max-width: 700px) {
     .mp-info { max-width: 100px; }
@@ -2574,25 +2634,29 @@ function renderTrackNav() {
   divider.className = 'track-nav-divider';
   el.appendChild(divider);
 
+  const listWrap = document.createElement('div');
+  listWrap.className = 'track-list';
+  el.appendChild(listWrap);
+
   let lastChapter = null;
   meta.tracks.forEach((t, i) => {
     if (t.chapter && t.chapter !== lastChapter) {
       const chapterRow = document.createElement('div');
       chapterRow.className = 'chapter-divider';
       chapterRow.innerHTML = `<span class="chapter-roman">${t.chapterRoman || ''}</span><span class="chapter-name">${t.chapter}</span>`;
-      el.appendChild(chapterRow);
+      listWrap.appendChild(chapterRow);
       lastChapter = t.chapter;
     } else if (!t.chapter) {
       if (lastChapter !== null) {
         const closeDivider = document.createElement('div');
         closeDivider.className = 'track-nav-divider';
-        el.appendChild(closeDivider);
+        listWrap.appendChild(closeDivider);
       }
       lastChapter = null;
     }
 
     const row = document.createElement('div');
-    row.className = 'track-row' + (i === state.track ? ' active' : '');
+    row.className = 'track-row' + (i === state.track ? ' active' : '') + (i % 2 === 0 ? ' idx-even' : ' idx-odd');
     row.dataset.idx = i;
     const displayTitle = t.title.replace('(Orchestral Echo)', '(OE)');
     row.innerHTML = `
@@ -2606,7 +2670,7 @@ function renderTrackNav() {
       e.stopPropagation();
       toggleOrPlay(state.album, i);
     });
-    el.appendChild(row);
+    listWrap.appendChild(row);
   });
   el.scrollTop = scrollPos;
   refreshPlayingIndicators();
