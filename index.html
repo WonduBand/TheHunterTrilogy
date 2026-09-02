@@ -9,7 +9,7 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --accent: #4db8ff; --accent-deep: #1a6fc4; --accent-pale: #a8d8ff;
+    --accent: #6b8f3f; --accent-deep: #4a6b2a; --accent-pale: #a8cf7f;
     --bg: #03060f; --bg-panel: #070d1a; --bg-raise: #0a1220;
     --border: #2a4a6a; --border-dim: #0d3b6e;
     --text-dim: #5a7fa8;
@@ -35,13 +35,9 @@
   }
 
   /* ── ALBUM THEMES ── */
-  body[data-album="1"] { --accent:#4db8ff; --accent-deep:#1a6fc4; --accent-pale:#a8d8ff; --bg:#03060f; --bg-panel:#070d1a; --bg-raise:#0c1526; --border:#2a4a6a; --border-dim:#0d3b6e; --text-dim:#5a7fa8; }
-  body[data-album="2"] { --accent:#b06dff; --accent-deep:#6b24c4; --accent-pale:#d4aaff; --bg:#05030f; --bg-panel:#0a0714; --bg-raise:#130c22; --border:#3a2060; --border-dim:#2d0a6e; --text-dim:#7a5aa8; }
-  body[data-album="3"] { --accent:#4dff8a; --accent-deep:#1a8a40; --accent-pale:#a8ffc4; --bg:#030f05; --bg-panel:#060f08; --bg-raise:#0c1a10; --border:#204030; --border-dim:#0a4020; --text-dim:#5aa870; }
-  body[data-album="4"] { --accent:#ffc840; --accent-deep:#c47a00; --accent-pale:#ffe8a0; --bg:#0f0a00; --bg-panel:#140e00; --bg-raise:#221a05; --border:#402800; --border-dim:#5a3a00; --text-dim:#a07830; }
-  body[data-album="5"] { --accent:#ff4d4d; --accent-deep:#a30d0d; --accent-pale:#ff9494; --bg:#0f0303; --bg-panel:#140505; --bg-raise:#220808; --border:#601010; --border-dim:#4a0808; --text-dim:#a85a5a; }
-  body[data-album="6"] { --accent:#dce6f7; --accent-deep:#8fa3c4; --accent-pale:#ffffff; --bg:#05070a; --bg-panel:#0a0d12; --bg-raise:#141822; --border:#2a3550; --border-dim:#1a2238; --text-dim:#7a8aa8; }
-  body[data-album="7"] { --accent:#c9ccd6; --accent-deep:#3a3d42; --accent-pale:#eef0f4; --bg:#050505; --bg-panel:#0a0a0a; --bg-raise:#121212; --border:#2a2a2a; --border-dim:#1a1a1a; --text-dim:#6a6a6a; }
+  body[data-album="1"] { --accent:#6b8f3f; --accent-deep:#4a6b2a; --accent-pale:#a8cf7f; --bg:#0a0d09; --bg-panel:#13170f; --bg-raise:#1a2014; --border:#2a3820; --border-dim:#1c2615; --text-dim:#93958a; }
+  body[data-album="2"] { --accent:#c62a2a; --accent-deep:#8a1c1c; --accent-pale:#e88080; --bg:#0c0a0a; --bg-panel:#171213; --bg-raise:#1f1719; --border:#3a2224; --border-dim:#2c1618; --text-dim:#a17878; }
+  body[data-album="3"] { --accent:#d97e2a; --accent-deep:#a3591a; --accent-pale:#f0b878; --bg:#0a0806; --bg-panel:#181310; --bg-raise:#201a15; --border:#3a2c1e; --border-dim:#2a1f14; --text-dim:#b09680; }
 
   /* ── APP SHELL ── */
   .app {
@@ -51,13 +47,9 @@
     position: relative; z-index: 1;
   }
 
-  body[data-album="1"] .topbar, body[data-album="1"] .sidebar { background: rgba(7,13,26,0.55); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
-  body[data-album="2"] .topbar, body[data-album="2"] .sidebar { background: rgba(10,7,20,0.55); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
-  body[data-album="3"] .topbar, body[data-album="3"] .sidebar { background: rgba(6,15,8,0.55); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
-  body[data-album="4"] .topbar, body[data-album="4"] .sidebar { background: rgba(20,14,0,0.55); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
-  body[data-album="5"] .topbar, body[data-album="5"] .sidebar { background: rgba(20,5,5,0.55); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
-  body[data-album="6"] .topbar, body[data-album="6"] .sidebar { background: rgba(10,13,18,0.55); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
-  body[data-album="7"] .topbar, body[data-album="7"] .sidebar { background: rgba(5,5,5,0.55); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+  body[data-album="1"] .topbar, body[data-album="1"] .sidebar { background: rgba(19,23,15,0.55); }
+  body[data-album="2"] .topbar, body[data-album="2"] .sidebar { background: rgba(23,18,19,0.55); }
+  body[data-album="3"] .topbar, body[data-album="3"] .sidebar { background: rgba(24,19,16,0.55); }
 
   .topbar {
     display: flex; align-items: center; justify-content: space-between;
@@ -79,7 +71,7 @@
   }
   .loading-screen.hidden { opacity: 0; pointer-events: none; }
   .loading-mark {
-    font-size: 2.2rem; color: #4db8ff;
+    font-size: 2.2rem; color: #6b8f3f;
     animation: loadingSpin 2.4s linear infinite;
   }
   @keyframes loadingSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
@@ -95,7 +87,7 @@
     width: 220px; height: 2px; background: #1a1f28; margin-top: 0.4rem; overflow: hidden;
   }
   .loading-bar-fill {
-    height: 100%; width: 0%; background: #4db8ff;
+    height: 100%; width: 0%; background: #6b8f3f;
     transition: width 0.25s ease;
   }
   .topbar-sub { font-size:0.58rem; letter-spacing:0.2em; color: var(--text-dim); text-transform:uppercase; transition: color 0.5s ease; }
@@ -117,7 +109,7 @@
 
   .app-main {
     display: grid;
-    grid-template-columns: 300px 2.4rem minmax(0,1.15fr) 2.8rem minmax(0,1fr);
+    grid-template-columns: 300px minmax(0,1.15fr) minmax(0,1fr);
     min-height: 0;
   }
 
@@ -286,9 +278,8 @@
     border-right: 1px solid var(--border);
     transition: border-color 0.5s ease;
     display: flex; align-items: stretch; justify-content: stretch;
-    grid-column: 3;
+    grid-column: 2;
   }
-  .cover-pane.panel-collapsed { border-right-color: transparent; }
   .cover-img-wrap { position: absolute; inset: 0; }
   .cover-glow {
     position: absolute; inset: 0; pointer-events: none;
@@ -367,51 +358,20 @@
   .text-pane {
     display: flex; flex-direction: column; min-height: 0;
     position: relative;
-    grid-column: 5;
+    grid-column: 3;
   }
   .text-pane-inner {
     display: flex; flex-direction: column; min-height: 0; flex: 1;
-    background: var(--bg); transition: background 0.5s ease, transform 0.45s ease, opacity 0.4s ease;
+    background: var(--bg); transition: background 0.5s ease;
   }
-  @media (min-width: 981px) {
-    .text-pane-inner.collapsed { transform: translateX(-100%); opacity: 0; pointer-events: none; }
-  }
-  .text-pane-toggle {
-    position: absolute; left: -2.45rem; top: 1rem; z-index: 5;
-    width: 2.1rem; height: 1.9rem; border-radius: 3px;
-    background: var(--bg-panel); border: 1px solid var(--border); color: var(--text-dim);
-    font-size: 0.8rem; letter-spacing: 0.02em; cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    transition: all 0.2s;
-  }
-  .text-pane-toggle:hover { border-color: var(--accent); color: var(--accent); }
 
   .cover-pane-inner {
     display: flex; flex-direction: column; width: 100%;
     background: #000;
-    transition: transform 0.45s ease, opacity 0.4s ease, background 0.5s ease;
+    transition: background 0.5s ease;
   }
   @media (min-width: 981px) {
     .cover-pane-inner { height: 100%; }
-  }
-  @media (min-width: 981px) {
-    .cover-pane-inner.collapsed { transform: translateX(-100%); opacity: 0; pointer-events: none; }
-  }
-  .cover-pane-toggle {
-    grid-column: 2; align-self: start; justify-self: center;
-    margin-top: 1rem; z-index: 5;
-    width: 2.1rem; height: 1.9rem; border-radius: 3px;
-    background: var(--bg-panel); border: 1px solid var(--border); color: var(--text-dim);
-    font-size: 0.8rem; letter-spacing: 0.02em; cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    transition: all 0.2s;
-  }
-  .cover-pane-toggle:hover { border-color: var(--accent); color: var(--accent); }
-  @media (max-width: 980px) {
-    .cover-pane-toggle { display: none; }
-  }
-  @media (max-width: 980px) {
-    .text-pane-toggle { display: none; }
   }
   .text-head {
     padding: 1rem 1.6rem 0.8rem; border-bottom: 1px solid var(--border);
@@ -629,8 +589,6 @@
       <div class="sidebar-foot" id="sidebarFoot">⬡ Wondu — The Hunter Trilogy ⬡</div>
     </nav>
 
-    <button class="cover-pane-toggle" id="coverPaneToggle" title="Hide artwork panel">«</button>
-
     <section class="cover-pane">
       <div class="cover-pane-inner" id="coverPaneInner">
         <div class="cover-img-wrap">
@@ -658,7 +616,6 @@
     </section>
 
     <section class="text-pane" id="textPane">
-      <button class="text-pane-toggle" id="textPaneToggle" title="Hide lyrics panel">«</button>
       <div class="text-pane-inner" id="textPaneInner">
         <div class="text-head">
           <button class="text-nav-btn" id="prevBtn" title="Previous track"><span class="icon icon-tri-left"></span></button>
@@ -2991,26 +2948,6 @@ appMainEl.addEventListener('touchend', (e) => {
     else if (dx > 0 && idx > 0) setMobileView(mobileTabOrder[idx - 1]);
   }
 }, { passive: true });
-
-// ── LYRICS PANEL TOGGLE (desktop) ──
-const textPaneInner = document.getElementById('textPaneInner');
-const textPaneToggle = document.getElementById('textPaneToggle');
-textPaneToggle.addEventListener('click', () => {
-  const collapsed = textPaneInner.classList.toggle('collapsed');
-  textPaneToggle.textContent = collapsed ? '»' : '«';
-  textPaneToggle.title = collapsed ? 'Show lyrics panel' : 'Hide lyrics panel';
-});
-
-// ── ARTWORK PANEL TOGGLE (desktop) ──
-const coverPaneInner = document.getElementById('coverPaneInner');
-const coverPaneToggle = document.getElementById('coverPaneToggle');
-const coverPane = document.querySelector('.cover-pane');
-coverPaneToggle.addEventListener('click', () => {
-  const collapsed = coverPaneInner.classList.toggle('collapsed');
-  coverPane.classList.toggle('panel-collapsed', collapsed);
-  coverPaneToggle.textContent = collapsed ? '»' : '«';
-  coverPaneToggle.title = collapsed ? 'Show artwork panel' : 'Hide artwork panel';
-});
 
 // ── FULLSCREEN TOGGLE ──
 const fsBtn = document.getElementById('fullscreenBtn');
