@@ -4,12 +4,19 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Wondu — The Hunter Trilogy</title>
-<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Black+Ops+One&family=Cinzel:wght@500;700&family=Orbitron:wght@500;700&family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
+    --font-logo: 'Anton', sans-serif;
+    --font-flavor: 'Rajdhani', sans-serif;
+    --font-ui: 'Rajdhani', sans-serif;
+    --font-body: 'IBM Plex Sans', sans-serif;
+    --font-data: 'IBM Plex Mono', monospace;
+
     --accent: #6b8f3f; --accent-deep: #4a6b2a; --accent-pale: #a8cf7f;
+    --accent2: #6b8f3f;
     --bg: #03060f; --bg-panel: #070d1a; --bg-raise: #0a1220;
     --border: #2a4a6a; --border-dim: #0d3b6e;
     --text-dim: #5a7fa8;
@@ -19,7 +26,7 @@
     height: 100%;
     overflow: hidden;
     background: var(--bg);
-    font-family: 'Share Tech Mono', monospace;
+    font-family: var(--font-body);
     color: #ccc;
   }
 
@@ -29,15 +36,209 @@
 
   body::before {
     content: '';
-    position: fixed; inset: 0;
-    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.025) 2px, rgba(255,255,255,0.025) 4px);
+    position: fixed; inset: -50%; width: 200%; height: 200%;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    opacity: 0.07;
+    mix-blend-mode: overlay;
     pointer-events: none; z-index: 9000;
   }
 
+
   /* ── ALBUM THEMES ── */
-  body[data-album="1"] { --accent:#6b8f3f; --accent-deep:#4a6b2a; --accent-pale:#a8cf7f; --bg:#0a0d09; --bg-panel:#13170f; --bg-raise:#1a2014; --border:#2a3820; --border-dim:#1c2615; --text-dim:#93958a; }
-  body[data-album="2"] { --accent:#c62a2a; --accent-deep:#8a1c1c; --accent-pale:#e88080; --bg:#0c0a0a; --bg-panel:#171213; --bg-raise:#1f1719; --border:#3a2224; --border-dim:#2c1618; --text-dim:#a17878; }
-  body[data-album="3"] { --accent:#d97e2a; --accent-deep:#a3591a; --accent-pale:#f0b878; --bg:#0a0806; --bg-panel:#181310; --bg-raise:#201a15; --border:#3a2c1e; --border-dim:#2a1f14; --text-dim:#b09680; }
+  /* Album I — The First Hunter: late-90s action boxart. Jungle green primary identity, blood-red as a sparing highlight only. */
+  body[data-album="1"] {
+    --font-flavor: 'Black Ops One', sans-serif;
+    --accent: #6b9d3f; --accent-deep: #4a7028; --accent-pale: #a8d67f;
+    --accent2: #c41f16;
+    --bg: #060503; --bg-panel: #0e0c09; --bg-raise: #1a1611;
+    --border: #3a3226; --border-dim: #241f18;
+    --text-dim: #7a8264;
+  }
+  /* Album II — Legacy of the Mark: surveillance-state sci-fi. Propaganda red, cold steel, blue flicker. */
+  body[data-album="2"] {
+    --font-flavor: 'Orbitron', sans-serif;
+    --accent: #c41f22; --accent-deep: #7a1315; --accent-pale: #e8342f;
+    --accent2: #3b9cff;
+    --bg: #050506; --bg-panel: #0a0b0d; --bg-raise: #131518;
+    --border: #2a2f34; --border-dim: #1a1d20;
+    --text-dim: #565c60;
+  }
+  /* Album III — Where Worlds End: cosmic mythic. Ancient gold, faint teal corruption. */
+  body[data-album="3"] {
+    --font-flavor: 'Cinzel', serif;
+    --accent: #c58b48; --accent-deep: #8a5f2e; --accent-pale: #e7b878;
+    --accent2: #5ad1c8;
+    --bg: #030304; --bg-panel: #09080c; --bg-raise: #131019;
+    --border: #2a2438; --border-dim: #1a1522;
+    --text-dim: #6a6278;
+  }
+
+  /* ── SHARED SIGNATURE MOTIF: thin red line under topbar / around mini-player ── */
+  .topbar { border-bottom: none !important; box-shadow: 0 2px 0 0 var(--accent), 0 2px 6px 0 rgba(0,0,0,0.4); }
+  .mini-player { border-top: none !important; box-shadow: 0 -2px 0 0 var(--accent); }
+
+  /* ══════════════════ PER-ALBUM SHAPE LANGUAGE ══════════════════ */
+
+  /* Album I — chipped/organic clip-paths, grain, corner rivets */
+  body[data-album="1"] .album-tab,
+  body[data-album="1"] .track-row.active,
+  body[data-album="1"] .cover-row {
+    clip-path: polygon(0 8px, 8px 0, 100% 0, 100% 100%, 0 100%);
+  }
+  body[data-album="1"] .cover-pane {
+    background: radial-gradient(ellipse at 35% 75%, rgba(90,107,58,0.35), transparent 70%), var(--bg);
+  }
+  body[data-album="1"] .rivet {
+    display: block; position: absolute; width: 16px; height: 16px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #a89060, #2a2418 70%);
+    box-shadow: 0 0 12px 2px rgba(0,0,0,0.7), 0 0 0 2px #000; z-index: 6;
+  }
+  body[data-album="1"] .cover-title {
+    text-shadow: 3px 3px 0 #000, 6px 6px 0 rgba(0,0,0,0.4);
+    position: relative; display: inline-block; padding: 0.1em 0;
+  }
+  body[data-album="1"] .cover-title::before {
+    content: ''; position: absolute; left: -1.5rem; right: -1.5rem; top: 48%; height: 0.55em;
+    background: var(--accent2); transform: translateY(-50%) skewY(-3deg); z-index: -1; opacity: 0.92;
+  }
+
+  /* Album II — precise grid cuts, propaganda banner + scanline */
+  body[data-album="2"] .album-tab {
+    clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 0 100%);
+  }
+  /* ── Album II track list: Option D — staggered organic rows ── */
+  body[data-album="2"] .track-row {
+    align-items: center; border-left: 2px solid var(--border); border-bottom: none;
+    border-radius: 0; padding: 0.5rem 0.6rem; margin-bottom: 0.35rem;
+    background: var(--bg-raise);
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+  }
+  body[data-album="2"] .track-row.idx-even { margin-left: 0.9rem; }
+  body[data-album="2"] .track-row:hover { background: var(--panel2, var(--bg-raise)); border-left-color: var(--accent-deep); }
+  body[data-album="2"] .track-row.active { border-left-color: var(--accent); background: var(--bg-raise); clip-path: polygon(0 0, 100% 0, 100% 100%, 8px 100%, 0 calc(100% - 8px)); }
+  body[data-album="2"] .cover-pane {
+    background:
+      linear-gradient(rgba(5,5,6,0.7), rgba(5,5,6,0.85)),
+      repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(196,31,34,0.06) 39px, rgba(196,31,34,0.06) 40px),
+      repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(196,31,34,0.06) 39px, rgba(196,31,34,0.06) 40px),
+      var(--bg);
+  }
+  body[data-album="2"] .banner { display: block; }
+  body[data-album="2"] .cover-title {
+    position: relative;
+    color: var(--accent);
+    padding: 22px 44px;
+    margin: -22px -44px;
+    background-repeat: no-repeat;
+    background-image:
+      linear-gradient(90deg, transparent 48px, rgba(196,31,34,0.4) 48px, rgba(196,31,34,0.4) 50px, transparent 50px),
+      linear-gradient(0deg, transparent 34px, rgba(196,31,34,0.4) 34px, rgba(196,31,34,0.4) 36px, transparent 36px),
+      linear-gradient(90deg, transparent calc(100% - 60px), rgba(196,31,34,0.4) calc(100% - 60px), rgba(196,31,34,0.4) calc(100% - 58px), transparent calc(100% - 58px)),
+      linear-gradient(0deg, transparent calc(100% - 30px), rgba(196,31,34,0.4) calc(100% - 30px), rgba(196,31,34,0.4) calc(100% - 28px), transparent calc(100% - 28px)),
+      radial-gradient(circle, rgba(196,31,34,0.55) 3px, transparent 3px),
+      radial-gradient(circle, rgba(196,31,34,0.55) 3px, transparent 3px);
+    background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%, 10px 10px, 10px 10px;
+    background-position: 0 0, 0 0, 0 0, 0 0, 48px 8px, calc(100% - 60px) calc(100% - 30px);
+  }
+  body[data-album="2"] .cover-title::before,
+  body[data-album="2"] .cover-title::after {
+    content: attr(data-text);
+    position: absolute; left: 44px; top: 22px; right: 44px;
+    overflow: hidden; pointer-events: none;
+  }
+  body[data-album="2"] .cover-title::before {
+    color: #8a3a1a; transform: translate(-3px, 1px);
+    clip-path: polygon(0 20%, 100% 20%, 100% 45%, 0 45%); opacity: 0.9;
+  }
+  body[data-album="2"] .cover-title::after {
+    color: #8a3a1a; transform: translate(3px, -1px);
+    clip-path: polygon(0 55%, 100% 55%, 100% 80%, 0 80%); opacity: 0.5;
+  }
+
+  /* Album III — clean panels, ancient portal rings + starfield */
+  body[data-album="3"] .cover-pane {
+    background: radial-gradient(ellipse at 65% 35%, rgba(197,139,72,0.14), transparent 55%),
+                radial-gradient(ellipse at 30% 95%, rgba(90,209,200,0.06), transparent 55%), var(--bg);
+  }
+  body[data-album="3"] .portal-ring, body[data-album="3"] .starfield { display: block; }
+  body[data-album="3"] .cover-title {
+    text-shadow: 0 0 30px rgba(197,139,72,0.35);
+    position: relative;
+    color: var(--accent-pale);
+  }
+  body[data-album="3"] .cover-title::before {
+    content: ''; position: absolute; left: 50%; top: 50%; width: 380px; height: 380px;
+    transform: translate(-50%, -50%); border-radius: 50%; z-index: -1; pointer-events: none;
+    background: radial-gradient(circle, rgba(197,139,72,0.32) 0%, rgba(197,139,72,0.08) 45%, transparent 70%);
+  }
+  body[data-album="3"] .cover-title::after {
+    content: ''; position: absolute; left: 50%; top: 50%; width: 280px; height: 280px;
+    transform: translate(-50%, -50%); border-radius: 50%; border: 1px solid var(--accent);
+    opacity: 0.4; z-index: -1; pointer-events: none;
+    box-shadow: 0 0 0 50px rgba(90,209,200,0.04);
+  }
+
+  /* ── Album I track list: Option C — oversized number ledger ── */
+  body[data-album="1"] .track-row {
+    align-items: flex-start; border-left: none; border-bottom: 1px solid var(--border);
+    border-radius: 0; padding: 0.6rem 0.4rem;
+  }
+  body[data-album="1"] .track-row:hover { background: transparent; }
+  body[data-album="1"] .track-row.active { background: transparent; border-left: none; }
+  body[data-album="1"] .track-row .row-play-btn { order: 3; margin-left: auto; align-self: center; }
+  body[data-album="1"] .track-row .t-num {
+    font-family: var(--font-logo); font-weight: 400; font-size: 1.5rem; color: var(--border);
+    line-height: 1; min-width: 2.1rem; transition: color 0.2s ease;
+  }
+  body[data-album="1"] .track-row.active .t-num,
+  body[data-album="1"] .track-row:hover .t-num { color: var(--accent); }
+  body[data-album="1"] .track-row .t-title { white-space: normal; line-height: 1.25; }
+
+  /* ── Album III track list: Option G — chain of realms ── */
+  body[data-album="3"] .track-nav { position: relative; padding-left: 1.4rem; }
+  body[data-album="3"] .track-nav::before {
+    content: ''; position: absolute; left: 1.05rem; top: 0.6rem; bottom: 0.6rem; width: 1px;
+    background: linear-gradient(180deg, var(--accent), var(--accent2)); opacity: 0.45;
+  }
+  body[data-album="3"] .track-row { position: relative; border-left: none; }
+  body[data-album="3"] .track-row::before {
+    content: ''; position: absolute; left: -0.75rem; top: 50%; width: 7px; height: 7px; border-radius: 50%;
+    background: var(--bg); border: 1px solid var(--accent); transform: translateY(-50%); z-index: 1;
+  }
+  body[data-album="3"] .track-row.active::before,
+  body[data-album="3"] .track-row.playing::before {
+    background: var(--accent); box-shadow: 0 0 8px var(--accent);
+  }
+  body[data-album="3"] .track-row .row-play-btn { opacity: 0; width: 0; margin: 0; pointer-events: none; }
+  body[data-album="3"] .track-row:hover .row-play-btn,
+  body[data-album="3"] .track-row.active .row-play-btn {
+    opacity: 1; width: 1.5rem; margin-right: 0.2rem; pointer-events: auto;
+  }
+
+  /* ── Decorative elements: hidden by default, shown per album above ── */
+  .rivet { display: none; }
+  .banner, .scan-line, .portal-ring, .starfield { display: none; }
+  .banner {
+    position: absolute; top: -20px; right: 40px; width: 100px; height: 240px;
+    background: var(--accent); opacity: 1; z-index: 4;
+    clip-path: path(evenodd, "M0 0 L100 0 L100 216 L50 240 L0 216 Z M7 7 L93 7 L93 209 L50 227 L7 209 Z");
+  }
+  .portal-ring { position: absolute; border-radius: 50%; pointer-events: none; z-index: 3; }
+  .portal-ring.ring-outer { width: 460px; height: 460px; top: -140px; right: -160px; border: 2px solid var(--accent); opacity: 0.65; box-shadow: 0 0 40px 0 rgba(0,0,0,0.5); }
+  .portal-ring.ring-mid { width: 340px; height: 340px; top: -80px; right: -100px; border: 2px dashed var(--accent); opacity: 0.55; }
+  .portal-ring.ring-inner { width: 220px; height: 220px; top: -20px; right: -40px; border: 2px solid var(--accent2); opacity: 0.5; box-shadow: 0 0 24px 0 var(--accent2); }
+  .starfield {
+    position: absolute; inset: 0; pointer-events: none; z-index: 3; opacity: 0.5; mix-blend-mode: screen;
+    background-image:
+      radial-gradient(1.5px 1.5px at 20px 30px, #fff, transparent),
+      radial-gradient(1.5px 1.5px at 90px 80px, #fff, transparent),
+      radial-gradient(1px 1px at 160px 40px, #ccc, transparent),
+      radial-gradient(1.5px 1.5px at 230px 120px, #fff, transparent),
+      radial-gradient(1px 1px at 300px 60px, #ccc, transparent),
+      radial-gradient(1px 1px at 340px 180px, #999, transparent);
+    background-repeat: repeat; background-size: 260px 160px;
+  }
+
 
   /* ── APP SHELL ── */
   .app {
@@ -59,7 +260,7 @@
     z-index: 10; position: relative;
   }
   .topbar-brand { display: flex; align-items: baseline; gap: 0.8rem; }
-  .topbar-title { font-family:'Rajdhani',sans-serif; font-weight:700; letter-spacing:0.3em; font-size:1rem; text-transform:uppercase; color:#eee; }
+  .topbar-logo { height: 2.1rem; width: auto; display: block; }
 
   /* ── LOADING SCREEN ── */
   .loading-screen {
@@ -159,7 +360,7 @@
   }
   .track-row:hover { background: var(--bg-raise); }
   .track-row.active { background: var(--bg-raise); border-left-color: var(--accent); }
-  .track-row .t-num { font-size: 0.58rem; color: var(--accent-deep); min-width: 1.6rem; transition: color 0.5s ease; }
+  .track-row .t-num { font-family: var(--font-data); font-size: 0.58rem; color: var(--accent-deep); min-width: 1.6rem; transition: color 0.5s ease; }
   .track-row .t-title {
     font-family:'Rajdhani',sans-serif; font-weight:600; letter-spacing:0.06em;
     font-size: 0.82rem; text-transform: uppercase; color: #99a; flex:1;
@@ -218,7 +419,7 @@
   /* ── MINI PLAYER ── */
   .mini-player {
     display: none; align-items: center; gap: 1rem;
-    padding: 0.55rem 1.4rem;
+    padding: 0.55rem 1.4rem; position: relative; overflow: hidden;
     background: var(--bg-panel); border-top: 1px solid var(--border);
     transition: border-color 0.5s ease, background 0.5s ease;
   }
@@ -237,34 +438,69 @@
   .icon-pause::after { left: 5px; }
 
   .mp-btn {
-    background: transparent; border: 1px solid var(--border); color: var(--text-dim);
-    width: 2rem; height: 2rem; border-radius: 50%; flex-shrink: 0;
+    background: var(--bg-raise); border: 1px solid var(--border); color: var(--text-dim);
+    width: 2.1rem; height: 2.1rem; border-radius: 50%; flex-shrink: 0;
     cursor: pointer; font-size: 0.7rem; display: flex; align-items: center; justify-content: center;
     transition: all 0.2s;
   }
   .mp-btn:hover { border-color: var(--accent); color: var(--accent); }
-  .mp-play { width: 2.3rem; height: 2.3rem; font-size: 0.8rem; }
+  .mp-play { width: 2.5rem; height: 2.5rem; font-size: 0.8rem; border-color: var(--accent); color: var(--accent); }
   .mp-info { min-width: 0; flex: 1 1 auto; max-width: 240px; overflow: hidden; }
-  .mp-title { font-family:'Rajdhani',sans-serif; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .mp-album { font-size: 0.55rem; color: var(--text-dim); letter-spacing: 0.12em; text-transform: uppercase; margin-top: 0.15rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: color 0.5s ease; }
+  .mp-title { font-family: var(--font-ui); font-size: 0.82rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .mp-album { font-family: var(--font-data); font-size: 0.55rem; color: var(--text-dim); letter-spacing: 0.12em; text-transform: uppercase; margin-top: 0.15rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: color 0.5s ease; }
   .mp-progress {
-    flex: 1; min-width: 0; height: 3px; -webkit-appearance: none; appearance: none;
+    flex: 1; min-width: 0; height: 4px; -webkit-appearance: none; appearance: none;
     background: var(--border); border-radius: 2px; cursor: pointer; outline: none;
     transition: background 0.5s ease;
   }
-  .mp-progress::-webkit-slider-thumb { -webkit-appearance: none; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); cursor: pointer; }
-  .mp-progress::-moz-range-thumb { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); border: none; cursor: pointer; }
-  .mp-time { font-size: 0.55rem; color: var(--text-dim); letter-spacing: 0.05em; white-space: nowrap; flex-shrink: 0; transition: color 0.5s ease; }
+  .mp-progress::-webkit-slider-thumb { -webkit-appearance: none; width: 11px; height: 11px; border-radius: 50%; background: var(--accent2, var(--accent)); cursor: pointer; box-shadow: 0 0 6px var(--accent2, var(--accent)); }
+  .mp-progress::-moz-range-thumb { width: 11px; height: 11px; border-radius: 50%; background: var(--accent2, var(--accent)); border: none; cursor: pointer; }
+  .mp-time { font-family: var(--font-data); font-size: 0.55rem; color: var(--text-dim); letter-spacing: 0.05em; white-space: nowrap; flex-shrink: 0; transition: color 0.5s ease; }
 
   .mp-volume { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; }
   .mp-vol-btn { font-size: 0.85rem; }
   .mp-vol-slider {
-    width: 70px; height: 3px; -webkit-appearance: none; appearance: none;
+    width: 70px; height: 4px; -webkit-appearance: none; appearance: none;
     background: var(--border); border-radius: 2px; cursor: pointer; outline: none;
     transition: background 0.5s ease;
   }
-  .mp-vol-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); cursor: pointer; }
-  .mp-vol-slider::-moz-range-thumb { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); border: none; cursor: pointer; }
+  .mp-vol-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 11px; height: 11px; border-radius: 50%; background: var(--accent); cursor: pointer; }
+  .mp-vol-slider::-moz-range-thumb { width: 11px; height: 11px; border-radius: 50%; background: var(--accent); border: none; cursor: pointer; }
+
+  /* ── Album I: chunky chipped buttons, moss glow behind progress ── */
+  /* Album I mini-player: weapon-case latch bar, chunky beveled buttons, all green */
+  body[data-album="1"] .mini-player { position: relative; background: linear-gradient(180deg, var(--bg-raise), var(--bg-panel)); }
+  body[data-album="1"] .mini-player::before,
+  body[data-album="1"] .mini-player::after {
+    content: ''; position: absolute; top: -8px; width: 16px; height: 16px;
+    background: var(--border); border: 1px solid #000; border-radius: 2px; z-index: 1;
+  }
+  body[data-album="1"] .mini-player::before { left: 56px; }
+  body[data-album="1"] .mini-player::after { right: 56px; }
+  body[data-album="1"] .mp-btn {
+    clip-path: none; border-radius: 3px; background: var(--bg-raise); border: 1px solid #000;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 2px 2px 0 #000;
+  }
+  body[data-album="1"] .mp-btn:hover { border-color: #000; }
+  body[data-album="1"] .mp-play {
+    background: var(--accent); color: #06110a; border-color: #000;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.25), 2px 2px 0 #000;
+  }
+  body[data-album="1"] .mp-play:hover { background: var(--accent-pale); color: #06110a; }
+  body[data-album="1"] .mp-progress { height: 6px; border: 1px solid #000; background: var(--bg-raise); border-radius: 1px; }
+  body[data-album="1"] .mp-progress::-webkit-slider-thumb { background: var(--accent); box-shadow: 2px 2px 0 #000; border-radius: 2px; }
+  body[data-album="1"] .mp-progress::-moz-range-thumb { background: var(--accent); border-radius: 2px; }
+
+  /* ── Album II: sharp precise-cut buttons, cold square thumb ── */
+  body[data-album="2"] .mp-btn { clip-path: polygon(0 0, calc(100% - 4px) 0, 100% 4px, 100% 100%, 0 100%); border-radius: 0; background: var(--bg-panel); }
+  body[data-album="2"] .mp-progress { background: repeating-linear-gradient(90deg, var(--border) 0px, var(--border) 8px, var(--bg-raise) 8px, var(--bg-raise) 9px); }
+  body[data-album="2"] .mp-progress::-webkit-slider-thumb { border-radius: 0; background: var(--accent); box-shadow: 0 0 6px var(--accent); }
+  body[data-album="2"] .mp-progress::-moz-range-thumb { border-radius: 0; background: var(--accent); }
+
+  /* ── Album III: soft rings, wider glow, ancient dial feel ── */
+  body[data-album="3"] .mp-btn { border-width: 1px; box-shadow: 0 0 0 3px var(--bg-raise); }
+  body[data-album="3"] .mp-play { box-shadow: 0 0 14px 1px var(--accent2), 0 0 0 3px var(--bg-raise); }
+  body[data-album="3"] .mp-progress::-webkit-slider-thumb { box-shadow: 0 0 10px 2px var(--accent2); }
 
   @media (max-width: 700px) {
     .mp-info { max-width: 100px; }
@@ -287,7 +523,7 @@
     opacity: 0.18;
     transition: background 0.6s ease;
   }
-  .cover-glow.pulsing { animation: coverGlowPulse 2.2s ease-in-out infinite; }
+  .cover-glow.pulsing { }
   @keyframes coverGlowPulse { 0%, 100% { opacity: 0.14; } 50% { opacity: 0.42; } }
   .cover-img {
     width: 100%; height: 100%; object-fit: cover;
@@ -313,24 +549,112 @@
     justify-content: space-between; width: 100%; padding: 1.6rem 2rem;
     flex: 1;
   }
-  .cover-top { display:flex; justify-content: space-between; font-size: 0.58rem; letter-spacing: 0.15em; color: rgba(255,255,255,0.55); text-transform: uppercase; }
+  .cover-top { display:flex; justify-content: space-between; font-size: 0.58rem; letter-spacing: 0.15em; color: rgba(255,255,255,0.55); text-transform: uppercase; font-family: var(--font-data); }
   .cover-bottom { }
-  .cover-eyebrow { font-size: 0.62rem; letter-spacing: 0.35em; color: var(--accent); text-transform: uppercase; margin-bottom:0.5rem; transition: color 0.5s ease; }
+  .cover-eyebrow { font-family: var(--font-flavor); font-weight: 600; font-size: 0.68rem; letter-spacing: 0.2em; color: var(--accent); text-transform: uppercase; margin-bottom:0.5rem; transition: color 0.5s ease; }
   .cover-echo-badge {
     display: none; font-size: 0.58rem; letter-spacing: 0.15em; color: var(--accent-deep);
-    text-transform: uppercase; margin-bottom: 0.6rem; font-family:'Share Tech Mono', monospace;
+    text-transform: uppercase; margin-bottom: 0.6rem; font-family: var(--font-data);
   }
   .cover-bottom { animation: fadeInLeft 0.35s ease both; }
   .cover-title {
-    font-family:'Rajdhani',sans-serif; font-size: clamp(2rem, 4vw, 3.4rem); font-weight: 700;
-    letter-spacing: 0.08em; text-transform: uppercase; color: #fff; line-height: 1.05;
+    font-family: var(--font-logo); font-size: clamp(2.2rem, 4.4vw, 3.8rem); font-weight: 400;
+    letter-spacing: 0.02em; text-transform: uppercase; color: #fff; line-height: 0.94;
     text-shadow: 0 0 40px rgba(0,0,0,0.8);
   }
-  .cover-tagline { font-size: 0.8rem; font-style: italic; color: #ddd; margin-top: 0.6rem; max-width: 480px; }
-  .cover-meta { display:flex; flex-wrap: wrap; gap: 1.4rem; margin-top: 1.1rem; font-size: 0.58rem; letter-spacing: 0.1em; color: rgba(255,255,255,0.5); text-transform: uppercase; }
-  .cover-song-note { display: none; font-size: 0.85rem; font-style: italic; color: rgba(255,255,255,0.78); line-height: 1.75; max-width: 560px; margin-top: 0.6rem; }
+  .cover-tagline { font-family: var(--font-body); font-size: 0.8rem; font-style: italic; color: #ddd; margin-top: 0.6rem; max-width: 480px; }
+  .cover-meta { display:flex; flex-wrap: wrap; gap: 1.4rem; margin-top: 1.1rem; font-size: 0.58rem; letter-spacing: 0.1em; color: rgba(255,255,255,0.5); text-transform: uppercase; font-family: var(--font-data); }
+  .cover-song-note { display: none; font-family: var(--font-body); font-size: 0.85rem; font-style: italic; color: rgba(255,255,255,0.78); line-height: 1.75; max-width: 560px; margin-top: 0.6rem; }
   .cover-meta span { color: var(--accent); transition: color 0.5s ease; }
-  .cover-pulse { width: 100%; height: 34px; margin-top: 0.9rem; display:block; }
+  .cover-pulse { width: 100%; height: 34px; margin-top: 0.9rem; display: none; }
+
+  /* Album II: security monitor grid, replacing the frequency canvas entirely */
+  .monitor-grid { display: none; gap: 3px; margin-top: 0.9rem; height: 30px; }
+  body[data-album="2"] .monitor-grid { display: flex; }
+  .mg-cell {
+    flex: 1; background: #16191b; border: 1px solid #2a2f34; position: relative;
+    animation: mgLive 2.4s ease-in-out infinite;
+    animation-play-state: paused;
+  }
+  .mg-cell::after {
+    content: '●'; color: var(--accent); font-size: 6px; display: block; text-align: right; padding: 1px 2px;
+    opacity: 0; animation: mgDot 2.4s ease-in-out infinite; animation-play-state: paused;
+  }
+  .monitor-grid.playing .mg-cell,
+  .monitor-grid.playing .mg-cell::after { animation-play-state: running; }
+  @keyframes mgLive {
+    0%, 82%, 100% { background: #16191b; border-color: #2a2f34; }
+    88%, 96% { background: rgba(196,31,34,0.3); border-color: var(--accent); }
+  }
+  @keyframes mgDot { 0%, 82%, 100% { opacity: 0; } 88%, 96% { opacity: 1; } }
+
+  /* Album I: tribal drum ripple + bar cluster, replacing the frequency waveform */
+  .drum-visualizer { display: none; align-items: center; gap: 20px; margin-top: 0.9rem; height: 44px; }
+  body[data-album="1"] .drum-visualizer { display: flex; }
+  .dv-drum { position: relative; width: 40px; height: 40px; flex-shrink: 0; }
+  .dv-ring { position: absolute; inset: 0; border-radius: 50%; border: 1px solid var(--accent); }
+  .dv-ring.r1 { opacity: 0.9; }
+  .dv-ring.r2 { inset: -7px; opacity: 0.5; }
+  .dv-ring.r3 { inset: -14px; opacity: 0.25; }
+  .dv-center { position: absolute; inset: 13px; border-radius: 50%; background: var(--accent); }
+  .dv-bars { display: flex; align-items: center; gap: 4px; flex: 1; height: 28px; }
+  .dv-bar {
+    width: 5px; height: 40%; background: var(--accent); opacity: 0.85;
+    clip-path: polygon(0 3px, 3px 0, 100% 0, 100% 100%, 0 100%);
+    animation: dvBarPulse 1.1s ease-in-out infinite;
+    animation-play-state: paused;
+  }
+  .drum-visualizer.playing .dv-ring { animation: dvRipple 1.4s ease-out infinite; }
+  .drum-visualizer.playing .dv-ring.r2 { animation-delay: 0.15s; }
+  .drum-visualizer.playing .dv-ring.r3 { animation-delay: 0.3s; }
+  .drum-visualizer.playing .dv-bar { animation-play-state: running; }
+  @keyframes dvRipple {
+    0% { transform: scale(0.85); opacity: 0.9; }
+    100% { transform: scale(1.35); opacity: 0; }
+  }
+  @keyframes dvBarPulse {
+    0%, 100% { height: 25%; }
+    50% { height: 90%; }
+  }
+
+  /* Album III: orbiting core, streaks emanate outward on the beat — replaces the old frequency bars entirely */
+  .orbit-visualizer { display: none; align-items: center; gap: 16px; margin-top: 0.9rem; height: 44px; }
+  body[data-album="3"] .orbit-visualizer { display: flex; }
+  .ov-anchor { position: relative; width: 40px; height: 40px; flex-shrink: 0; }
+  .ov-ring { position: absolute; border-radius: 50%; border: 1px solid var(--accent); opacity: 0.35; }
+  .ov-ring.o1 { inset: 0; } .ov-ring.o2 { inset: 10px; }
+  .ov-core {
+    position: absolute; inset: 16px; border-radius: 50%; background: var(--accent-pale);
+    box-shadow: 0 0 8px var(--accent-pale);
+  }
+  .ov-body {
+    position: absolute; width: 4px; height: 4px; border-radius: 50%; background: var(--accent2);
+    box-shadow: 0 0 5px var(--accent2);
+    transform-origin: 0 0;
+  }
+  .ov-field { flex: 1; height: 100%; position: relative; overflow: hidden; }
+  .ov-streak {
+    position: absolute; width: 110px; height: 2px; left: 0; top: 50%;
+    background: linear-gradient(90deg, var(--accent-pale), transparent);
+  }
+  .ov-streak::before {
+    content: ''; position: absolute; left: -1.5px; top: -3px; width: 8px; height: 8px;
+    border-radius: 50%; background: var(--accent-pale);
+    box-shadow: 0 0 10px 3px var(--accent-pale), 0 0 20px 6px rgba(231,184,120,0.4);
+  }
+  .ov-streak.teal { background: linear-gradient(90deg, var(--accent2), transparent); }
+  .ov-streak.teal::before { background: var(--accent2); box-shadow: 0 0 10px 3px var(--accent2), 0 0 20px 6px rgba(90,209,200,0.4); }
+  .orbit-visualizer.playing .ov-core { animation: ovBeat 2.2s ease-in-out infinite; }
+  .orbit-visualizer.playing .ov-body { animation: ovSpin 4s linear infinite; }
+  .orbit-visualizer.playing .ov-streak { animation: ovEmanate 2.2s cubic-bezier(.2,.7,.3,1) infinite; }
+  @keyframes ovBeat { 0%, 100% { transform: scale(0.85); } 12% { transform: scale(1.3); } 30% { transform: scale(0.9); } }
+  @keyframes ovSpin { from { transform: rotate(0deg) translateX(16px) rotate(0deg); } to { transform: rotate(360deg) translateX(16px) rotate(-360deg); } }
+  @keyframes ovEmanate {
+    0% { transform: translateX(0) scaleX(0.3); opacity: 0; }
+    12% { opacity: 1; }
+    70% { opacity: 1; }
+    100% { transform: translateX(220px) scaleX(1); opacity: 0; }
+  }
 
   /* ── COVER ANIMATION CLIP (plays inline inside the artwork frame) ── */
   .cover-clip-btn {
@@ -377,8 +701,8 @@
     padding: 1rem 1.6rem 0.8rem; border-bottom: 1px solid var(--border);
     display: flex; align-items: center; gap: 0.8rem; transition: border-color 0.5s ease;
   }
-  .text-head .th-num { font-size: 0.62rem; color: var(--accent-deep); letter-spacing: 0.1em; transition: color 0.5s ease; }
-  .text-head .th-title { font-family:'Rajdhani',sans-serif; font-size: 1.35rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #fff; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .text-head .th-num { font-family: var(--font-data); font-size: 0.62rem; color: var(--accent-deep); letter-spacing: 0.1em; transition: color 0.5s ease; }
+  .text-head .th-title { font-family: var(--font-logo); font-weight: 400; font-size: 1.5rem; letter-spacing: 0.02em; text-transform: uppercase; color: #fff; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .text-head .th-badge { font-size: 0.5rem; letter-spacing: 0.15em; padding: 0.25rem 0.55rem; border: 1px solid var(--border-dim); color: var(--text-dim); text-transform: uppercase; white-space: nowrap; transition: all 0.5s ease; }
   .text-nav-btn {
     background: transparent; border: 1px solid var(--border); color: var(--text-dim);
@@ -412,12 +736,12 @@
 
   .lyric-section { margin-bottom: 1.2rem; }
   .sec-label {
-    font-size: 0.6rem; letter-spacing: 0.2em; margin-bottom: 0.45rem;
+    font-family: var(--font-flavor); font-weight: 600; font-size: 0.65rem; letter-spacing: 0.15em; margin-bottom: 0.45rem;
     display: flex; align-items: center; gap: 0.5rem; color: var(--accent);
     text-transform: uppercase; transition: color 0.5s ease;
   }
   .sec-label::after { content: ''; flex: 1; height: 1px; background: var(--border); opacity: 0.5; max-width: 80px; }
-  .sec-lines { font-size: 0.85rem; line-height: 1.85; white-space: pre-line; color: #f8f8ff; padding-left: 0.5rem; }
+  .sec-lines { font-family: var(--font-body); font-size: 0.85rem; line-height: 1.85; white-space: pre-line; color: #f8f8ff; padding-left: 0.5rem; }
 
   .lyric-section.chorus .sec-label { color: var(--accent); }
   .lyric-section.chorus .sec-lines { color: #f8f8ff; }
@@ -480,6 +804,15 @@
   @media (max-width: 980px) {
     .app { grid-template-rows: auto 1fr auto auto; }
 
+    /* Decorative per-album cover motifs (rivets, banner, portal rings, starfield) are a
+       desktop-only flourish — on the smaller mobile canvas they just clutter the artwork. */
+    body[data-album="1"] .rivet,
+    body[data-album="2"] .banner,
+    body[data-album="3"] .portal-ring,
+    body[data-album="3"] .starfield {
+      display: none;
+    }
+
     .app-main {
       grid-template-columns: 1fr;
       position: relative;
@@ -490,6 +823,7 @@
     .sidebar, .cover-pane, .text-pane {
       display: flex; position: absolute; inset: 0;
       height: 100%; max-height: none; border: none;
+      grid-column: 1;
       transition: transform 0.38s cubic-bezier(.4,0,.2,1);
       will-change: transform;
     }
@@ -518,7 +852,6 @@
     .cover-pulse {
       position: static;
       width: 100%; height: 34px; margin: 0;
-      display: block;
     }
 
     /* Default resting order: tracks | cover | lyrics, left to right */
@@ -574,7 +907,7 @@
 
   <div class="topbar">
     <div class="topbar-brand">
-      <div class="topbar-title">Wondu</div>
+      <img class="topbar-logo" src="wondu-logo.png" alt="Wondu">
       <div class="topbar-sub">Lyrics &amp; Artwork Archive</div>
     </div>
     <div class="topbar-stamp" id="topbarStamp">⊙ THE HUNTER TRILOGY ⊙</div>
@@ -591,6 +924,16 @@
 
     <section class="cover-pane">
       <div class="cover-pane-inner" id="coverPaneInner">
+        <div class="starfield"></div>
+        <div class="rivet" style="top:12px; left:12px;"></div>
+        <div class="rivet" style="top:12px; right:12px;"></div>
+        <div class="rivet" style="bottom:12px; left:12px;"></div>
+        <div class="rivet" style="bottom:12px; right:12px;"></div>
+        <div class="banner"></div>
+        <div class="scan-line"></div>
+        <div class="portal-ring ring-outer"></div>
+        <div class="portal-ring ring-mid"></div>
+        <div class="portal-ring ring-inner"></div>
         <div class="cover-img-wrap">
           <img class="cover-img" id="coverImg" src="" alt="">
           <div class="cover-fallback" id="coverFallback" style="display:none;"></div>
@@ -607,9 +950,63 @@
             <div class="cover-echo-badge" id="coverEchoBadge"></div>
             <div class="cover-title" id="coverTitle">Ignition</div>
             <div class="cover-tagline" id="coverTagline"></div>
+            <canvas class="cover-pulse" id="coverPulse"></canvas>
+            <div class="monitor-grid" id="monitorGrid">
+              <div class="mg-cell" style="animation-delay:0s;"></div>
+              <div class="mg-cell" style="animation-delay:0.3s;"></div>
+              <div class="mg-cell" style="animation-delay:0.9s;"></div>
+              <div class="mg-cell" style="animation-delay:0.15s;"></div>
+              <div class="mg-cell" style="animation-delay:1.4s;"></div>
+              <div class="mg-cell" style="animation-delay:0.6s;"></div>
+              <div class="mg-cell" style="animation-delay:1.9s;"></div>
+              <div class="mg-cell" style="animation-delay:0.45s;"></div>
+              <div class="mg-cell" style="animation-delay:1.1s;"></div>
+              <div class="mg-cell" style="animation-delay:0.75s;"></div>
+              <div class="mg-cell" style="animation-delay:2.1s;"></div>
+              <div class="mg-cell" style="animation-delay:0.2s;"></div>
+              <div class="mg-cell" style="animation-delay:1.6s;"></div>
+              <div class="mg-cell" style="animation-delay:0.85s;"></div>
+              <div class="mg-cell" style="animation-delay:0.05s;"></div>
+              <div class="mg-cell" style="animation-delay:1.3s;"></div>
+              <div class="mg-cell" style="animation-delay:0.55s;"></div>
+              <div class="mg-cell" style="animation-delay:1.8s;"></div>
+              <div class="mg-cell" style="animation-delay:0.35s;"></div>
+              <div class="mg-cell" style="animation-delay:1.05s;"></div>
+            </div>
+            <div class="drum-visualizer" id="drumVisualizer">
+              <div class="dv-drum">
+                <div class="dv-ring r3"></div>
+                <div class="dv-ring r2"></div>
+                <div class="dv-ring r1"></div>
+                <div class="dv-center"></div>
+              </div>
+              <div class="dv-bars">
+                <div class="dv-bar" style="animation-delay:0s;"></div>
+                <div class="dv-bar" style="animation-delay:0.1s;"></div>
+                <div class="dv-bar" style="animation-delay:0.05s;"></div>
+                <div class="dv-bar" style="animation-delay:0.2s;"></div>
+                <div class="dv-bar" style="animation-delay:0.15s;"></div>
+                <div class="dv-bar" style="animation-delay:0.25s;"></div>
+                <div class="dv-bar" style="animation-delay:0.08s;"></div>
+                <div class="dv-bar" style="animation-delay:0.18s;"></div>
+                <div class="dv-bar" style="animation-delay:0.12s;"></div>
+                <div class="dv-bar" style="animation-delay:0.22s;"></div>
+              </div>
+            </div>
+            <div class="orbit-visualizer" id="orbitVisualizer">
+              <div class="ov-anchor">
+                <div class="ov-ring o1"></div>
+                <div class="ov-ring o2"></div>
+                <div class="ov-core"></div>
+                <div class="ov-body" style="left:20px; top:20px;"></div>
+              </div>
+              <div class="ov-field">
+                <div class="ov-streak" style="top:30%; animation-delay:0s;"></div>
+                <div class="ov-streak teal" style="top:65%; animation-delay:1.1s;"></div>
+              </div>
+            </div>
             <div class="cover-meta" id="coverMeta"></div>
             <div class="cover-song-note" id="coverSongNote"></div>
-            <canvas class="cover-pulse" id="coverPulse"></canvas>
           </div>
         </div>
       </div>
@@ -666,13 +1063,13 @@ const ALBUMS = {
     "roman": "I",
     "title": "The First Hunter",
     "cover": "Album 1 - The First Hunter/00-the-first-hunter-cover.png",
-    "intro": "The Hunter begins as a lone warrior in an ancient wilderness and is drawn through increasingly strange realms. He discovers the Mark, confronts living remnants of forgotten ages, survives machine and spirit realms, and becomes the warrior the journey demands. The album ends with apparent victory but leaves the origin and true purpose of the Mark unresolved.",
+    "intro": "Deep in an ancient wilderness, something has been calling for longer than anyone can remember \u2014 and tonight, it finally gets an answer. The Hunter doesn\u2019t know why the signal chose him, or what waking up will cost him. But the jungle has stopped testing his strength. Now it\u2019s testing what he\u2019s willing to become.",
     "label": "// Album I of III \u2014 The Hunter Trilogy //",
     "tagline": "\"Something old is waking up.\"",
     "meta": [
       [
         "GENRE",
-        "Melodic / Groove Metal"
+        "Tribal / Groove Metal"
       ],
       [
         "TRACKS",
@@ -1225,7 +1622,7 @@ const ALBUMS = {
     "roman": "II",
     "title": "Legacy of the Mark",
     "cover": "Album 2 - Legacy of the Mark/00-legacy-of-the-mark-cover.png",
-    "intro": "The Hunter is thrown a thousand years into the future. A technological empire has stolen his symbol, rewritten his history and attempted to reproduce the power in his blood. He moves from displaced outsider to rebel, destroys the system built around his legend, and watches the natural world begin returning beneath the dead machinery.",
+    "intro": "A thousand years gone, and the world The Hunter wakes up to worships a version of him that never existed. His face is carved into monuments he never posed for. His name opens doors he\u2019s never walked through. Somewhere beneath the propaganda and the neon, the real Hunter is still out there \u2014 and he\u2019s about to find out exactly what they built in his absence.",
     "label": "// Album II of III \u2014 The Hunter Trilogy //",
     "tagline": "\"A thousand years. What have you done?\"",
     "meta": [
@@ -1784,7 +2181,7 @@ const ALBUMS = {
     "roman": "III",
     "title": "Where Worlds End",
     "cover": "Album 3 - Where Worlds End/00-where-worlds-end-cover.png",
-    "intro": "The final album expands the conflict from civilizations to worlds. The Hunter learns that the Mark is a key between realms, discovers previous bearers, confronts the force that consumed them, unites surviving worlds for a final war and ultimately ends the cycle by destroying the Mark itself.",
+    "intro": "The war is over. The city is finally, unbearably quiet. Then the dead screens flicker back to life on their own, and a signal arrives from somewhere that should not exist. Something out there has been searching for a very long time \u2014 and it has just found what it was looking for.",
     "label": "// Album III of III \u2014 The Hunter Trilogy //",
     "tagline": "\"Some things end so life can grow.\"",
     "meta": [
@@ -2335,8 +2732,8 @@ const ALBUMS = {
       "#d97e2a",
       "#a3591a"
     ],
-    "mid": "#a3591a",
-    "ice": "#f0b878",
+    "mid": "#e7b878",
+    "ice": "#5ad1c8",
     "svgFallback": "<svg viewBox=\"0 0 800 500\" preserveAspectRatio=\"xMidYMid slice\" xmlns=\"http://www.w3.org/2000/svg\"><defs><radialGradient id=\"hf3\" cx=\"50%\" cy=\"30%\" r=\"85%\"><stop offset=\"0%\" stop-color=\"var(--bg-raise)\"/><stop offset=\"100%\" stop-color=\"var(--bg)\"/></radialGradient></defs><rect width=\"800\" height=\"500\" fill=\"url(#hf3)\"/><g opacity=\"0.7\" fill=\"#fff\"><circle cx=\"120\" cy=\"90\" r=\"1.4\"/><circle cx=\"640\" cy=\"120\" r=\"1.2\"/><circle cx=\"300\" cy=\"60\" r=\"1\"/><circle cx=\"500\" cy=\"70\" r=\"1.3\"/></g><circle cx=\"400\" cy=\"250\" r=\"40\" fill=\"var(--accent)\" opacity=\"0.35\"/><circle cx=\"400\" cy=\"250\" r=\"120\" fill=\"none\" stroke=\"var(--accent)\" stroke-width=\"1\" opacity=\"0.35\"/><circle cx=\"400\" cy=\"250\" r=\"190\" fill=\"none\" stroke=\"var(--accent-deep)\" stroke-width=\"1\" opacity=\"0.22\"/></svg>"
   }
 };
@@ -2364,6 +2761,10 @@ function initPulseCanvas() {
   }
   function draw() {
     const meta = ALBUMS[state.album];
+    const dpr = window.devicePixelRatio || 1;
+    if (canvas.offsetWidth > 0 && (canvas.width !== Math.round(canvas.offsetWidth * dpr) || canvas.height !== Math.round(canvas.offsetHeight * dpr))) {
+      resize();
+    }
     const W = canvas.offsetWidth, H = canvas.offsetHeight;
     pulseCtx.clearRect(0,0,W,H);
 
@@ -2381,6 +2782,17 @@ function initPulseCanvas() {
     pulseCtx.shadowColor = '#eaf6ff';
     pulseCtx.shadowBlur = isPlaying ? 5 : 2;
 
+    const isStarlight = state.album === 3;
+    let starGradient = null;
+    if (isStarlight) {
+      starGradient = pulseCtx.createLinearGradient(0, H/2 - H*0.46, 0, H/2 + H*0.46);
+      starGradient.addColorStop(0, meta.ice);
+      starGradient.addColorStop(0.45, meta.mid);
+      starGradient.addColorStop(1, meta.ice);
+      pulseCtx.shadowColor = meta.mid;
+      pulseCtx.shadowBlur = isPlaying ? 10 : 5;
+    }
+
     for (let i = 0; i < spikeCount / 2; i++) {
       let v;
       if (isPlaying) {
@@ -2391,7 +2803,7 @@ function initPulseCanvas() {
                  + 0.04 * (Math.sin(pulseT * 0.6 + i * 0.2) * 0.5 + 0.5);
       }
       const spikeH = Math.max(1.5, v * (H * 0.46));
-      pulseCtx.fillStyle = i % 3 === 0 ? meta.mid : meta.ice;
+      pulseCtx.fillStyle = isStarlight ? starGradient : (i % 3 === 0 ? meta.mid : meta.ice);
       pulseCtx.globalAlpha = isPlaying ? (0.55 + v * 0.5) : 0.4;
       pulseCtx.fillRect(W/2 + i * spikeWidth, H/2 - spikeH, Math.max(1, spikeWidth - 1), spikeH * 2);
       pulseCtx.fillRect(W/2 - (i + 1) * spikeWidth, H/2 - spikeH, Math.max(1, spikeWidth - 1), spikeH * 2);
@@ -2450,25 +2862,29 @@ function renderTrackNav() {
   divider.className = 'track-nav-divider';
   el.appendChild(divider);
 
+  const listWrap = document.createElement('div');
+  listWrap.className = 'track-list';
+  el.appendChild(listWrap);
+
   let lastChapter = null;
   meta.tracks.forEach((t, i) => {
     if (t.chapter && t.chapter !== lastChapter) {
       const chapterRow = document.createElement('div');
       chapterRow.className = 'chapter-divider';
       chapterRow.innerHTML = `<span class="chapter-roman">${t.chapterRoman || ''}</span><span class="chapter-name">${t.chapter}</span>`;
-      el.appendChild(chapterRow);
+      listWrap.appendChild(chapterRow);
       lastChapter = t.chapter;
     } else if (!t.chapter) {
       if (lastChapter !== null) {
         const closeDivider = document.createElement('div');
         closeDivider.className = 'track-nav-divider';
-        el.appendChild(closeDivider);
+        listWrap.appendChild(closeDivider);
       }
       lastChapter = null;
     }
 
     const row = document.createElement('div');
-    row.className = 'track-row' + (i === state.track ? ' active' : '');
+    row.className = 'track-row' + (i === state.track ? ' active' : '') + (i % 2 === 0 ? ' idx-even' : ' idx-odd');
     row.dataset.idx = i;
     const displayTitle = t.title.replace('(Orchestral Echo)', '(OE)');
     row.innerHTML = `
@@ -2482,7 +2898,7 @@ function renderTrackNav() {
       e.stopPropagation();
       toggleOrPlay(state.album, i);
     });
-    el.appendChild(row);
+    listWrap.appendChild(row);
   });
   el.scrollTop = scrollPos;
   refreshPlayingIndicators();
@@ -2513,7 +2929,12 @@ function renderCover() {
     echoBadge.textContent = '';
     echoBadge.style.display = 'none';
   }
-  document.getElementById('coverTitle').textContent = track ? track.title : meta.title;
+  {
+    const titleText = track ? track.title : meta.title;
+    const coverTitleEl = document.getElementById('coverTitle');
+    coverTitleEl.textContent = titleText;
+    coverTitleEl.dataset.text = titleText;
+  }
   document.getElementById('coverTagline').textContent = meta.tagline;
   document.getElementById('coverSongNote').textContent = track ? (track.note || '') : '';
 
@@ -2829,6 +3250,12 @@ function refreshPlayingIndicators() {
   if (mpBtn) mpBtn.innerHTML = `<span class="icon ${audioPlayer.paused ? 'icon-tri-right' : 'icon-pause'}"></span>`;
   const glow = document.getElementById('coverGlow');
   if (glow) glow.classList.toggle('pulsing', !audioPlayer.paused);
+  const drumViz = document.getElementById('drumVisualizer');
+  if (drumViz) drumViz.classList.toggle('playing', !audioPlayer.paused);
+  const monitorGrid = document.getElementById('monitorGrid');
+  if (monitorGrid) monitorGrid.classList.toggle('playing', !audioPlayer.paused);
+  const orbitViz = document.getElementById('orbitVisualizer');
+  if (orbitViz) orbitViz.classList.toggle('playing', !audioPlayer.paused);
 }
 
 function formatTime(s) {
