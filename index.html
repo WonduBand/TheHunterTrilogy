@@ -124,10 +124,9 @@
       var(--bg);
   }
   body[data-album="2"] .banner { display: block; }
-
-  /* Album II title: circuit-trace backdrop + red/amber glitch-split */
   body[data-album="2"] .cover-title {
     position: relative;
+    color: var(--accent);
     padding: 22px 44px;
     margin: -22px -44px;
     background-repeat: no-repeat;
@@ -148,12 +147,12 @@
     overflow: hidden; pointer-events: none;
   }
   body[data-album="2"] .cover-title::before {
-    color: var(--accent); transform: translate(-3px, 1px);
-    clip-path: polygon(0 20%, 100% 20%, 100% 45%, 0 45%); opacity: 0.85;
+    color: #8a3a1a; transform: translate(-3px, 1px);
+    clip-path: polygon(0 20%, 100% 20%, 100% 45%, 0 45%); opacity: 0.9;
   }
   body[data-album="2"] .cover-title::after {
-    color: #d4a017; transform: translate(3px, -1px);
-    clip-path: polygon(0 55%, 100% 55%, 100% 80%, 0 80%); opacity: 0.85;
+    color: #8a3a1a; transform: translate(3px, -1px);
+    clip-path: polygon(0 55%, 100% 55%, 100% 80%, 0 80%); opacity: 0.5;
   }
 
   /* Album III — clean panels, ancient portal rings + starfield */
@@ -165,6 +164,7 @@
   body[data-album="3"] .cover-title {
     text-shadow: 0 0 30px rgba(197,139,72,0.35);
     position: relative;
+    color: var(--accent-pale);
   }
   body[data-album="3"] .cover-title::before {
     content: ''; position: absolute; left: 50%; top: 50%; width: 380px; height: 380px;
@@ -567,7 +567,56 @@
   .cover-song-note { display: none; font-family: var(--font-body); font-size: 0.85rem; font-style: italic; color: rgba(255,255,255,0.78); line-height: 1.75; max-width: 560px; margin-top: 0.6rem; }
   .cover-meta span { color: var(--accent); transition: color 0.5s ease; }
   .cover-pulse { width: 100%; height: 34px; margin-top: 0.9rem; display: none; }
-  body[data-album="2"] .cover-pulse { display: block; }
+  body[data-album="3"] .cover-pulse { display: block; }
+
+  /* Album II: security monitor grid, replacing the frequency canvas entirely */
+  .monitor-grid { display: none; gap: 3px; margin-top: 0.9rem; height: 30px; }
+  body[data-album="2"] .monitor-grid { display: flex; }
+  .mg-cell {
+    flex: 1; background: #16191b; border: 1px solid #2a2f34; position: relative;
+    animation: mgLive 2.4s ease-in-out infinite;
+    animation-play-state: paused;
+  }
+  .mg-cell::after {
+    content: '●'; color: var(--accent); font-size: 6px; display: block; text-align: right; padding: 1px 2px;
+    opacity: 0; animation: mgDot 2.4s ease-in-out infinite; animation-play-state: paused;
+  }
+  .monitor-grid.playing .mg-cell,
+  .monitor-grid.playing .mg-cell::after { animation-play-state: running; }
+  @keyframes mgLive {
+    0%, 82%, 100% { background: #16191b; border-color: #2a2f34; }
+    88%, 96% { background: rgba(196,31,34,0.3); border-color: var(--accent); }
+  }
+  @keyframes mgDot { 0%, 82%, 100% { opacity: 0; } 88%, 96% { opacity: 1; } }
+
+  /* Album I: tribal drum ripple + bar cluster, replacing the frequency waveform */
+  .drum-visualizer { display: none; align-items: center; gap: 20px; margin-top: 0.9rem; height: 44px; }
+  body[data-album="1"] .drum-visualizer { display: flex; }
+  .dv-drum { position: relative; width: 40px; height: 40px; flex-shrink: 0; }
+  .dv-ring { position: absolute; inset: 0; border-radius: 50%; border: 1px solid var(--accent); }
+  .dv-ring.r1 { opacity: 0.9; }
+  .dv-ring.r2 { inset: -7px; opacity: 0.5; }
+  .dv-ring.r3 { inset: -14px; opacity: 0.25; }
+  .dv-center { position: absolute; inset: 13px; border-radius: 50%; background: var(--accent); }
+  .dv-bars { display: flex; align-items: center; gap: 4px; flex: 1; height: 28px; }
+  .dv-bar {
+    width: 5px; height: 40%; background: var(--accent); opacity: 0.85;
+    clip-path: polygon(0 3px, 3px 0, 100% 0, 100% 100%, 0 100%);
+    animation: dvBarPulse 1.1s ease-in-out infinite;
+    animation-play-state: paused;
+  }
+  .drum-visualizer.playing .dv-ring { animation: dvRipple 1.4s ease-out infinite; }
+  .drum-visualizer.playing .dv-ring.r2 { animation-delay: 0.15s; }
+  .drum-visualizer.playing .dv-ring.r3 { animation-delay: 0.3s; }
+  .drum-visualizer.playing .dv-bar { animation-play-state: running; }
+  @keyframes dvRipple {
+    0% { transform: scale(0.85); opacity: 0.9; }
+    100% { transform: scale(1.35); opacity: 0; }
+  }
+  @keyframes dvBarPulse {
+    0%, 100% { height: 25%; }
+    50% { height: 90%; }
+  }
 
   /* ── COVER ANIMATION CLIP (plays inline inside the artwork frame) ── */
   .cover-clip-btn {
@@ -717,6 +766,15 @@
   @media (max-width: 980px) {
     .app { grid-template-rows: auto 1fr auto auto; }
 
+    /* Decorative per-album cover motifs (rivets, banner, portal rings, starfield) are a
+       desktop-only flourish — on the smaller mobile canvas they just clutter the artwork. */
+    body[data-album="1"] .rivet,
+    body[data-album="2"] .banner,
+    body[data-album="3"] .portal-ring,
+    body[data-album="3"] .starfield {
+      display: none;
+    }
+
     .app-main {
       grid-template-columns: 1fr;
       position: relative;
@@ -857,6 +915,48 @@
             <div class="cover-meta" id="coverMeta"></div>
             <div class="cover-song-note" id="coverSongNote"></div>
             <canvas class="cover-pulse" id="coverPulse"></canvas>
+            <div class="monitor-grid" id="monitorGrid">
+              <div class="mg-cell" style="animation-delay:0s;"></div>
+              <div class="mg-cell" style="animation-delay:0.3s;"></div>
+              <div class="mg-cell" style="animation-delay:0.9s;"></div>
+              <div class="mg-cell" style="animation-delay:0.15s;"></div>
+              <div class="mg-cell" style="animation-delay:1.4s;"></div>
+              <div class="mg-cell" style="animation-delay:0.6s;"></div>
+              <div class="mg-cell" style="animation-delay:1.9s;"></div>
+              <div class="mg-cell" style="animation-delay:0.45s;"></div>
+              <div class="mg-cell" style="animation-delay:1.1s;"></div>
+              <div class="mg-cell" style="animation-delay:0.75s;"></div>
+              <div class="mg-cell" style="animation-delay:2.1s;"></div>
+              <div class="mg-cell" style="animation-delay:0.2s;"></div>
+              <div class="mg-cell" style="animation-delay:1.6s;"></div>
+              <div class="mg-cell" style="animation-delay:0.85s;"></div>
+              <div class="mg-cell" style="animation-delay:0.05s;"></div>
+              <div class="mg-cell" style="animation-delay:1.3s;"></div>
+              <div class="mg-cell" style="animation-delay:0.55s;"></div>
+              <div class="mg-cell" style="animation-delay:1.8s;"></div>
+              <div class="mg-cell" style="animation-delay:0.35s;"></div>
+              <div class="mg-cell" style="animation-delay:1.05s;"></div>
+            </div>
+            <div class="drum-visualizer" id="drumVisualizer">
+              <div class="dv-drum">
+                <div class="dv-ring r3"></div>
+                <div class="dv-ring r2"></div>
+                <div class="dv-ring r1"></div>
+                <div class="dv-center"></div>
+              </div>
+              <div class="dv-bars">
+                <div class="dv-bar" style="animation-delay:0s;"></div>
+                <div class="dv-bar" style="animation-delay:0.1s;"></div>
+                <div class="dv-bar" style="animation-delay:0.05s;"></div>
+                <div class="dv-bar" style="animation-delay:0.2s;"></div>
+                <div class="dv-bar" style="animation-delay:0.15s;"></div>
+                <div class="dv-bar" style="animation-delay:0.25s;"></div>
+                <div class="dv-bar" style="animation-delay:0.08s;"></div>
+                <div class="dv-bar" style="animation-delay:0.18s;"></div>
+                <div class="dv-bar" style="animation-delay:0.12s;"></div>
+                <div class="dv-bar" style="animation-delay:0.22s;"></div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -2582,8 +2682,8 @@ const ALBUMS = {
       "#d97e2a",
       "#a3591a"
     ],
-    "mid": "#a3591a",
-    "ice": "#f0b878",
+    "mid": "#e7b878",
+    "ice": "#5ad1c8",
     "svgFallback": "<svg viewBox=\"0 0 800 500\" preserveAspectRatio=\"xMidYMid slice\" xmlns=\"http://www.w3.org/2000/svg\"><defs><radialGradient id=\"hf3\" cx=\"50%\" cy=\"30%\" r=\"85%\"><stop offset=\"0%\" stop-color=\"var(--bg-raise)\"/><stop offset=\"100%\" stop-color=\"var(--bg)\"/></radialGradient></defs><rect width=\"800\" height=\"500\" fill=\"url(#hf3)\"/><g opacity=\"0.7\" fill=\"#fff\"><circle cx=\"120\" cy=\"90\" r=\"1.4\"/><circle cx=\"640\" cy=\"120\" r=\"1.2\"/><circle cx=\"300\" cy=\"60\" r=\"1\"/><circle cx=\"500\" cy=\"70\" r=\"1.3\"/></g><circle cx=\"400\" cy=\"250\" r=\"40\" fill=\"var(--accent)\" opacity=\"0.35\"/><circle cx=\"400\" cy=\"250\" r=\"120\" fill=\"none\" stroke=\"var(--accent)\" stroke-width=\"1\" opacity=\"0.35\"/><circle cx=\"400\" cy=\"250\" r=\"190\" fill=\"none\" stroke=\"var(--accent-deep)\" stroke-width=\"1\" opacity=\"0.22\"/></svg>"
   }
 };
@@ -2611,6 +2711,10 @@ function initPulseCanvas() {
   }
   function draw() {
     const meta = ALBUMS[state.album];
+    const dpr = window.devicePixelRatio || 1;
+    if (canvas.offsetWidth > 0 && (canvas.width !== Math.round(canvas.offsetWidth * dpr) || canvas.height !== Math.round(canvas.offsetHeight * dpr))) {
+      resize();
+    }
     const W = canvas.offsetWidth, H = canvas.offsetHeight;
     pulseCtx.clearRect(0,0,W,H);
 
@@ -2628,6 +2732,17 @@ function initPulseCanvas() {
     pulseCtx.shadowColor = '#eaf6ff';
     pulseCtx.shadowBlur = isPlaying ? 5 : 2;
 
+    const isStarlight = state.album === 3;
+    let starGradient = null;
+    if (isStarlight) {
+      starGradient = pulseCtx.createLinearGradient(0, H/2 - H*0.46, 0, H/2 + H*0.46);
+      starGradient.addColorStop(0, meta.ice);
+      starGradient.addColorStop(0.45, meta.mid);
+      starGradient.addColorStop(1, meta.ice);
+      pulseCtx.shadowColor = meta.mid;
+      pulseCtx.shadowBlur = isPlaying ? 10 : 5;
+    }
+
     for (let i = 0; i < spikeCount / 2; i++) {
       let v;
       if (isPlaying) {
@@ -2638,7 +2753,7 @@ function initPulseCanvas() {
                  + 0.04 * (Math.sin(pulseT * 0.6 + i * 0.2) * 0.5 + 0.5);
       }
       const spikeH = Math.max(1.5, v * (H * 0.46));
-      pulseCtx.fillStyle = i % 3 === 0 ? meta.mid : meta.ice;
+      pulseCtx.fillStyle = isStarlight ? starGradient : (i % 3 === 0 ? meta.mid : meta.ice);
       pulseCtx.globalAlpha = isPlaying ? (0.55 + v * 0.5) : 0.4;
       pulseCtx.fillRect(W/2 + i * spikeWidth, H/2 - spikeH, Math.max(1, spikeWidth - 1), spikeH * 2);
       pulseCtx.fillRect(W/2 - (i + 1) * spikeWidth, H/2 - spikeH, Math.max(1, spikeWidth - 1), spikeH * 2);
@@ -3085,6 +3200,10 @@ function refreshPlayingIndicators() {
   if (mpBtn) mpBtn.innerHTML = `<span class="icon ${audioPlayer.paused ? 'icon-tri-right' : 'icon-pause'}"></span>`;
   const glow = document.getElementById('coverGlow');
   if (glow) glow.classList.toggle('pulsing', !audioPlayer.paused);
+  const drumViz = document.getElementById('drumVisualizer');
+  if (drumViz) drumViz.classList.toggle('playing', !audioPlayer.paused);
+  const monitorGrid = document.getElementById('monitorGrid');
+  if (monitorGrid) monitorGrid.classList.toggle('playing', !audioPlayer.paused);
 }
 
 function formatTime(s) {
