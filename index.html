@@ -567,7 +567,6 @@
   .cover-song-note { display: none; font-family: var(--font-body); font-size: 0.85rem; font-style: italic; color: rgba(255,255,255,0.78); line-height: 1.75; max-width: 560px; margin-top: 0.6rem; }
   .cover-meta span { color: var(--accent); transition: color 0.5s ease; }
   .cover-pulse { width: 100%; height: 34px; margin-top: 0.9rem; display: none; }
-  body[data-album="3"] .cover-pulse { display: block; }
 
   /* Album II: security monitor grid, replacing the frequency canvas entirely */
   .monitor-grid { display: none; gap: 3px; margin-top: 0.9rem; height: 30px; }
@@ -616,6 +615,45 @@
   @keyframes dvBarPulse {
     0%, 100% { height: 25%; }
     50% { height: 90%; }
+  }
+
+  /* Album III: orbiting core, streaks emanate outward on the beat — replaces the old frequency bars entirely */
+  .orbit-visualizer { display: none; align-items: center; gap: 16px; margin-top: 0.9rem; height: 44px; }
+  body[data-album="3"] .orbit-visualizer { display: flex; }
+  .ov-anchor { position: relative; width: 40px; height: 40px; flex-shrink: 0; }
+  .ov-ring { position: absolute; border-radius: 50%; border: 1px solid var(--accent); opacity: 0.35; }
+  .ov-ring.o1 { inset: 0; } .ov-ring.o2 { inset: 10px; }
+  .ov-core {
+    position: absolute; inset: 16px; border-radius: 50%; background: var(--accent-pale);
+    box-shadow: 0 0 8px var(--accent-pale);
+  }
+  .ov-body {
+    position: absolute; width: 4px; height: 4px; border-radius: 50%; background: var(--accent2);
+    box-shadow: 0 0 5px var(--accent2);
+    transform-origin: 0 0;
+  }
+  .ov-field { flex: 1; height: 100%; position: relative; overflow: hidden; }
+  .ov-streak {
+    position: absolute; width: 110px; height: 2px; left: 0; top: 50%;
+    background: linear-gradient(90deg, var(--accent-pale), transparent);
+  }
+  .ov-streak::before {
+    content: ''; position: absolute; left: -1.5px; top: -3px; width: 8px; height: 8px;
+    border-radius: 50%; background: var(--accent-pale);
+    box-shadow: 0 0 10px 3px var(--accent-pale), 0 0 20px 6px rgba(231,184,120,0.4);
+  }
+  .ov-streak.teal { background: linear-gradient(90deg, var(--accent2), transparent); }
+  .ov-streak.teal::before { background: var(--accent2); box-shadow: 0 0 10px 3px var(--accent2), 0 0 20px 6px rgba(90,209,200,0.4); }
+  .orbit-visualizer.playing .ov-core { animation: ovBeat 2.2s ease-in-out infinite; }
+  .orbit-visualizer.playing .ov-body { animation: ovSpin 4s linear infinite; }
+  .orbit-visualizer.playing .ov-streak { animation: ovEmanate 2.2s cubic-bezier(.2,.7,.3,1) infinite; }
+  @keyframes ovBeat { 0%, 100% { transform: scale(0.85); } 12% { transform: scale(1.3); } 30% { transform: scale(0.9); } }
+  @keyframes ovSpin { from { transform: rotate(0deg) translateX(16px) rotate(0deg); } to { transform: rotate(360deg) translateX(16px) rotate(-360deg); } }
+  @keyframes ovEmanate {
+    0% { transform: translateX(0) scaleX(0.3); opacity: 0; }
+    12% { opacity: 1; }
+    70% { opacity: 1; }
+    100% { transform: translateX(220px) scaleX(1); opacity: 0; }
   }
 
   /* ── COVER ANIMATION CLIP (plays inline inside the artwork frame) ── */
@@ -912,8 +950,6 @@
             <div class="cover-echo-badge" id="coverEchoBadge"></div>
             <div class="cover-title" id="coverTitle">Ignition</div>
             <div class="cover-tagline" id="coverTagline"></div>
-            <div class="cover-meta" id="coverMeta"></div>
-            <div class="cover-song-note" id="coverSongNote"></div>
             <canvas class="cover-pulse" id="coverPulse"></canvas>
             <div class="monitor-grid" id="monitorGrid">
               <div class="mg-cell" style="animation-delay:0s;"></div>
@@ -957,6 +993,20 @@
                 <div class="dv-bar" style="animation-delay:0.22s;"></div>
               </div>
             </div>
+            <div class="orbit-visualizer" id="orbitVisualizer">
+              <div class="ov-anchor">
+                <div class="ov-ring o1"></div>
+                <div class="ov-ring o2"></div>
+                <div class="ov-core"></div>
+                <div class="ov-body" style="left:20px; top:20px;"></div>
+              </div>
+              <div class="ov-field">
+                <div class="ov-streak" style="top:30%; animation-delay:0s;"></div>
+                <div class="ov-streak teal" style="top:65%; animation-delay:1.1s;"></div>
+              </div>
+            </div>
+            <div class="cover-meta" id="coverMeta"></div>
+            <div class="cover-song-note" id="coverSongNote"></div>
           </div>
         </div>
       </div>
@@ -3204,6 +3254,8 @@ function refreshPlayingIndicators() {
   if (drumViz) drumViz.classList.toggle('playing', !audioPlayer.paused);
   const monitorGrid = document.getElementById('monitorGrid');
   if (monitorGrid) monitorGrid.classList.toggle('playing', !audioPlayer.paused);
+  const orbitViz = document.getElementById('orbitVisualizer');
+  if (orbitViz) orbitViz.classList.toggle('playing', !audioPlayer.paused);
 }
 
 function formatTime(s) {
