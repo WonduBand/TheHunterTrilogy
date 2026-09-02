@@ -4,22 +4,30 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Wondu — The Hunter Trilogy</title>
-<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Black+Ops+One&family=Cinzel:wght@500;700&family=Orbitron:wght@500;700&family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
+    --font-logo: 'Anton', sans-serif;
+    --font-flavor: 'Rajdhani', sans-serif;
+    --font-ui: 'Rajdhani', sans-serif;
+    --font-body: 'IBM Plex Sans', sans-serif;
+    --font-data: 'IBM Plex Mono', monospace;
+
     --accent: #6b8f3f; --accent-deep: #4a6b2a; --accent-pale: #a8cf7f;
+    --accent2: #6b8f3f;
     --bg: #03060f; --bg-panel: #070d1a; --bg-raise: #0a1220;
     --border: #2a4a6a; --border-dim: #0d3b6e;
     --text-dim: #5a7fa8;
+    --red-line: #c41f22;
   }
 
   html, body {
     height: 100%;
     overflow: hidden;
     background: var(--bg);
-    font-family: 'Share Tech Mono', monospace;
+    font-family: var(--font-body);
     color: #ccc;
   }
 
@@ -35,9 +43,107 @@
   }
 
   /* ── ALBUM THEMES ── */
-  body[data-album="1"] { --accent:#6b8f3f; --accent-deep:#4a6b2a; --accent-pale:#a8cf7f; --bg:#0a0d09; --bg-panel:#13170f; --bg-raise:#1a2014; --border:#2a3820; --border-dim:#1c2615; --text-dim:#93958a; }
-  body[data-album="2"] { --accent:#c62a2a; --accent-deep:#8a1c1c; --accent-pale:#e88080; --bg:#0c0a0a; --bg-panel:#171213; --bg-raise:#1f1719; --border:#3a2224; --border-dim:#2c1618; --text-dim:#a17878; }
-  body[data-album="3"] { --accent:#d97e2a; --accent-deep:#a3591a; --accent-pale:#f0b878; --bg:#0a0806; --bg-panel:#181310; --bg-raise:#201a15; --border:#3a2c1e; --border-dim:#2a1f14; --text-dim:#b09680; }
+  /* Album I — The First Hunter: late-90s action boxart. Blood-red accent, khaki/bone text, moss wash. */
+  body[data-album="1"] {
+    --font-flavor: 'Black Ops One', sans-serif;
+    --accent: #c41f16; --accent-deep: #7a130e; --accent-pale: #e8342f;
+    --accent2: #5a6b3a;
+    --bg: #060503; --bg-panel: #0e0c09; --bg-raise: #1a1611;
+    --border: #3a3226; --border-dim: #241f18;
+    --text-dim: #8a8264;
+  }
+  /* Album II — Legacy of the Mark: surveillance-state sci-fi. Propaganda red, cold steel, blue flicker. */
+  body[data-album="2"] {
+    --font-flavor: 'Orbitron', sans-serif;
+    --accent: #c41f22; --accent-deep: #7a1315; --accent-pale: #e8342f;
+    --accent2: #3b9cff;
+    --bg: #050506; --bg-panel: #0a0b0d; --bg-raise: #131518;
+    --border: #2a2f34; --border-dim: #1a1d20;
+    --text-dim: #565c60;
+  }
+  /* Album III — Where Worlds End: cosmic mythic. Ancient gold, faint teal corruption. */
+  body[data-album="3"] {
+    --font-flavor: 'Cinzel', serif;
+    --accent: #c58b48; --accent-deep: #8a5f2e; --accent-pale: #e7b878;
+    --accent2: #5ad1c8;
+    --bg: #030304; --bg-panel: #09080c; --bg-raise: #131019;
+    --border: #2a2438; --border-dim: #1a1522;
+    --text-dim: #6a6278;
+  }
+
+  /* ── SHARED SIGNATURE MOTIF: thin red line under topbar / around mini-player ── */
+  .topbar { border-bottom: none !important; box-shadow: 0 2px 0 0 var(--red-line), 0 2px 6px 0 rgba(196,31,34,0.4); }
+  .mini-player { border-top: none !important; box-shadow: 0 -2px 0 0 var(--red-line); }
+
+  /* ══════════════════ PER-ALBUM SHAPE LANGUAGE ══════════════════ */
+
+  /* Album I — chipped/organic clip-paths, grain, corner rivets */
+  body[data-album="1"] .album-tab,
+  body[data-album="1"] .track-row.active,
+  body[data-album="1"] .cover-row {
+    clip-path: polygon(0 8px, 8px 0, 100% 0, 100% 100%, 0 100%);
+  }
+  body[data-album="1"] .cover-pane {
+    background: radial-gradient(ellipse at 35% 75%, rgba(90,107,58,0.35), transparent 70%), var(--bg);
+  }
+  body[data-album="1"] .rivet {
+    display: block; position: absolute; width: 10px; height: 10px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #6a5f45, #2a2418 70%); z-index: 6;
+  }
+  body[data-album="1"] .cover-title { text-shadow: 3px 3px 0 #000, 6px 6px 0 rgba(0,0,0,0.4); }
+
+  /* Album II — precise grid cuts, propaganda banner + scanline */
+  body[data-album="2"] .album-tabs { grid-template-columns: 1fr 1fr; display: grid; gap: 0.4rem; }
+  body[data-album="2"] .album-tab {
+    clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 0 100%);
+  }
+  body[data-album="2"] .track-row { border-bottom: 1px solid var(--border-dim); }
+  body[data-album="2"] .track-row.active { clip-path: none; border-left: 2px solid var(--accent); }
+  body[data-album="2"] .cover-pane {
+    background:
+      linear-gradient(rgba(5,5,6,0.7), rgba(5,5,6,0.85)),
+      repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(196,31,34,0.06) 39px, rgba(196,31,34,0.06) 40px),
+      repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(196,31,34,0.06) 39px, rgba(196,31,34,0.06) 40px),
+      var(--bg);
+  }
+  body[data-album="2"] .banner, body[data-album="2"] .scan-line { display: block; }
+
+  /* Album III — clean panels, ancient portal rings + starfield */
+  body[data-album="3"] .cover-pane {
+    background: radial-gradient(ellipse at 65% 35%, rgba(197,139,72,0.14), transparent 55%),
+                radial-gradient(ellipse at 30% 95%, rgba(90,209,200,0.06), transparent 55%), var(--bg);
+  }
+  body[data-album="3"] .portal-ring, body[data-album="3"] .starfield { display: block; }
+  body[data-album="3"] .cover-title { text-shadow: 0 0 30px rgba(197,139,72,0.35); }
+
+  /* ── Decorative elements: hidden by default, shown per album above ── */
+  .rivet { display: none; }
+  .banner, .scan-line, .portal-ring, .starfield { display: none; }
+  .banner {
+    position: absolute; top: -20px; right: 40px; width: 90px; height: 220px;
+    background: var(--accent); opacity: 0.85; z-index: 1;
+    clip-path: polygon(0 0, 100% 0, 100% 90%, 50% 100%, 0 90%);
+  }
+  .scan-line {
+    position: absolute; left: 0; right: 0; height: 1px; background: var(--accent2); opacity: 0.5; z-index: 2;
+    top: 35%; box-shadow: 0 0 8px var(--accent2);
+  }
+  .portal-ring { position: absolute; border-radius: 50%; pointer-events: none; z-index: 1; }
+  .portal-ring.ring-outer { width: 460px; height: 460px; top: -140px; right: -160px; border: 1px solid var(--accent); opacity: 0.28; }
+  .portal-ring.ring-mid { width: 340px; height: 340px; top: -80px; right: -100px; border: 1px dashed var(--accent); opacity: 0.18; }
+  .portal-ring.ring-inner { width: 220px; height: 220px; top: -20px; right: -40px; border: 1px solid var(--accent2); opacity: 0.16; }
+  .starfield {
+    position: absolute; inset: 0; pointer-events: none; z-index: 0; opacity: 0.3;
+    background-image:
+      radial-gradient(1px 1px at 20px 30px, #fff, transparent),
+      radial-gradient(1px 1px at 90px 80px, #fff, transparent),
+      radial-gradient(1px 1px at 160px 40px, #999, transparent),
+      radial-gradient(1px 1px at 230px 120px, #fff, transparent),
+      radial-gradient(1px 1px at 300px 60px, #999, transparent),
+      radial-gradient(1px 1px at 340px 180px, #888, transparent);
+    background-repeat: repeat; background-size: 420px 220px;
+  }
+
 
   /* ── APP SHELL ── */
   .app {
@@ -59,7 +165,7 @@
     z-index: 10; position: relative;
   }
   .topbar-brand { display: flex; align-items: baseline; gap: 0.8rem; }
-  .topbar-title { font-family:'Rajdhani',sans-serif; font-weight:700; letter-spacing:0.3em; font-size:1rem; text-transform:uppercase; color:#eee; }
+  .topbar-title { font-family: var(--font-logo); font-weight: 400; letter-spacing: 0.05em; font-size: 1.4rem; text-transform: uppercase; color: #e8e2d4; }
 
   /* ── LOADING SCREEN ── */
   .loading-screen {
@@ -159,7 +265,7 @@
   }
   .track-row:hover { background: var(--bg-raise); }
   .track-row.active { background: var(--bg-raise); border-left-color: var(--accent); }
-  .track-row .t-num { font-size: 0.58rem; color: var(--accent-deep); min-width: 1.6rem; transition: color 0.5s ease; }
+  .track-row .t-num { font-family: var(--font-data); font-size: 0.58rem; color: var(--accent-deep); min-width: 1.6rem; transition: color 0.5s ease; }
   .track-row .t-title {
     font-family:'Rajdhani',sans-serif; font-weight:600; letter-spacing:0.06em;
     font-size: 0.82rem; text-transform: uppercase; color: #99a; flex:1;
@@ -246,7 +352,7 @@
   .mp-play { width: 2.3rem; height: 2.3rem; font-size: 0.8rem; }
   .mp-info { min-width: 0; flex: 1 1 auto; max-width: 240px; overflow: hidden; }
   .mp-title { font-family:'Rajdhani',sans-serif; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .mp-album { font-size: 0.55rem; color: var(--text-dim); letter-spacing: 0.12em; text-transform: uppercase; margin-top: 0.15rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: color 0.5s ease; }
+  .mp-album { font-family: var(--font-data); font-size: 0.55rem; color: var(--text-dim); letter-spacing: 0.12em; text-transform: uppercase; margin-top: 0.15rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: color 0.5s ease; }
   .mp-progress {
     flex: 1; min-width: 0; height: 3px; -webkit-appearance: none; appearance: none;
     background: var(--border); border-radius: 2px; cursor: pointer; outline: none;
@@ -313,22 +419,22 @@
     justify-content: space-between; width: 100%; padding: 1.6rem 2rem;
     flex: 1;
   }
-  .cover-top { display:flex; justify-content: space-between; font-size: 0.58rem; letter-spacing: 0.15em; color: rgba(255,255,255,0.55); text-transform: uppercase; }
+  .cover-top { display:flex; justify-content: space-between; font-size: 0.58rem; letter-spacing: 0.15em; color: rgba(255,255,255,0.55); text-transform: uppercase; font-family: var(--font-data); }
   .cover-bottom { }
-  .cover-eyebrow { font-size: 0.62rem; letter-spacing: 0.35em; color: var(--accent); text-transform: uppercase; margin-bottom:0.5rem; transition: color 0.5s ease; }
+  .cover-eyebrow { font-family: var(--font-flavor); font-weight: 600; font-size: 0.68rem; letter-spacing: 0.2em; color: var(--accent); text-transform: uppercase; margin-bottom:0.5rem; transition: color 0.5s ease; }
   .cover-echo-badge {
     display: none; font-size: 0.58rem; letter-spacing: 0.15em; color: var(--accent-deep);
-    text-transform: uppercase; margin-bottom: 0.6rem; font-family:'Share Tech Mono', monospace;
+    text-transform: uppercase; margin-bottom: 0.6rem; font-family: var(--font-data);
   }
   .cover-bottom { animation: fadeInLeft 0.35s ease both; }
   .cover-title {
-    font-family:'Rajdhani',sans-serif; font-size: clamp(2rem, 4vw, 3.4rem); font-weight: 700;
-    letter-spacing: 0.08em; text-transform: uppercase; color: #fff; line-height: 1.05;
+    font-family: var(--font-logo); font-size: clamp(2.2rem, 4.4vw, 3.8rem); font-weight: 400;
+    letter-spacing: 0.02em; text-transform: uppercase; color: #fff; line-height: 0.94;
     text-shadow: 0 0 40px rgba(0,0,0,0.8);
   }
-  .cover-tagline { font-size: 0.8rem; font-style: italic; color: #ddd; margin-top: 0.6rem; max-width: 480px; }
-  .cover-meta { display:flex; flex-wrap: wrap; gap: 1.4rem; margin-top: 1.1rem; font-size: 0.58rem; letter-spacing: 0.1em; color: rgba(255,255,255,0.5); text-transform: uppercase; }
-  .cover-song-note { display: none; font-size: 0.85rem; font-style: italic; color: rgba(255,255,255,0.78); line-height: 1.75; max-width: 560px; margin-top: 0.6rem; }
+  .cover-tagline { font-family: var(--font-body); font-size: 0.8rem; font-style: italic; color: #ddd; margin-top: 0.6rem; max-width: 480px; }
+  .cover-meta { display:flex; flex-wrap: wrap; gap: 1.4rem; margin-top: 1.1rem; font-size: 0.58rem; letter-spacing: 0.1em; color: rgba(255,255,255,0.5); text-transform: uppercase; font-family: var(--font-data); }
+  .cover-song-note { display: none; font-family: var(--font-body); font-size: 0.85rem; font-style: italic; color: rgba(255,255,255,0.78); line-height: 1.75; max-width: 560px; margin-top: 0.6rem; }
   .cover-meta span { color: var(--accent); transition: color 0.5s ease; }
   .cover-pulse { width: 100%; height: 34px; margin-top: 0.9rem; display:block; }
 
@@ -377,8 +483,8 @@
     padding: 1rem 1.6rem 0.8rem; border-bottom: 1px solid var(--border);
     display: flex; align-items: center; gap: 0.8rem; transition: border-color 0.5s ease;
   }
-  .text-head .th-num { font-size: 0.62rem; color: var(--accent-deep); letter-spacing: 0.1em; transition: color 0.5s ease; }
-  .text-head .th-title { font-family:'Rajdhani',sans-serif; font-size: 1.35rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #fff; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .text-head .th-num { font-family: var(--font-data); font-size: 0.62rem; color: var(--accent-deep); letter-spacing: 0.1em; transition: color 0.5s ease; }
+  .text-head .th-title { font-family: var(--font-logo); font-weight: 400; font-size: 1.5rem; letter-spacing: 0.02em; text-transform: uppercase; color: #fff; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .text-head .th-badge { font-size: 0.5rem; letter-spacing: 0.15em; padding: 0.25rem 0.55rem; border: 1px solid var(--border-dim); color: var(--text-dim); text-transform: uppercase; white-space: nowrap; transition: all 0.5s ease; }
   .text-nav-btn {
     background: transparent; border: 1px solid var(--border); color: var(--text-dim);
@@ -412,12 +518,12 @@
 
   .lyric-section { margin-bottom: 1.2rem; }
   .sec-label {
-    font-size: 0.6rem; letter-spacing: 0.2em; margin-bottom: 0.45rem;
+    font-family: var(--font-flavor); font-weight: 600; font-size: 0.65rem; letter-spacing: 0.15em; margin-bottom: 0.45rem;
     display: flex; align-items: center; gap: 0.5rem; color: var(--accent);
     text-transform: uppercase; transition: color 0.5s ease;
   }
   .sec-label::after { content: ''; flex: 1; height: 1px; background: var(--border); opacity: 0.5; max-width: 80px; }
-  .sec-lines { font-size: 0.85rem; line-height: 1.85; white-space: pre-line; color: #f8f8ff; padding-left: 0.5rem; }
+  .sec-lines { font-family: var(--font-body); font-size: 0.85rem; line-height: 1.85; white-space: pre-line; color: #f8f8ff; padding-left: 0.5rem; }
 
   .lyric-section.chorus .sec-label { color: var(--accent); }
   .lyric-section.chorus .sec-lines { color: #f8f8ff; }
@@ -591,6 +697,16 @@
 
     <section class="cover-pane">
       <div class="cover-pane-inner" id="coverPaneInner">
+        <div class="starfield"></div>
+        <div class="rivet" style="top:12px; left:12px;"></div>
+        <div class="rivet" style="top:12px; right:12px;"></div>
+        <div class="rivet" style="bottom:12px; left:12px;"></div>
+        <div class="rivet" style="bottom:12px; right:12px;"></div>
+        <div class="banner"></div>
+        <div class="scan-line"></div>
+        <div class="portal-ring ring-outer"></div>
+        <div class="portal-ring ring-mid"></div>
+        <div class="portal-ring ring-inner"></div>
         <div class="cover-img-wrap">
           <img class="cover-img" id="coverImg" src="" alt="">
           <div class="cover-fallback" id="coverFallback" style="display:none;"></div>
