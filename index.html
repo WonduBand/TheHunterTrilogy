@@ -37,20 +37,23 @@
 
   body::before {
     content: '';
-    position: fixed; inset: 0;
-    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.025) 2px, rgba(255,255,255,0.025) 4px);
+    position: fixed; inset: -50%; width: 200%; height: 200%;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    opacity: 0.07;
+    mix-blend-mode: overlay;
     pointer-events: none; z-index: 9000;
   }
 
+
   /* ── ALBUM THEMES ── */
-  /* Album I — The First Hunter: late-90s action boxart. Khaki/moss primary identity, blood-red as a sparing highlight only. */
+  /* Album I — The First Hunter: late-90s action boxart. Jungle green primary identity, blood-red as a sparing highlight only. */
   body[data-album="1"] {
     --font-flavor: 'Black Ops One', sans-serif;
-    --accent: #8a8264; --accent-deep: #5a5540; --accent-pale: #cfc4a0;
+    --accent: #6b9d3f; --accent-deep: #4a7028; --accent-pale: #a8d67f;
     --accent2: #c41f16;
     --bg: #060503; --bg-panel: #0e0c09; --bg-raise: #1a1611;
     --border: #3a3226; --border-dim: #241f18;
-    --text-dim: #6a6350;
+    --text-dim: #7a8264;
   }
   /* Album II — Legacy of the Mark: surveillance-state sci-fi. Propaganda red, cold steel, blue flicker. */
   body[data-album="2"] {
@@ -121,7 +124,7 @@
       repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(196,31,34,0.06) 39px, rgba(196,31,34,0.06) 40px),
       var(--bg);
   }
-  body[data-album="2"] .banner, body[data-album="2"] .scan-line { display: block; }
+  body[data-album="2"] .banner { display: block; }
 
   /* Album III — clean panels, ancient portal rings + starfield */
   body[data-album="3"] .cover-pane {
@@ -144,7 +147,7 @@
     line-height: 1; min-width: 2.1rem; transition: color 0.2s ease;
   }
   body[data-album="1"] .track-row.active .t-num,
-  body[data-album="1"] .track-row:hover .t-num { color: var(--accent2); }
+  body[data-album="1"] .track-row:hover .t-num { color: var(--accent); }
   body[data-album="1"] .track-row .t-title { white-space: normal; line-height: 1.25; }
 
   /* ── Album III track list: Option G — chain of realms ── */
@@ -173,13 +176,8 @@
   .banner, .scan-line, .portal-ring, .starfield { display: none; }
   .banner {
     position: absolute; top: -20px; right: 40px; width: 100px; height: 240px;
-    background: var(--accent); opacity: 1; z-index: 4;
+    background: transparent; border: 2px solid var(--accent); opacity: 1; z-index: 4;
     clip-path: polygon(0 0, 100% 0, 100% 90%, 50% 100%, 0 90%);
-    box-shadow: 0 0 40px 4px rgba(0,0,0,0.6);
-  }
-  .scan-line {
-    position: absolute; left: 0; right: 0; height: 3px; background: var(--accent2); opacity: 0.9; z-index: 4;
-    top: 35%; box-shadow: 0 0 16px 2px var(--accent2);
   }
   .portal-ring { position: absolute; border-radius: 50%; pointer-events: none; z-index: 3; }
   .portal-ring.ring-outer { width: 460px; height: 460px; top: -140px; right: -160px; border: 2px solid var(--accent); opacity: 0.65; box-shadow: 0 0 40px 0 rgba(0,0,0,0.5); }
@@ -402,7 +400,7 @@
     transition: all 0.2s;
   }
   .mp-btn:hover { border-color: var(--accent); color: var(--accent); }
-  .mp-play { width: 2.5rem; height: 2.5rem; font-size: 0.8rem; border-color: var(--accent2, var(--accent)); color: var(--accent2, var(--accent)); }
+  .mp-play { width: 2.5rem; height: 2.5rem; font-size: 0.8rem; border-color: var(--accent); color: var(--accent); }
   .mp-info { min-width: 0; flex: 1 1 auto; max-width: 240px; overflow: hidden; }
   .mp-title { font-family: var(--font-ui); font-size: 0.82rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .mp-album { font-family: var(--font-data); font-size: 0.55rem; color: var(--text-dim); letter-spacing: 0.12em; text-transform: uppercase; margin-top: 0.15rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: color 0.5s ease; }
@@ -461,7 +459,7 @@
     opacity: 0.18;
     transition: background 0.6s ease;
   }
-  .cover-glow.pulsing { animation: coverGlowPulse 2.2s ease-in-out infinite; }
+  .cover-glow.pulsing { }
   @keyframes coverGlowPulse { 0%, 100% { opacity: 0.14; } 50% { opacity: 0.42; } }
   .cover-img {
     width: 100%; height: 100%; object-fit: cover;
@@ -504,7 +502,8 @@
   .cover-meta { display:flex; flex-wrap: wrap; gap: 1.4rem; margin-top: 1.1rem; font-size: 0.58rem; letter-spacing: 0.1em; color: rgba(255,255,255,0.5); text-transform: uppercase; font-family: var(--font-data); }
   .cover-song-note { display: none; font-family: var(--font-body); font-size: 0.85rem; font-style: italic; color: rgba(255,255,255,0.78); line-height: 1.75; max-width: 560px; margin-top: 0.6rem; }
   .cover-meta span { color: var(--accent); transition: color 0.5s ease; }
-  .cover-pulse { width: 100%; height: 34px; margin-top: 0.9rem; display:block; }
+  .cover-pulse { width: 100%; height: 34px; margin-top: 0.9rem; display: none; }
+  body[data-album="2"] .cover-pulse { display: block; }
 
   /* ── COVER ANIMATION CLIP (plays inline inside the artwork frame) ── */
   .cover-clip-btn {
@@ -664,6 +663,7 @@
     .sidebar, .cover-pane, .text-pane {
       display: flex; position: absolute; inset: 0;
       height: 100%; max-height: none; border: none;
+      grid-column: 1;
       transition: transform 0.38s cubic-bezier(.4,0,.2,1);
       will-change: transform;
     }
@@ -692,7 +692,6 @@
     .cover-pulse {
       position: static;
       width: 100%; height: 34px; margin: 0;
-      display: block;
     }
 
     /* Default resting order: tracks | cover | lyrics, left to right */
@@ -856,7 +855,7 @@ const ALBUMS = {
     "meta": [
       [
         "GENRE",
-        "Melodic / Groove Metal"
+        "Tribal / Groove Metal"
       ],
       [
         "TRACKS",
