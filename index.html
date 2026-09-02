@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>Wondu — The Hunter Trilogy</title>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Black+Ops+One&family=Cinzel:wght@500;700&family=Orbitron:wght@500;700&family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -644,6 +644,16 @@
   }
   .ov-streak.teal { background: linear-gradient(90deg, var(--accent2), transparent); }
   .ov-streak.teal::before { background: var(--accent2); box-shadow: 0 0 10px 3px var(--accent2), 0 0 20px 6px rgba(90,209,200,0.4); }
+  .ov-star {
+    position: absolute; width: 2px; height: 2px; border-radius: 50%; background: #fff;
+    animation: ovTwinkle 2.6s ease-in-out infinite;
+  }
+  .ov-star.teal-star { background: var(--accent2); box-shadow: 0 0 4px var(--accent2); }
+  .ov-star.gold-star { background: var(--accent-pale); box-shadow: 0 0 4px var(--accent-pale); }
+  @keyframes ovTwinkle {
+    0%, 100% { opacity: 0.15; transform: scale(0.8); }
+    50% { opacity: 0.9; transform: scale(1.3); }
+  }
   .orbit-visualizer.playing .ov-core { animation: ovBeat 2.2s ease-in-out infinite; }
   .orbit-visualizer.playing .ov-body { animation: ovSpin 4s linear infinite; }
   .orbit-visualizer.playing .ov-streak { animation: ovEmanate 2.2s cubic-bezier(.2,.7,.3,1) infinite; }
@@ -657,6 +667,29 @@
   }
 
   /* ── COVER ANIMATION CLIP (plays inline inside the artwork frame) ── */
+  .artwork-toggle-btn {
+    position: absolute; top: 1rem; right: 1rem; z-index: 20;
+    width: 2.1rem; height: 2.1rem; border-radius: 50%;
+    background: rgba(0,0,0,0.55); border: 1px solid rgba(255,255,255,0.25); color: #eee;
+    font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+  }
+  .artwork-toggle-btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(0,0,0,0.75); }
+  .artwork-toggle-btn.active { border-color: var(--accent); color: var(--accent); }
+  @media (max-width: 980px) { .artwork-toggle-btn { display: none; } }
+
+  .cover-pane-inner.artwork-only .cover-scrim,
+  .cover-pane-inner.artwork-only .cover-content,
+  .cover-pane-inner.artwork-only .cover-glow,
+  .cover-pane-inner.artwork-only .starfield,
+  .cover-pane-inner.artwork-only .rivet,
+  .cover-pane-inner.artwork-only .banner,
+  .cover-pane-inner.artwork-only .scan-line,
+  .cover-pane-inner.artwork-only .portal-ring {
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+
   .cover-clip-btn {
     position: absolute; right: 1rem; bottom: 1rem; z-index: 6;
     width: 2.4rem; height: 2.4rem; border-radius: 50%;
@@ -923,6 +956,7 @@
     </nav>
 
     <section class="cover-pane">
+      <button class="artwork-toggle-btn" id="artworkToggleBtn" title="Hide captions &amp; overlays">👁</button>
       <div class="cover-pane-inner" id="coverPaneInner">
         <div class="starfield"></div>
         <div class="rivet" style="top:12px; left:12px;"></div>
@@ -1001,6 +1035,14 @@
                 <div class="ov-body" style="left:20px; top:20px;"></div>
               </div>
               <div class="ov-field">
+                <div class="ov-star" style="left:8%; top:15%; animation-delay:0s;"></div>
+                <div class="ov-star gold-star" style="left:22%; top:75%; animation-delay:0.5s;"></div>
+                <div class="ov-star" style="left:38%; top:40%; animation-delay:1.1s;"></div>
+                <div class="ov-star teal-star" style="left:54%; top:20%; animation-delay:0.3s;"></div>
+                <div class="ov-star" style="left:63%; top:80%; animation-delay:1.6s;"></div>
+                <div class="ov-star gold-star" style="left:78%; top:50%; animation-delay:0.8s;"></div>
+                <div class="ov-star" style="left:88%; top:25%; animation-delay:1.9s;"></div>
+                <div class="ov-star teal-star" style="left:95%; top:68%; animation-delay:0.2s;"></div>
                 <div class="ov-streak" style="top:30%; animation-delay:0s;"></div>
                 <div class="ov-streak teal" style="top:65%; animation-delay:1.1s;"></div>
               </div>
@@ -3377,6 +3419,16 @@ appMainEl.addEventListener('touchend', (e) => {
 }, { passive: true });
 
 // ── FULLSCREEN TOGGLE ──
+// ── ARTWORK-ONLY TOGGLE (desktop): hide all captions/overlays, show the pure cover art ──
+const artworkToggleBtn = document.getElementById('artworkToggleBtn');
+const coverPaneInnerForToggle = document.getElementById('coverPaneInner');
+artworkToggleBtn.addEventListener('click', () => {
+  const isArtworkOnly = coverPaneInnerForToggle.classList.toggle('artwork-only');
+  artworkToggleBtn.classList.toggle('active', isArtworkOnly);
+  artworkToggleBtn.textContent = isArtworkOnly ? '👁‍🗨' : '👁';
+  artworkToggleBtn.title = isArtworkOnly ? 'Show captions & overlays' : 'Hide captions & overlays';
+});
+
 const fsBtn = document.getElementById('fullscreenBtn');
 fsBtn.addEventListener('click', () => {
   if (!document.fullscreenElement) {
