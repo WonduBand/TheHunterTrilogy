@@ -185,7 +185,10 @@
   }
   body[data-album="1"] .track-row:hover { background: transparent; }
   body[data-album="1"] .track-row.active { background: transparent; border-left: none; }
-  body[data-album="1"] .track-row .row-play-btn { order: 3; margin-left: auto; align-self: center; }
+  body[data-album="1"] .track-row { display: flex; align-items: center; }
+  body[data-album="1"] .track-row .t-num { order: 1; }
+  body[data-album="1"] .track-row .row-play-btn { order: 2; margin: 0 0.7rem; align-self: center; }
+  body[data-album="1"] .track-row .t-title { order: 3; }
   body[data-album="1"] .track-row .t-num {
     font-family: var(--font-logo); font-weight: 400; font-size: 1.5rem; color: var(--border);
     line-height: 1; min-width: 2.1rem; transition: color 0.2s ease;
@@ -504,7 +507,6 @@
 
   @media (max-width: 700px) {
     .mp-info { max-width: 100px; }
-    .mp-time { display: none; }
     .mp-vol-slider { width: 46px; }
   }
 
