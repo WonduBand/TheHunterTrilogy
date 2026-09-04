@@ -506,7 +506,14 @@
   body[data-album="3"] .mp-progress::-webkit-slider-thumb { box-shadow: 0 0 10px 2px var(--accent2); }
 
   @media (max-width: 700px) {
-    .mp-info { max-width: 100px; }
+    .mini-player { flex-wrap: wrap; row-gap: 0.45rem; }
+    .mp-info {
+      order: -1; flex: 1 1 100%; max-width: none;
+      display: flex; align-items: baseline; gap: 0.5rem; overflow: hidden;
+    }
+    .mp-title { flex-shrink: 0; }
+    .mp-album { margin-top: 0; }
+    .mp-album::before { content: '— '; }
     .mp-vol-slider { width: 46px; }
   }
 
