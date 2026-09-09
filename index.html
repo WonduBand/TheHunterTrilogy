@@ -3475,6 +3475,8 @@ document.addEventListener('fullscreenchange', () => {
   const loadingScreen = document.getElementById('loadingScreen');
   const loadingPct = document.getElementById('loadingPct');
   const loadingBarFill = document.getElementById('loadingBarFill');
+  const MIN_DISPLAY_MS = 2000;
+  const startTime = Date.now();
 
   // Critical: every album cover — these are seen immediately when switching albums.
   const criticalUrls = [];
@@ -3492,8 +3494,12 @@ document.addEventListener('fullscreenchange', () => {
   }
 
   function finishLoading() {
-    loadingScreen.classList.add('hidden');
-    setTimeout(() => loadingScreen.remove(), 700);
+    const elapsed = Date.now() - startTime;
+    const remaining = Math.max(0, MIN_DISPLAY_MS - elapsed);
+    setTimeout(() => {
+      loadingScreen.classList.add('hidden');
+      setTimeout(() => loadingScreen.remove(), 700);
+    }, remaining);
     backgroundPreloadTrackArt();
   }
 
